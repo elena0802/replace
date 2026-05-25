@@ -51,7 +51,9 @@ export default function AuthNav() {
 
   if (isLoading) {
     return (
-      <span className="rounded-full px-4 py-2 text-[#6B6B68]">확인 중</span>
+      <span className="inline-flex min-h-11 items-center rounded-full px-4 py-2 text-[#6B6B68]">
+        확인 중
+      </span>
     );
   }
 
@@ -59,7 +61,7 @@ export default function AuthNav() {
     return (
       <Link
         href="/login"
-        className="rounded-full bg-[#FCFBF8] px-4 py-2 text-[#4D5748] shadow-[0_8px_18px_rgba(77,87,72,0.06)] transition hover:bg-[#EAE3D8] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[#4D5748]"
+        className="inline-flex min-h-11 items-center rounded-full bg-[#FCFBF8] px-4 py-2 text-[#4D5748] shadow-[0_8px_18px_rgba(77,87,72,0.06)] transition hover:bg-[#EAE3D8] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[#4D5748]"
       >
         로그인
       </Link>
@@ -70,7 +72,7 @@ export default function AuthNav() {
     <button
       type="button"
       onClick={handleLogout}
-      className="rounded-full bg-[#FCFBF8] px-4 py-2 text-[#4D5748] shadow-[0_8px_18px_rgba(77,87,72,0.06)] transition hover:bg-[#EAE3D8] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[#4D5748]"
+      className="inline-flex min-h-11 items-center rounded-full bg-[#FCFBF8] px-4 py-2 text-[#4D5748] shadow-[0_8px_18px_rgba(77,87,72,0.06)] transition hover:bg-[#EAE3D8] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[#4D5748]"
     >
       로그아웃
     </button>

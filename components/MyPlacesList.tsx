@@ -1,8 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
+import EmptyState from "@/components/EmptyState";
 import PlaceCard from "@/components/PlaceCard";
+import StatusMessage from "@/components/StatusMessage";
 import { getCurrentUser } from "@/lib/auth/getCurrentUser";
 import { getPlaces } from "@/lib/places/getPlaces";
 import type { PlaceRow } from "@/types/database";
@@ -59,61 +60,32 @@ export default function MyPlacesList() {
   }, []);
 
   if (isLoading) {
-    return (
-      <div className="rounded-3xl border border-[#E5E0D8] bg-[#FCFBF8] px-5 py-12 text-center shadow-[0_14px_34px_rgba(77,87,72,0.06)]">
-        <p className="text-xl font-semibold text-[#4D5748]">
-          기록을 불러오는 중...
-        </p>
-      </div>
-    );
+    return <StatusMessage>기록을 불러오는 중...</StatusMessage>;
   }
 
   if (errorMessage) {
-    return (
-      <div
-        className="rounded-3xl border border-[#E5C8BA] bg-[#FFF8F4] px-5 py-8 text-lg font-semibold leading-8 text-[#7A4B3A]"
-        role="alert"
-      >
-        {errorMessage}
-      </div>
-    );
+    return <StatusMessage tone="error">{errorMessage}</StatusMessage>;
   }
 
   if (requiresLogin) {
     return (
-      <div className="rounded-3xl border border-[#E5E0D8] bg-[#FCFBF8] px-5 py-12 text-center shadow-[0_14px_34px_rgba(77,87,72,0.06)] sm:px-8">
-        <h2 className="text-3xl font-semibold tracking-normal text-[#3F3F3B]">
-          내 장소 기록을 보려면 로그인이 필요해요.
-        </h2>
-        <p className="mx-auto mt-3 max-w-xl text-xl leading-9 text-[#6B6B68]">
-          로그인 후 내가 남긴 좋은 장소와 시간을 모아볼 수 있어요.
-        </p>
-        <Link
-          href="/login"
-          className="mt-7 inline-flex min-h-14 items-center justify-center rounded-full bg-[#A8B2A1] px-7 py-4 text-xl font-semibold text-[#2F362D] shadow-[0_10px_24px_rgba(77,87,72,0.14)] transition hover:bg-[#4D5748] hover:text-white focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748]"
-        >
-          로그인하기
-        </Link>
-      </div>
+      <EmptyState
+        title="내 장소 기록을 보려면 로그인이 필요해요."
+        description="로그인하고 나만의 장소 아카이브를 만들어보세요."
+        actionHref="/login"
+        actionLabel="로그인하기"
+      />
     );
   }
 
   if (places.length === 0) {
     return (
-      <div className="rounded-3xl border border-[#E5E0D8] bg-[#FCFBF8] px-5 py-12 text-center shadow-[0_14px_34px_rgba(77,87,72,0.06)] sm:px-8">
-        <h2 className="text-3xl font-semibold tracking-normal text-[#3F3F3B]">
-          아직 기록한 장소가 없어요.
-        </h2>
-        <p className="mx-auto mt-3 max-w-xl text-xl leading-9 text-[#6B6B68]">
-          좋은 장소와 시간을 첫 번째 기록으로 남겨보세요.
-        </p>
-        <Link
-          href="/places/new"
-          className="mt-7 inline-flex min-h-14 items-center justify-center rounded-full bg-[#A8B2A1] px-7 py-4 text-xl font-semibold text-[#2F362D] shadow-[0_10px_24px_rgba(77,87,72,0.14)] transition hover:bg-[#4D5748] hover:text-white focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748]"
-        >
-          장소 기록하기
-        </Link>
-      </div>
+      <EmptyState
+        title="아직 기록한 장소가 없어요."
+        description="좋은 장소와 시간을 첫 번째 기록으로 남겨보세요."
+        actionHref="/places/new"
+        actionLabel="장소 기록하기"
+      />
     );
   }
 

@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import EmptyState from "@/components/EmptyState";
+import StatusMessage from "@/components/StatusMessage";
 import { getCurrentUser } from "@/lib/auth/getCurrentUser";
 import { deletePlace } from "@/lib/places/deletePlace";
 import { getPlaceById } from "@/lib/places/getPlaceById";
@@ -123,11 +125,7 @@ export default function PlaceDetail({ id }: PlaceDetailProps) {
   if (isLoading) {
     return (
       <div className="mx-auto w-full max-w-6xl px-5 py-12 lg:px-8 lg:py-16">
-        <div className="rounded-3xl border border-[#E5E0D8] bg-[#FCFBF8] px-5 py-12 text-center shadow-[0_14px_34px_rgba(77,87,72,0.06)]">
-          <p className="text-xl font-semibold text-[#4D5748]">
-            장소를 불러오는 중...
-          </p>
-        </div>
+        <StatusMessage>장소를 불러오는 중...</StatusMessage>
       </div>
     );
   }
@@ -135,12 +133,7 @@ export default function PlaceDetail({ id }: PlaceDetailProps) {
   if (errorMessage) {
     return (
       <div className="mx-auto w-full max-w-6xl px-5 py-12 lg:px-8 lg:py-16">
-        <div
-          className="rounded-3xl border border-[#E5C8BA] bg-[#FFF8F4] px-5 py-8 text-lg font-semibold leading-8 text-[#7A4B3A]"
-          role="alert"
-        >
-          {errorMessage}
-        </div>
+        <StatusMessage tone="error">{errorMessage}</StatusMessage>
       </div>
     );
   }
@@ -148,20 +141,12 @@ export default function PlaceDetail({ id }: PlaceDetailProps) {
   if (isNotFound || !place) {
     return (
       <div className="mx-auto w-full max-w-3xl px-5 py-12 lg:px-8 lg:py-16">
-        <div className="rounded-3xl border border-[#E5E0D8] bg-[#FCFBF8] px-5 py-12 text-center shadow-[0_14px_34px_rgba(77,87,72,0.06)] sm:px-8">
-          <h1 className="text-4xl font-semibold leading-tight tracking-normal text-[#3F3F3B]">
-            이 장소를 찾을 수 없어요.
-          </h1>
-          <p className="mx-auto mt-4 max-w-xl text-xl leading-9 text-[#6B6B68]">
-            삭제되었거나 존재하지 않는 기록입니다.
-          </p>
-          <Link
-            href="/explore"
-            className="mt-8 inline-flex min-h-14 items-center justify-center rounded-full bg-[#A8B2A1] px-7 py-4 text-xl font-semibold text-[#2F362D] shadow-[0_10px_24px_rgba(77,87,72,0.14)] transition hover:bg-[#4D5748] hover:text-white focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748]"
-          >
-            둘러보기로 이동
-          </Link>
-        </div>
+        <EmptyState
+          title="이 장소를 찾을 수 없어요."
+          description="삭제되었거나 존재하지 않는 기록입니다."
+          actionHref="/explore"
+          actionLabel="둘러보기로 이동"
+        />
       </div>
     );
   }
@@ -207,12 +192,9 @@ export default function PlaceDetail({ id }: PlaceDetailProps) {
       </div>
 
       {actionError && (
-        <div
-          className="mb-6 rounded-3xl border border-[#E5C8BA] bg-[#FFF8F4] px-5 py-4 text-lg font-semibold leading-8 text-[#7A4B3A]"
-          role="alert"
-        >
+        <StatusMessage tone="error" className="mb-6 text-left">
           {actionError}
-        </div>
+        </StatusMessage>
       )}
 
       <article className="overflow-hidden rounded-3xl border border-[#E5E0D8] bg-[#FCFBF8] shadow-[0_18px_44px_rgba(77,87,72,0.07)]">
@@ -227,10 +209,10 @@ export default function PlaceDetail({ id }: PlaceDetailProps) {
           ) : (
             <div className="flex h-full w-full flex-col items-center justify-center gap-3 px-6 text-center">
               <span className="text-3xl font-semibold text-[#4D5748]">
-                Re:Place
+                사진이 아직 없어요
               </span>
               <span className="text-lg font-medium text-[#6B6B68]">
-                사진이 없는 장소 기록
+                좋은 순간을 사진으로 남겨보세요
               </span>
             </div>
           )}

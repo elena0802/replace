@@ -1,4 +1,4 @@
-import PlaceForm from "@/components/PlaceForm";
+import NewPlaceForm from "@/components/NewPlaceForm";
 
 export default function NewPlacePage() {
   return (
@@ -13,7 +13,7 @@ export default function NewPlacePage() {
         </p>
       </div>
 
-      <PlaceForm />
+      <NewPlaceForm />
     </div>
   );
 }

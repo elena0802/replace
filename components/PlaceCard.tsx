@@ -46,9 +46,12 @@ export default function PlaceCard({ place, href }: PlaceCardProps) {
             style={{ backgroundImage: `url("${normalizedPlace.imageUrl}")` }}
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center px-6 text-center">
+          <div className="flex h-full w-full flex-col items-center justify-center gap-2 px-6 text-center">
             <span className="text-xl font-semibold text-[#4D5748]">
-              Re:Place
+              사진이 아직 없어요
+            </span>
+            <span className="text-base font-medium leading-7 text-[#6B6B68]">
+              좋은 순간을 사진으로 남겨보세요
             </span>
           </div>
         )}

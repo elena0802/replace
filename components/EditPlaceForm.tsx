@@ -1,8 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
+import EmptyState from "@/components/EmptyState";
 import PlaceForm from "@/components/PlaceForm";
+import StatusMessage from "@/components/StatusMessage";
 import { getCurrentUser } from "@/lib/auth/getCurrentUser";
 import { getPlaceById } from "@/lib/places/getPlaceById";
 import { mapPlaceFormToUpdate } from "@/lib/places/mapPlaceFormToUpdate";
@@ -94,11 +95,7 @@ export default function EditPlaceForm({ id }: EditPlaceFormProps) {
   if (isLoading) {
     return (
       <div className="mx-auto w-full max-w-4xl px-5 py-12 lg:px-8 lg:py-16">
-        <div className="rounded-3xl border border-[#E5E0D8] bg-[#FCFBF8] px-5 py-12 text-center shadow-[0_14px_34px_rgba(77,87,72,0.06)]">
-          <p className="text-xl font-semibold text-[#4D5748]">
-            기록을 불러오는 중...
-          </p>
-        </div>
+        <StatusMessage>기록을 불러오는 중...</StatusMessage>
       </div>
     );
   }
@@ -106,12 +103,7 @@ export default function EditPlaceForm({ id }: EditPlaceFormProps) {
   if (errorMessage) {
     return (
       <div className="mx-auto w-full max-w-4xl px-5 py-12 lg:px-8 lg:py-16">
-        <div
-          className="rounded-3xl border border-[#E5C8BA] bg-[#FFF8F4] px-5 py-8 text-lg font-semibold leading-8 text-[#7A4B3A]"
-          role="alert"
-        >
-          {errorMessage}
-        </div>
+        <StatusMessage tone="error">{errorMessage}</StatusMessage>
       </div>
     );
   }
@@ -128,20 +120,12 @@ export default function EditPlaceForm({ id }: EditPlaceFormProps) {
 
     return (
       <div className="mx-auto w-full max-w-3xl px-5 py-12 lg:px-8 lg:py-16">
-        <div className="rounded-3xl border border-[#E5E0D8] bg-[#FCFBF8] px-5 py-12 text-center shadow-[0_14px_34px_rgba(77,87,72,0.06)] sm:px-8">
-          <h1 className="text-4xl font-semibold leading-tight tracking-normal text-[#3F3F3B]">
-            {title}
-          </h1>
-          <p className="mx-auto mt-4 max-w-xl text-xl leading-9 text-[#6B6B68]">
-            {description}
-          </p>
-          <Link
-            href={href}
-            className="mt-8 inline-flex min-h-14 items-center justify-center rounded-full bg-[#A8B2A1] px-7 py-4 text-xl font-semibold text-[#2F362D] shadow-[0_10px_24px_rgba(77,87,72,0.14)] transition hover:bg-[#4D5748] hover:text-white focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748]"
-          >
-            {buttonLabel}
-          </Link>
-        </div>
+        <EmptyState
+          title={title}
+          description={description}
+          actionHref={href}
+          actionLabel={buttonLabel}
+        />
       </div>
     );
   }

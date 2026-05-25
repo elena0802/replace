@@ -24,26 +24,28 @@ export default function RootLayout({
     <html lang="ko">
       <body className="flex min-h-screen flex-col bg-[#F8F6F2] text-[#3F3F3B] antialiased">
         <header className="sticky top-0 z-20 border-b border-[#EFEAE2] bg-[#F8F6F2]/95 backdrop-blur">
-          <nav className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-5 py-4 sm:flex-row sm:items-center sm:justify-between lg:px-8">
-            <Link
-              href="/"
-              className="text-2xl font-semibold tracking-normal text-[#4D5748]"
-            >
-              Re:Place
-            </Link>
-            <div className="flex flex-wrap items-center gap-2 text-lg font-medium text-[#6B6B68]">
-              <div className="flex flex-wrap gap-2">
+          <nav className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 py-3 sm:px-5 sm:py-4 lg:px-8">
+            <div className="flex min-h-12 items-center justify-between gap-3">
+              <Link
+                href="/"
+                className="shrink-0 text-2xl font-semibold tracking-normal text-[#4D5748]"
+              >
+                Re:Place
+              </Link>
+              <AuthNav />
+            </div>
+            <div className="-mx-1 overflow-x-auto pb-1">
+              <div className="flex min-w-max gap-2 px-1 text-lg font-medium text-[#6B6B68]">
                 {navigation.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="rounded-full px-4 py-2 transition hover:bg-[#EAE3D8] hover:text-[#4D5748] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[#4D5748]"
+                    className="inline-flex min-h-11 items-center rounded-full px-4 py-2 transition hover:bg-[#EAE3D8] hover:text-[#4D5748] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[#4D5748]"
                   >
                     {item.name}
                   </Link>
                 ))}
               </div>
-              <AuthNav />
             </div>
           </nav>
         </header>
