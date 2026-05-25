@@ -87,7 +87,7 @@ export default function ExplorePlacesList() {
   return (
     <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {places.map((place) => (
-        <PlaceCard key={place.id} place={place} href={null} />
+        <PlaceCard key={place.id} place={place} />
       ))}
     </div>
   );

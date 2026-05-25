@@ -79,7 +79,7 @@ export default function Home() {
         </div>
         <div className="grid gap-5 md:grid-cols-3">
           {recentPublicPlaces.map((place) => (
-            <PlaceCard key={place.id} place={place} />
+            <PlaceCard key={place.id} place={place} href={null} />
           ))}
         </div>
       </section>
