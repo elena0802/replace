@@ -1,12 +1,32 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
+import type {
+  Companion,
+  PlaceCategory,
+  PlaceFormValues,
+  RevisitLevel,
+} from "@/types/place";
 
-const categories = ["카페", "음식점", "공원", "여행지", "호텔", "기타"];
-const companions = ["혼자", "부부", "가족", "친구", "기타"];
-const revisitLevels = ["보통", "좋았어요", "꼭 다시 가고 싶어요"];
-const visibilityOptions = ["공개", "비공개"];
-const spaceInfoOptions = [
+const categories: PlaceCategory[] = [
+  "카페",
+  "음식점",
+  "공원",
+  "여행지",
+  "호텔",
+  "기타",
+];
+const companions: Companion[] = ["혼자", "부부", "가족", "친구", "기타"];
+const revisitLevels: RevisitLevel[] = [
+  "보통",
+  "좋았어요",
+  "꼭 다시 가고 싶어요",
+];
+const visibilityOptions = [
+  { label: "공개", value: true },
+  { label: "비공개", value: false },
+];
+const spaceTagOptions = [
   "주차가 편해요",
   "걷기 편해요",
   "계단이 적어요",
@@ -17,19 +37,7 @@ const spaceInfoOptions = [
   "사진 찍기 좋아요",
 ];
 
-type FormValues = {
-  name: string;
-  category: string;
-  region: string;
-  memory: string;
-  visitedDate: string;
-  companion: string;
-  revisitLevel: string;
-  visibility: string;
-  spaceInfo: string[];
-};
-
-const initialValues: FormValues = {
+const initialValues: PlaceFormValues = {
   name: "",
   category: "",
   region: "",
@@ -37,33 +45,72 @@ const initialValues: FormValues = {
   visitedDate: "",
   companion: "",
   revisitLevel: "좋았어요",
-  visibility: "공개",
-  spaceInfo: [],
+  isPublic: true,
+  spaceTags: [],
 };
 
 const fieldClass =
   "min-h-14 w-full rounded-2xl border border-[#E5E0D8] bg-white px-4 text-xl font-medium text-[#3F3F3B] outline-none transition placeholder:text-[#6B6B68]/60 focus:border-[#A8B2A1] focus:ring-3 focus:ring-[#A8B2A1]/20";
 const labelClass = "space-y-2 text-lg font-semibold text-[#3F3F3B]";
 
+type RequiredField = "name" | "category" | "region" | "memory";
+type FieldErrors = Partial<Record<RequiredField, string>>;
+
+function isRequiredField(field: keyof PlaceFormValues): field is RequiredField {
+  return (
+    field === "name" ||
+    field === "category" ||
+    field === "region" ||
+    field === "memory"
+  );
+}
+
 export default function PlaceForm() {
-  const [values, setValues] = useState<FormValues>(initialValues);
-  const [errors, setErrors] = useState<string[]>([]);
+  const [values, setValues] = useState<PlaceFormValues>(initialValues);
+  const [errors, setErrors] = useState<FieldErrors>({});
   const [successMessage, setSuccessMessage] = useState("");
 
-  function updateValue(field: keyof FormValues, value: string) {
+  const nameRef = useRef<HTMLInputElement>(null);
+  const categoryRef = useRef<HTMLSelectElement>(null);
+  const regionRef = useRef<HTMLInputElement>(null);
+  const memoryRef = useRef<HTMLTextAreaElement>(null);
+
+  const hasErrors = Object.keys(errors).length > 0;
+
+  function focusField(field: RequiredField) {
+    const refs = {
+      name: nameRef,
+      category: categoryRef,
+      region: regionRef,
+      memory: memoryRef,
+    };
+
+    refs[field].current?.focus();
+  }
+
+  function updateValue<Field extends keyof PlaceFormValues>(
+    field: Field,
+    value: PlaceFormValues[Field],
+  ) {
     setValues((current) => ({ ...current, [field]: value }));
-    setErrors([]);
+    if (isRequiredField(field)) {
+      setErrors((current) => {
+        const nextErrors = { ...current };
+        delete nextErrors[field];
+        return nextErrors;
+      });
+    }
     setSuccessMessage("");
   }
 
-  function toggleSpaceInfo(option: string) {
+  function toggleSpaceTag(tag: string) {
     setValues((current) => {
-      const exists = current.spaceInfo.includes(option);
+      const exists = current.spaceTags.includes(tag);
       return {
         ...current,
-        spaceInfo: exists
-          ? current.spaceInfo.filter((item) => item !== option)
-          : [...current.spaceInfo, option],
+        spaceTags: exists
+          ? current.spaceTags.filter((item) => item !== tag)
+          : [...current.spaceTags, tag],
       };
     });
     setSuccessMessage("");
@@ -72,22 +119,39 @@ export default function PlaceForm() {
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const nextErrors = [
-      !values.name.trim() && "장소명을 입력해주세요.",
-      !values.category && "카테고리를 선택해주세요.",
-      !values.region.trim() && "지역을 입력해주세요.",
-      !values.memory.trim() && "기억을 입력해주세요.",
-    ].filter(Boolean) as string[];
+    const nextErrors: FieldErrors = {};
+
+    if (!values.name.trim()) {
+      nextErrors.name = "장소명을 입력해주세요.";
+    }
+
+    if (!values.category) {
+      nextErrors.category = "카테고리를 선택해주세요.";
+    }
+
+    if (!values.region.trim()) {
+      nextErrors.region = "지역을 입력해주세요.";
+    }
+
+    if (!values.memory.trim()) {
+      nextErrors.memory = "기억을 입력해주세요.";
+    }
 
     setErrors(nextErrors);
 
-    if (nextErrors.length > 0) {
+    const firstErrorField = (
+      ["name", "category", "region", "memory"] as RequiredField[]
+    ).find((field) => nextErrors[field]);
+
+    if (firstErrorField) {
       setSuccessMessage("");
+      focusField(firstErrorField);
       return;
     }
 
+    console.log("PlaceForm data:", JSON.stringify(values));
     setSuccessMessage(
-      "기록 UI가 준비되었습니다. 다음 단계에서 저장 기능을 연결합니다.",
+      "기록할 준비가 완료되었습니다. 다음 단계에서 저장 기능을 연결합니다.",
     );
   }
 
@@ -97,7 +161,7 @@ export default function PlaceForm() {
       noValidate
       className="space-y-8 rounded-3xl border border-[#E5E0D8] bg-[#FCFBF8] p-5 shadow-[0_18px_44px_rgba(77,87,72,0.07)] sm:p-7"
     >
-      {(errors.length > 0 || successMessage) && (
+      {(hasErrors || successMessage) && (
         <div
           className={`rounded-2xl border px-5 py-4 text-lg leading-8 ${
             successMessage
@@ -109,14 +173,9 @@ export default function PlaceForm() {
           {successMessage ? (
             <p className="font-semibold">{successMessage}</p>
           ) : (
-            <div>
-              <p className="font-semibold">필수 항목을 확인해주세요.</p>
-              <ul className="mt-2 list-disc space-y-1 pl-6">
-                {errors.map((error) => (
-                  <li key={error}>{error}</li>
-                ))}
-              </ul>
-            </div>
+            <p className="font-semibold">
+              필수 항목을 확인해주세요. 첫 번째 표시된 항목부터 입력해주세요.
+            </p>
           )}
         </div>
       )}
@@ -136,20 +195,36 @@ export default function PlaceForm() {
             장소명 <span className="text-[#4D5748]">*</span>
             <input
               type="text"
+              ref={nameRef}
               value={values.name}
               onChange={(event) => updateValue("name", event.target.value)}
               placeholder="예: 봄날 정원 카페"
               className={fieldClass}
+              aria-invalid={Boolean(errors.name)}
+              aria-describedby={errors.name ? "name-error" : undefined}
               aria-required="true"
             />
+            {errors.name && (
+              <span id="name-error" className="block text-base text-[#7A4B3A]">
+                {errors.name}
+              </span>
+            )}
           </label>
 
           <label className={labelClass}>
             카테고리 <span className="text-[#4D5748]">*</span>
             <select
+              ref={categoryRef}
               value={values.category}
-              onChange={(event) => updateValue("category", event.target.value)}
+              onChange={(event) =>
+                updateValue(
+                  "category",
+                  event.target.value as PlaceCategory | "",
+                )
+              }
               className={fieldClass}
+              aria-invalid={Boolean(errors.category)}
+              aria-describedby={errors.category ? "category-error" : undefined}
               aria-required="true"
             >
               <option value="">카테고리 선택</option>
@@ -159,6 +234,14 @@ export default function PlaceForm() {
                 </option>
               ))}
             </select>
+            {errors.category && (
+              <span
+                id="category-error"
+                className="block text-base text-[#7A4B3A]"
+              >
+                {errors.category}
+              </span>
+            )}
           </label>
         </div>
 
@@ -167,12 +250,20 @@ export default function PlaceForm() {
             지역 <span className="text-[#4D5748]">*</span>
             <input
               type="text"
+              ref={regionRef}
               value={values.region}
               onChange={(event) => updateValue("region", event.target.value)}
               placeholder="예: 경기 양평"
               className={fieldClass}
+              aria-invalid={Boolean(errors.region)}
+              aria-describedby={errors.region ? "region-error" : undefined}
               aria-required="true"
             />
+            {errors.region && (
+              <span id="region-error" className="block text-base text-[#7A4B3A]">
+                {errors.region}
+              </span>
+            )}
           </label>
 
           <label className={labelClass}>
@@ -191,13 +282,21 @@ export default function PlaceForm() {
         <label className={labelClass}>
           기억 <span className="text-[#4D5748]">*</span>
           <textarea
+            ref={memoryRef}
             value={values.memory}
             onChange={(event) => updateValue("memory", event.target.value)}
             placeholder="예: 창가에 앉아 천천히 쉬었던 오후가 오래 기억에 남았어요."
             rows={5}
             className="w-full rounded-2xl border border-[#E5E0D8] bg-white px-4 py-3 text-xl font-medium leading-8 text-[#3F3F3B] outline-none transition placeholder:text-[#6B6B68]/60 focus:border-[#A8B2A1] focus:ring-3 focus:ring-[#A8B2A1]/20"
+            aria-invalid={Boolean(errors.memory)}
+            aria-describedby={errors.memory ? "memory-error" : undefined}
             aria-required="true"
           />
+          {errors.memory && (
+            <span id="memory-error" className="block text-base text-[#7A4B3A]">
+              {errors.memory}
+            </span>
+          )}
         </label>
       </section>
 
@@ -216,7 +315,9 @@ export default function PlaceForm() {
             누구와 갔나요?
             <select
               value={values.companion}
-              onChange={(event) => updateValue("companion", event.target.value)}
+              onChange={(event) =>
+                updateValue("companion", event.target.value as Companion | "")
+              }
               className={fieldClass}
             >
               <option value="">선택 안 함</option>
@@ -244,7 +345,10 @@ export default function PlaceForm() {
                     value={level}
                     checked={values.revisitLevel === level}
                     onChange={(event) =>
-                      updateValue("revisitLevel", event.target.value)
+                      updateValue(
+                        "revisitLevel",
+                        event.target.value as RevisitLevel,
+                      )
                     }
                     className="size-5 accent-[#4D5748]"
                   />
@@ -262,20 +366,17 @@ export default function PlaceForm() {
           <div className="grid gap-3 sm:grid-cols-2">
             {visibilityOptions.map((option) => (
               <label
-                key={option}
+                key={option.label}
                 className="flex min-h-14 items-center gap-3 rounded-2xl border border-[#E5E0D8] bg-white px-4 text-lg font-medium text-[#3F3F3B]"
               >
                 <input
                   type="radio"
-                  name="visibility"
-                  value={option}
-                  checked={values.visibility === option}
-                  onChange={(event) =>
-                    updateValue("visibility", event.target.value)
-                  }
+                  name="isPublic"
+                  checked={values.isPublic === option.value}
+                  onChange={() => updateValue("isPublic", option.value)}
                   className="size-5 accent-[#4D5748]"
                 />
-                {option}
+                {option.label}
               </label>
             ))}
           </div>
@@ -293,15 +394,15 @@ export default function PlaceForm() {
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
-          {spaceInfoOptions.map((option) => (
+          {spaceTagOptions.map((option) => (
             <label
               key={option}
               className="flex min-h-14 items-center gap-3 rounded-2xl border border-[#E5E0D8] bg-white px-4 text-lg font-medium text-[#3F3F3B] transition has-checked:border-[#A8B2A1] has-checked:bg-[#A8B2A1]/15"
             >
               <input
                 type="checkbox"
-                checked={values.spaceInfo.includes(option)}
-                onChange={() => toggleSpaceInfo(option)}
+                checked={values.spaceTags.includes(option)}
+                onChange={() => toggleSpaceTag(option)}
                 className="size-5 accent-[#4D5748]"
               />
               {option}
