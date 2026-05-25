@@ -1,6 +1,9 @@
 "use client";
 
-import { FormEvent, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { FormEvent, useEffect, useRef, useState } from "react";
+import { createPlace } from "@/lib/places/createPlace";
+import { mapPlaceFormToInsert } from "@/lib/places/mapPlaceFormToInsert";
 import type {
   Companion,
   PlaceCategory,
@@ -66,16 +69,29 @@ function isRequiredField(field: keyof PlaceFormValues): field is RequiredField {
 }
 
 export default function PlaceForm() {
+  const router = useRouter();
   const [values, setValues] = useState<PlaceFormValues>(initialValues);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [successMessage, setSuccessMessage] = useState("");
+  const [submitError, setSubmitError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const nameRef = useRef<HTMLInputElement>(null);
   const categoryRef = useRef<HTMLSelectElement>(null);
   const regionRef = useRef<HTMLInputElement>(null);
   const memoryRef = useRef<HTMLTextAreaElement>(null);
+  const redirectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const hasErrors = Object.keys(errors).length > 0;
+  const isSubmitDisabled = isSubmitting || Boolean(successMessage);
+
+  useEffect(() => {
+    return () => {
+      if (redirectTimeoutRef.current) {
+        clearTimeout(redirectTimeoutRef.current);
+      }
+    };
+  }, []);
 
   function focusField(field: RequiredField) {
     const refs = {
@@ -101,6 +117,7 @@ export default function PlaceForm() {
       });
     }
     setSuccessMessage("");
+    setSubmitError("");
   }
 
   function toggleSpaceTag(tag: string) {
@@ -114,10 +131,15 @@ export default function PlaceForm() {
       };
     });
     setSuccessMessage("");
+    setSubmitError("");
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (isSubmitting) {
+      return;
+    }
 
     const nextErrors: FieldErrors = {};
 
@@ -145,14 +167,32 @@ export default function PlaceForm() {
 
     if (firstErrorField) {
       setSuccessMessage("");
+      setSubmitError("");
       focusField(firstErrorField);
       return;
     }
 
-    console.log("PlaceForm data:", JSON.stringify(values));
-    setSuccessMessage(
-      "기록할 준비가 완료되었습니다. 다음 단계에서 저장 기능을 연결합니다.",
-    );
+    setIsSubmitting(true);
+    setSuccessMessage("");
+    setSubmitError("");
+
+    try {
+      const placeInsert = mapPlaceFormToInsert(values);
+      const createdPlace = await createPlace(placeInsert);
+      console.log("Created place:", JSON.stringify(createdPlace));
+      setSuccessMessage("좋은 장소가 기록되었습니다.");
+
+      redirectTimeoutRef.current = setTimeout(() => {
+        router.push("/my-places");
+      }, 1000);
+    } catch (error) {
+      console.error(error);
+      setSubmitError(
+        "기록을 저장하지 못했습니다. Supabase 설정과 테이블을 확인해주세요.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -161,7 +201,7 @@ export default function PlaceForm() {
       noValidate
       className="space-y-8 rounded-3xl border border-[#E5E0D8] bg-[#FCFBF8] p-5 shadow-[0_18px_44px_rgba(77,87,72,0.07)] sm:p-7"
     >
-      {(hasErrors || successMessage) && (
+      {(hasErrors || successMessage || submitError) && (
         <div
           className={`rounded-2xl border px-5 py-4 text-lg leading-8 ${
             successMessage
@@ -172,6 +212,8 @@ export default function PlaceForm() {
         >
           {successMessage ? (
             <p className="font-semibold">{successMessage}</p>
+          ) : submitError ? (
+            <p className="font-semibold">{submitError}</p>
           ) : (
             <p className="font-semibold">
               필수 항목을 확인해주세요. 첫 번째 표시된 항목부터 입력해주세요.
@@ -440,9 +482,14 @@ export default function PlaceForm() {
         </p>
         <button
           type="submit"
-          className="min-h-14 rounded-full bg-[#A8B2A1] px-8 py-4 text-xl font-semibold text-[#2F362D] shadow-[0_10px_24px_rgba(77,87,72,0.14)] transition hover:bg-[#4D5748] hover:text-white focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748]"
+          disabled={isSubmitDisabled}
+          className="min-h-14 rounded-full bg-[#A8B2A1] px-8 py-4 text-xl font-semibold text-[#2F362D] shadow-[0_10px_24px_rgba(77,87,72,0.14)] transition hover:bg-[#4D5748] hover:text-white focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748] disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:bg-[#A8B2A1] disabled:hover:text-[#2F362D]"
         >
-          기록 저장하기
+          {isSubmitting
+            ? "기록하는 중..."
+            : successMessage
+              ? "기록 완료"
+              : "기록 저장하기"}
         </button>
       </div>
     </form>

@@ -1,6 +1,5 @@
 import Link from "next/link";
-import PlaceCard from "@/components/PlaceCard";
-import { mockPlaces } from "@/lib/mockPlaces";
+import MyPlacesList from "@/components/MyPlacesList";
 
 export default function MyPlacesPage() {
   return (
@@ -23,16 +22,8 @@ export default function MyPlacesPage() {
         </Link>
       </div>
 
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {mockPlaces.map((place) => (
-          <div key={place.id} className="relative">
-            <PlaceCard place={place} />
-            <span className="absolute right-4 top-4 rounded-full bg-[#FCFBF8]/95 px-3 py-1 text-base font-medium text-[#4D5748] shadow-[0_8px_18px_rgba(77,87,72,0.08)]">
-              {place.isPublic ? "공개" : "나만 보기"}
-            </span>
-          </div>
-        ))}
-      </div>
+      {/* 로그인 도입 후 user_id 기준 필터링 필요 */}
+      <MyPlacesList />
     </div>
   );
 }
