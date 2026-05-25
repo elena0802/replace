@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { deletePlace } from "@/lib/places/deletePlace";
 import { getPlaceById } from "@/lib/places/getPlaceById";
 import type { PlaceRow } from "@/types/database";
 
@@ -39,10 +41,13 @@ function DetailRow({ label, value }: { label: string; value: string }) {
 }
 
 export default function PlaceDetail({ id }: PlaceDetailProps) {
+  const router = useRouter();
   const [place, setPlace] = useState<PlaceRow | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+  const [actionError, setActionError] = useState("");
   const [isNotFound, setIsNotFound] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -83,6 +88,31 @@ export default function PlaceDetail({ id }: PlaceDetailProps) {
       isMounted = false;
     };
   }, [id]);
+
+  async function handleDelete() {
+    if (!place || isDeleting) {
+      return;
+    }
+
+    const shouldDelete = window.confirm("이 장소 기록을 삭제할까요?");
+
+    if (!shouldDelete) {
+      return;
+    }
+
+    setIsDeleting(true);
+    setActionError("");
+
+    try {
+      await deletePlace(place.id);
+      router.push("/my-places");
+    } catch (error) {
+      console.error(error);
+      setActionError("장소 기록을 삭제하지 못했습니다. Supabase 설정을 확인해주세요.");
+    } finally {
+      setIsDeleting(false);
+    }
+  }
 
   if (isLoading) {
     return (
@@ -132,20 +162,49 @@ export default function PlaceDetail({ id }: PlaceDetailProps) {
 
   return (
     <div className="mx-auto w-full max-w-6xl px-5 py-12 lg:px-8 lg:py-16">
-      <div className="mb-6 flex flex-wrap gap-4">
-        <Link
-          href="/explore"
-          className="inline-flex text-lg font-semibold text-[#4D5748] hover:text-[#3F3F3B]"
-        >
-          둘러보기로 돌아가기
-        </Link>
-        <Link
-          href="/my-places"
-          className="inline-flex text-lg font-semibold text-[#6B6B68] hover:text-[#3F3F3B]"
-        >
-          내 장소로 돌아가기
-        </Link>
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-wrap gap-4">
+          <Link
+            href="/explore"
+            className="inline-flex text-lg font-semibold text-[#4D5748] hover:text-[#3F3F3B]"
+          >
+            둘러보기로 돌아가기
+          </Link>
+          <Link
+            href="/my-places"
+            className="inline-flex text-lg font-semibold text-[#6B6B68] hover:text-[#3F3F3B]"
+          >
+            내 장소로 돌아가기
+          </Link>
+        </div>
+
+        <div className="flex flex-wrap gap-3">
+          {/* 로그인 도입 후 작성자만 수정 가능하도록 제한 필요 */}
+          <Link
+            href={`/places/${place.id}/edit`}
+            className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#A8B2A1] px-5 py-3 text-lg font-semibold text-[#2F362D] shadow-[0_8px_18px_rgba(77,87,72,0.12)] transition hover:bg-[#4D5748] hover:text-white focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748]"
+          >
+            수정하기
+          </Link>
+          <button
+            type="button"
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className="inline-flex min-h-12 items-center justify-center rounded-full border border-[#D9C3B6] bg-[#FFF8F4] px-5 py-3 text-lg font-semibold text-[#7A4B3A] transition hover:border-[#B89282] hover:bg-[#F6EAE3] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#7A4B3A] disabled:cursor-not-allowed disabled:opacity-70"
+          >
+            {isDeleting ? "삭제하는 중..." : "삭제하기"}
+          </button>
+        </div>
       </div>
+
+      {actionError && (
+        <div
+          className="mb-6 rounded-3xl border border-[#E5C8BA] bg-[#FFF8F4] px-5 py-4 text-lg font-semibold leading-8 text-[#7A4B3A]"
+          role="alert"
+        >
+          {actionError}
+        </div>
+      )}
 
       <article className="overflow-hidden rounded-3xl border border-[#E5E0D8] bg-[#FCFBF8] shadow-[0_18px_44px_rgba(77,87,72,0.07)]">
         <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#EAE3D8] md:aspect-[16/7]">

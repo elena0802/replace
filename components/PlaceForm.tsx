@@ -40,7 +40,7 @@ const spaceTagOptions = [
   "사진 찍기 좋아요",
 ];
 
-const initialValues: PlaceFormValues = {
+const emptyPlaceFormValues: PlaceFormValues = {
   name: "",
   category: "",
   region: "",
@@ -52,12 +52,39 @@ const initialValues: PlaceFormValues = {
   spaceTags: [],
 };
 
+const formMessages = {
+  create: {
+    submitting: "기록하는 중...",
+    submit: "기록 저장하기",
+    completed: "기록 완료",
+    success: "좋은 장소가 기록되었습니다.",
+    error: "기록을 저장하지 못했습니다. Supabase 설정과 테이블을 확인해주세요.",
+  },
+  edit: {
+    submitting: "수정하는 중...",
+    submit: "수정 저장하기",
+    completed: "수정 완료",
+    success: "장소 기록이 수정되었습니다.",
+    error:
+      "장소 기록을 수정하지 못했습니다. Supabase 설정과 테이블을 확인해주세요.",
+  },
+};
+
 const fieldClass =
   "min-h-14 w-full rounded-2xl border border-[#E5E0D8] bg-white px-4 text-xl font-medium text-[#3F3F3B] outline-none transition placeholder:text-[#6B6B68]/60 focus:border-[#A8B2A1] focus:ring-3 focus:ring-[#A8B2A1]/20";
 const labelClass = "space-y-2 text-lg font-semibold text-[#3F3F3B]";
 
 type RequiredField = "name" | "category" | "region" | "memory";
 type FieldErrors = Partial<Record<RequiredField, string>>;
+type PlaceFormMode = "create" | "edit";
+type PlaceFormSubmitResult = { redirectPath?: string } | void;
+
+type PlaceFormProps = {
+  initialValues?: PlaceFormValues;
+  mode?: PlaceFormMode;
+  onSubmit?: (values: PlaceFormValues) => Promise<PlaceFormSubmitResult>;
+  successRedirectPath?: string;
+};
 
 function isRequiredField(field: keyof PlaceFormValues): field is RequiredField {
   return (
@@ -68,7 +95,22 @@ function isRequiredField(field: keyof PlaceFormValues): field is RequiredField {
   );
 }
 
-export default function PlaceForm() {
+function getSubmitRedirectPath(result: unknown) {
+  if (typeof result !== "object" || result === null || !("redirectPath" in result)) {
+    return undefined;
+  }
+
+  const redirectCandidate = (result as { redirectPath?: unknown }).redirectPath;
+
+  return typeof redirectCandidate === "string" ? redirectCandidate : undefined;
+}
+
+export default function PlaceForm({
+  initialValues = emptyPlaceFormValues,
+  mode = "create",
+  onSubmit,
+  successRedirectPath,
+}: PlaceFormProps) {
   const router = useRouter();
   const [values, setValues] = useState<PlaceFormValues>(initialValues);
   const [errors, setErrors] = useState<FieldErrors>({});
@@ -84,6 +126,9 @@ export default function PlaceForm() {
 
   const hasErrors = Object.keys(errors).length > 0;
   const isSubmitDisabled = isSubmitting || Boolean(successMessage);
+  const messages = formMessages[mode];
+  const redirectPath =
+    successRedirectPath ?? (mode === "create" ? "/my-places" : undefined);
 
   useEffect(() => {
     return () => {
@@ -177,19 +222,26 @@ export default function PlaceForm() {
     setSubmitError("");
 
     try {
-      const placeInsert = mapPlaceFormToInsert(values);
-      const createdPlace = await createPlace(placeInsert);
-      console.log("Created place:", JSON.stringify(createdPlace));
-      setSuccessMessage("좋은 장소가 기록되었습니다.");
+      const submitResult = onSubmit
+        ? await onSubmit(values)
+        : await createPlace(mapPlaceFormToInsert(values));
 
-      redirectTimeoutRef.current = setTimeout(() => {
-        router.push("/my-places");
-      }, 1000);
+      if (!onSubmit) {
+        console.log("Created place:", JSON.stringify(submitResult));
+      }
+
+      setSuccessMessage(messages.success);
+
+      const nextRedirectPath = getSubmitRedirectPath(submitResult) ?? redirectPath;
+
+      if (nextRedirectPath) {
+        redirectTimeoutRef.current = setTimeout(() => {
+          router.push(nextRedirectPath);
+        }, 1000);
+      }
     } catch (error) {
       console.error(error);
-      setSubmitError(
-        "기록을 저장하지 못했습니다. Supabase 설정과 테이블을 확인해주세요.",
-      );
+      setSubmitError(messages.error);
     } finally {
       setIsSubmitting(false);
     }
@@ -486,10 +538,10 @@ export default function PlaceForm() {
           className="min-h-14 rounded-full bg-[#A8B2A1] px-8 py-4 text-xl font-semibold text-[#2F362D] shadow-[0_10px_24px_rgba(77,87,72,0.14)] transition hover:bg-[#4D5748] hover:text-white focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748] disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:bg-[#A8B2A1] disabled:hover:text-[#2F362D]"
         >
           {isSubmitting
-            ? "기록하는 중..."
+            ? messages.submitting
             : successMessage
-              ? "기록 완료"
-              : "기록 저장하기"}
+              ? messages.completed
+              : messages.submit}
         </button>
       </div>
     </form>

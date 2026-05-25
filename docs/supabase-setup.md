@@ -43,11 +43,11 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 3. SQL Editor에 붙여넣고 실행합니다.
 4. 실행 후 **Table Editor**에서 `places` 테이블이 생성되었는지 확인합니다.
 
-현재 SQL은 MVP 테스트를 위한 초기 구조입니다. 로그인 기능이 아직 없으므로 `user_id` 컬럼을 만들지 않고, 공개 장소 조회, `/my-places` 전체 조회, anon insert 테스트 정책만 포함합니다.
+현재 SQL은 MVP 테스트를 위한 초기 구조입니다. 로그인 기능이 아직 없으므로 `user_id` 컬럼을 만들지 않고, 공개 장소 조회, `/my-places` 전체 조회, anon insert/update/delete 테스트 정책을 포함합니다.
 
 로그인 도입 후에는 `user_id` 컬럼을 추가하고, 사용자별 select/insert/update/delete RLS 정책으로 반드시 강화해야 합니다.
 
-현재 `/my-places`는 로그인 전 임시 화면이라 anon key로 공개/비공개 장소를 모두 조회할 수 있게 열려 있습니다. 실제 서비스 전환 시 이 정책은 제거하고 사용자 본인 데이터만 조회되도록 바꿔야 합니다.
+현재 `/my-places`, 장소 수정, 장소 삭제는 로그인 전 임시 화면이라 anon key로 공개/비공개 장소를 조회하고 변경할 수 있게 열려 있습니다. 실제 서비스 전환 시 이 정책은 제거하고 사용자 본인 데이터만 조회/수정/삭제되도록 바꿔야 합니다.
 
 ## 6. 다음 단계 places 테이블 초안
 

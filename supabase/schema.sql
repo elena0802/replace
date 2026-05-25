@@ -63,5 +63,26 @@ for insert
 to anon, authenticated
 with check (true);
 
-grant select, insert on public.places to anon;
+-- MVP test policy:
+-- 로그인 도입 후 user_id 컬럼과 사용자별 RLS 정책으로 교체해야 한다.
+-- 현재는 로그인 없이 수정 기능을 확인하기 위한 임시 정책이다.
+drop policy if exists "Anon can update places during MVP testing" on public.places;
+create policy "Anon can update places during MVP testing"
+on public.places
+for update
+to anon, authenticated
+using (true)
+with check (true);
+
+-- MVP test policy:
+-- 로그인 도입 후 user_id 컬럼과 사용자별 RLS 정책으로 교체해야 한다.
+-- 현재는 로그인 없이 삭제 기능을 확인하기 위한 임시 정책이다.
+drop policy if exists "Anon can delete places during MVP testing" on public.places;
+create policy "Anon can delete places during MVP testing"
+on public.places
+for delete
+to anon, authenticated
+using (true);
+
+grant select, insert, update, delete on public.places to anon;
 grant select, insert, update, delete on public.places to authenticated;
