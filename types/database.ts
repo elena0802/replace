@@ -11,14 +11,40 @@ export type PlaceRow = {
   is_public: boolean;
   image_url: string | null;
   created_at: string;
+  updated_at: string;
 };
 
-export type PlaceInsert = Omit<PlaceRow, "id" | "created_at"> & {
+export type PlaceInsert = {
   id?: string;
+  name: string;
+  category: string;
+  region: string;
+  memory: string;
+  visited_date?: string | null;
+  companion?: string | null;
+  revisit_level?: string;
+  space_tags?: string[];
+  is_public?: boolean;
+  image_url?: string | null;
   created_at?: string;
+  updated_at?: string;
 };
 
-export type PlaceUpdate = Partial<PlaceInsert>;
+export type PlaceUpdate = {
+  id?: string;
+  name?: string;
+  category?: string;
+  region?: string;
+  memory?: string;
+  visited_date?: string | null;
+  companion?: string | null;
+  revisit_level?: string;
+  space_tags?: string[];
+  is_public?: boolean;
+  image_url?: string | null;
+  created_at?: string;
+  updated_at?: string;
+};
 
 export interface Database {
   public: {

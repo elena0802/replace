@@ -36,7 +36,18 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 - 실제 Supabase 키를 코드나 문서에 직접 넣지 않습니다.
 - 이 저장소에는 예시 파일인 `.env.example`만 커밋합니다.
 
-## 5. 다음 단계 places 테이블 초안
+## 5. SQL Editor에서 스키마 실행
+
+1. Supabase 프로젝트 대시보드에서 **SQL Editor**를 엽니다.
+2. 이 저장소의 `supabase/schema.sql` 파일 내용을 복사합니다.
+3. SQL Editor에 붙여넣고 실행합니다.
+4. 실행 후 **Table Editor**에서 `places` 테이블이 생성되었는지 확인합니다.
+
+현재 SQL은 MVP 테스트를 위한 초기 구조입니다. 로그인 기능이 아직 없으므로 `user_id` 컬럼을 만들지 않고, 공개 장소 조회와 anon insert 테스트 정책만 포함합니다.
+
+로그인 도입 후에는 `user_id` 컬럼을 추가하고, 사용자별 select/insert/update/delete RLS 정책으로 반드시 강화해야 합니다.
+
+## 6. 다음 단계 places 테이블 초안
 
 다음 단계에서 실제 저장 기능을 연결할 때 만들 places 테이블 초안입니다.
 
@@ -54,5 +65,6 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 | is_public | boolean | 공개 여부 |
 | image_url | text | 대표 이미지 URL, nullable |
 | created_at | timestamptz | 생성일 |
+| updated_at | timestamptz | 수정일 |
 
-이번 단계에서는 테이블 생성, 조회, 저장, 인증, RLS 정책은 아직 구현하지 않습니다.
+이번 단계에서는 SQL과 타입만 준비합니다. 앱에서 실제 테이블 조회, 저장, 인증, 이미지 업로드는 아직 구현하지 않습니다.
