@@ -1,10 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { FormEvent, useEffect, useRef, useState } from "react";
-import { AuthRequiredError } from "@/lib/auth/getCurrentUser";
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
+import { AuthRequiredError, requireCurrentUser } from "@/lib/auth/getCurrentUser";
 import { createPlace } from "@/lib/places/createPlace";
 import { mapPlaceFormToInsert } from "@/lib/places/mapPlaceFormToInsert";
+import {
+  PlaceImageUploadError,
+  uploadPlaceImage,
+} from "@/lib/places/uploadPlaceImage";
 import type {
   Companion,
   PlaceCategory,
@@ -82,8 +86,12 @@ type PlaceFormSubmitResult = { redirectPath?: string } | void;
 
 type PlaceFormProps = {
   initialValues?: PlaceFormValues;
+  initialImageUrl?: string | null;
   mode?: PlaceFormMode;
-  onSubmit?: (values: PlaceFormValues) => Promise<PlaceFormSubmitResult>;
+  onSubmit?: (
+    values: PlaceFormValues,
+    imageUrl: string | null,
+  ) => Promise<PlaceFormSubmitResult>;
   successRedirectPath?: string;
 };
 
@@ -108,6 +116,7 @@ function getSubmitRedirectPath(result: unknown) {
 
 export default function PlaceForm({
   initialValues = emptyPlaceFormValues,
+  initialImageUrl = null,
   mode = "create",
   onSubmit,
   successRedirectPath,
@@ -118,11 +127,17 @@ export default function PlaceForm({
   const [successMessage, setSuccessMessage] = useState("");
   const [submitError, setSubmitError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitProgressMessage, setSubmitProgressMessage] = useState("");
+  const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState("");
+  const [imageFileName, setImageFileName] = useState("");
 
   const nameRef = useRef<HTMLInputElement>(null);
   const categoryRef = useRef<HTMLSelectElement>(null);
   const regionRef = useRef<HTMLInputElement>(null);
   const memoryRef = useRef<HTMLTextAreaElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const imageObjectUrlRef = useRef<string | null>(null);
   const redirectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const hasErrors = Object.keys(errors).length > 0;
@@ -130,11 +145,16 @@ export default function PlaceForm({
   const messages = formMessages[mode];
   const redirectPath =
     successRedirectPath ?? (mode === "create" ? "/my-places" : undefined);
+  const visibleImageUrl = imagePreviewUrl || initialImageUrl;
 
   useEffect(() => {
     return () => {
       if (redirectTimeoutRef.current) {
         clearTimeout(redirectTimeoutRef.current);
+      }
+
+      if (imageObjectUrlRef.current) {
+        URL.revokeObjectURL(imageObjectUrlRef.current);
       }
     };
   }, []);
@@ -180,6 +200,34 @@ export default function PlaceForm({
     setSubmitError("");
   }
 
+  function clearImageObjectUrl() {
+    if (imageObjectUrlRef.current) {
+      URL.revokeObjectURL(imageObjectUrlRef.current);
+      imageObjectUrlRef.current = null;
+    }
+  }
+
+  function handleImageChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0] ?? null;
+
+    clearImageObjectUrl();
+    setSuccessMessage("");
+    setSubmitError("");
+
+    if (!file) {
+      setSelectedImageFile(null);
+      setImagePreviewUrl("");
+      setImageFileName("");
+      return;
+    }
+
+    const nextPreviewUrl = URL.createObjectURL(file);
+    imageObjectUrlRef.current = nextPreviewUrl;
+    setSelectedImageFile(file);
+    setImagePreviewUrl(nextPreviewUrl);
+    setImageFileName(file.name);
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -219,13 +267,24 @@ export default function PlaceForm({
     }
 
     setIsSubmitting(true);
+    setSubmitProgressMessage(messages.submitting);
     setSuccessMessage("");
     setSubmitError("");
 
     try {
+      const user = await requireCurrentUser();
+      let nextImageUrl = initialImageUrl;
+
+      if (selectedImageFile) {
+        setSubmitProgressMessage("사진을 올리는 중...");
+        nextImageUrl = await uploadPlaceImage(selectedImageFile, user.id);
+      }
+
+      setSubmitProgressMessage(messages.submitting);
+
       const submitResult = onSubmit
-        ? await onSubmit(values)
-        : await createPlace(mapPlaceFormToInsert(values));
+        ? await onSubmit(values, nextImageUrl)
+        : await createPlace(mapPlaceFormToInsert(values, nextImageUrl));
 
       if (!onSubmit) {
         console.log("Created place:", JSON.stringify(submitResult));
@@ -255,9 +314,15 @@ export default function PlaceForm({
         return;
       }
 
+      if (error instanceof PlaceImageUploadError) {
+        setSubmitError("사진을 업로드하지 못했습니다. 다시 시도해주세요.");
+        return;
+      }
+
       setSubmitError(messages.error);
     } finally {
       setIsSubmitting(false);
+      setSubmitProgressMessage("");
     }
   }
 
@@ -525,21 +590,51 @@ export default function PlaceForm({
             사진
           </h2>
           <p className="text-lg leading-8 text-[#6B6B68]">
-            사진 업로드는 다음 단계에서 실제 저장 기능과 함께 연결합니다.
+            대표 사진은 한 장만 선택할 수 있어요.
           </p>
         </div>
 
+        <input
+          ref={imageInputRef}
+          type="file"
+          accept="image/*"
+          className="sr-only"
+          onChange={handleImageChange}
+        />
         <button
           type="button"
-          className="flex min-h-52 w-full flex-col items-center justify-center rounded-3xl border border-dashed border-[#A8B2A1] bg-[#F8F6F2] px-5 text-center transition hover:border-[#4D5748] hover:bg-[#EAE3D8]"
+          onClick={() => imageInputRef.current?.click()}
+          className="flex min-h-52 w-full flex-col items-center justify-center overflow-hidden rounded-3xl border border-dashed border-[#A8B2A1] bg-[#F8F6F2] text-center transition hover:border-[#4D5748] hover:bg-[#EAE3D8] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748]"
         >
-          <span className="text-2xl font-semibold text-[#3F3F3B]">
-            사진을 추가해보세요
-          </span>
-          <span className="mt-3 text-lg leading-8 text-[#6B6B68]">
-            실제 업로드 기능은 다음 단계에서 연결됩니다.
-          </span>
+          {visibleImageUrl ? (
+            <span
+              className="flex min-h-64 w-full items-end bg-cover bg-center p-4"
+              role="img"
+              aria-label="선택한 장소 사진 미리보기"
+              style={{ backgroundImage: `url("${visibleImageUrl}")` }}
+            >
+              <span className="rounded-full bg-[#FCFBF8]/95 px-4 py-2 text-lg font-semibold text-[#4D5748] shadow-[0_8px_18px_rgba(77,87,72,0.12)]">
+                사진 바꾸기
+              </span>
+            </span>
+          ) : (
+            <span className="px-5 py-10">
+              <span className="block text-2xl font-semibold text-[#3F3F3B]">
+                사진을 추가해보세요
+              </span>
+              <span className="mt-3 block text-lg leading-8 text-[#6B6B68]">
+                장소의 분위기가 담긴 대표 사진 한 장을 남길 수 있어요.
+              </span>
+            </span>
+          )}
         </button>
+        {(imageFileName || initialImageUrl) && (
+          <p className="text-lg leading-8 text-[#6B6B68]">
+            {imageFileName
+              ? `선택한 사진: ${imageFileName}`
+              : "기존 대표 사진을 유지합니다."}
+          </p>
+        )}
       </section>
 
       <div className="flex flex-col gap-4 border-t border-[#EFEAE2] pt-7 sm:flex-row sm:items-center sm:justify-between">
@@ -552,7 +647,7 @@ export default function PlaceForm({
           className="min-h-14 rounded-full bg-[#A8B2A1] px-8 py-4 text-xl font-semibold text-[#2F362D] shadow-[0_10px_24px_rgba(77,87,72,0.14)] transition hover:bg-[#4D5748] hover:text-white focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748] disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:bg-[#A8B2A1] disabled:hover:text-[#2F362D]"
         >
           {isSubmitting
-            ? messages.submitting
+            ? submitProgressMessage || messages.submitting
             : successMessage
               ? messages.completed
               : messages.submit}

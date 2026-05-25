@@ -3,6 +3,7 @@ import type { PlaceFormValues } from "@/types/place";
 
 export function mapPlaceFormToInsert(
   values: PlaceFormValues,
+  imageUrl: string | null = null,
 ): Omit<PlaceInsert, "user_id"> {
   return {
     name: values.name.trim(),
@@ -14,6 +15,6 @@ export function mapPlaceFormToInsert(
     revisit_level: values.revisitLevel,
     space_tags: values.spaceTags,
     is_public: values.isPublic,
-    image_url: null,
+    image_url: imageUrl,
   };
 }

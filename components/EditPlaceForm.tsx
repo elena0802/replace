@@ -18,6 +18,7 @@ export default function EditPlaceForm({ id }: EditPlaceFormProps) {
   const [initialValues, setInitialValues] = useState<PlaceFormValues | null>(
     null,
   );
+  const [initialImageUrl, setInitialImageUrl] = useState<string | null>(null);
   const [placeName, setPlaceName] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
@@ -57,6 +58,7 @@ export default function EditPlaceForm({ id }: EditPlaceFormProps) {
         }
 
         setInitialValues(mapPlaceRowToForm(place));
+        setInitialImageUrl(place.image_url);
         setPlaceName(place.name);
         setErrorMessage("");
         setIsNotFound(false);
@@ -81,8 +83,11 @@ export default function EditPlaceForm({ id }: EditPlaceFormProps) {
     };
   }, [id]);
 
-  async function handleSubmit(values: PlaceFormValues) {
-    const updatedPlace = await updatePlace(id, mapPlaceFormToUpdate(values));
+  async function handleSubmit(values: PlaceFormValues, imageUrl: string | null) {
+    const updatedPlace = await updatePlace(
+      id,
+      mapPlaceFormToUpdate(values, imageUrl),
+    );
     console.log("Updated place:", JSON.stringify(updatedPlace));
   }
 
@@ -155,6 +160,7 @@ export default function EditPlaceForm({ id }: EditPlaceFormProps) {
 
       <PlaceForm
         initialValues={initialValues}
+        initialImageUrl={initialImageUrl}
         mode="edit"
         onSubmit={handleSubmit}
         successRedirectPath={`/places/${id}`}

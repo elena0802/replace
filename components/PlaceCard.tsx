@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { Place } from "@/lib/mockPlaces";
 import type { PlaceRow } from "@/types/database";
@@ -40,12 +39,11 @@ export default function PlaceCard({ place, href }: PlaceCardProps) {
     <>
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#EAE3D8]">
         {normalizedPlace.imageUrl ? (
-          <Image
-            src={normalizedPlace.imageUrl}
-            alt={`${normalizedPlace.name} 사진`}
-            fill
-            sizes="(max-width: 768px) 100vw, 33vw"
-            className="object-cover transition duration-300 group-hover:scale-105"
+          <div
+            className="h-full w-full bg-cover bg-center transition duration-300 group-hover:scale-105"
+            role="img"
+            aria-label={`${normalizedPlace.name} 사진`}
+            style={{ backgroundImage: `url("${normalizedPlace.imageUrl}")` }}
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center px-6 text-center">

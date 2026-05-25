@@ -59,7 +59,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 ## 7. places 테이블 구조
 
-다음 단계에서 실제 저장 기능을 연결할 때 만들 places 테이블 초안입니다.
+현재 `places` 테이블 구조입니다.
 
 | column | type | note |
 | --- | --- | --- |
@@ -74,8 +74,20 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 | revisit_level | text | 보통, 좋았어요, 꼭 다시 가고 싶어요 |
 | space_tags | text[] | 공간 정보 태그 |
 | is_public | boolean | 공개 여부 |
-| image_url | text | 대표 이미지 URL, nullable |
+| image_url | text | Storage public URL, nullable |
 | created_at | timestamptz | 생성일 |
 | updated_at | timestamptz | 수정일 |
 
-현재 구현 범위는 이메일 로그인, 사용자별 장소 저장/조회/수정/삭제입니다. 이미지 업로드, 프로필, 소셜 로그인은 아직 구현하지 않습니다.
+## 8. Storage bucket 설정
+
+장소 대표 사진 업로드를 위해 public bucket을 하나 만듭니다.
+
+1. Supabase 프로젝트 대시보드에서 **Storage**를 엽니다.
+2. **New bucket**을 선택합니다.
+3. bucket name을 `place-images`로 입력합니다.
+4. **Public bucket**으로 생성합니다.
+5. SQL Editor에서 최신 `supabase/schema.sql`을 실행해 `storage.objects` 업로드 정책을 적용합니다.
+
+현재 MVP는 공개 이미지 URL을 `places.image_url`에 저장합니다. 추후 실제 서비스 전환 시 private bucket과 signed URL 방식으로 개선할 수 있습니다.
+
+현재 구현 범위는 이메일 로그인, 사용자별 장소 저장/조회/수정/삭제, 대표 사진 1장 업로드입니다. 프로필, 소셜 로그인, 여러 장 이미지 업로드는 아직 구현하지 않습니다.

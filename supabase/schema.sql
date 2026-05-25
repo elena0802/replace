@@ -90,3 +90,17 @@ using (auth.uid() = user_id);
 revoke insert, update, delete on public.places from anon;
 grant select on public.places to anon;
 grant select, insert, update, delete on public.places to authenticated;
+
+-- Storage bucket setup:
+-- Supabase Dashboard > Storage에서 place-images public bucket을 먼저 생성한다.
+-- 로그인한 사용자는 places/{user_id}/... 경로에만 대표 이미지를 업로드할 수 있다.
+drop policy if exists "Users can upload own place images" on storage.objects;
+create policy "Users can upload own place images"
+on storage.objects
+for insert
+to authenticated
+with check (
+  bucket_id = 'place-images'
+  and split_part(name, '/', 1) = 'places'
+  and split_part(name, '/', 2) = auth.uid()::text
+);

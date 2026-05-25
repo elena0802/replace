@@ -1,7 +1,10 @@
 import type { PlaceUpdate } from "@/types/database";
 import type { PlaceFormValues } from "@/types/place";
 
-export function mapPlaceFormToUpdate(values: PlaceFormValues): PlaceUpdate {
+export function mapPlaceFormToUpdate(
+  values: PlaceFormValues,
+  imageUrl?: string | null,
+): PlaceUpdate {
   return {
     name: values.name.trim(),
     category: values.category,
@@ -12,5 +15,6 @@ export function mapPlaceFormToUpdate(values: PlaceFormValues): PlaceUpdate {
     revisit_level: values.revisitLevel,
     space_tags: values.spaceTags,
     is_public: values.isPublic,
+    ...(imageUrl !== undefined ? { image_url: imageUrl } : {}),
   };
 }
