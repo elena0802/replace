@@ -1,7 +1,10 @@
 import { supabase } from "@/lib/supabase/client";
+import { requireCurrentUser } from "@/lib/auth/getCurrentUser";
 
 export async function deletePlace(id: string): Promise<void> {
   try {
+    await requireCurrentUser();
+
     const { error } = await supabase
       .from("places")
       .delete()

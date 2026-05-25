@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useRef, useState } from "react";
+import { AuthRequiredError } from "@/lib/auth/getCurrentUser";
 import { createPlace } from "@/lib/places/createPlace";
 import { mapPlaceFormToInsert } from "@/lib/places/mapPlaceFormToInsert";
 import type {
@@ -241,6 +242,19 @@ export default function PlaceForm({
       }
     } catch (error) {
       console.error(error);
+
+      if (error instanceof AuthRequiredError) {
+        setSubmitError(
+          mode === "edit"
+            ? "장소 기록을 수정하려면 로그인이 필요해요."
+            : "장소를 기록하려면 로그인이 필요해요.",
+        );
+        redirectTimeoutRef.current = setTimeout(() => {
+          router.push("/login");
+        }, 1000);
+        return;
+      }
+
       setSubmitError(messages.error);
     } finally {
       setIsSubmitting(false);

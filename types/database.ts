@@ -1,5 +1,6 @@
 export type PlaceRow = {
   id: string;
+  user_id: string | null;
   name: string;
   category: string;
   region: string;
@@ -16,6 +17,7 @@ export type PlaceRow = {
 
 export type PlaceInsert = {
   id?: string;
+  user_id: string;
   name: string;
   category: string;
   region: string;
@@ -32,6 +34,7 @@ export type PlaceInsert = {
 
 export type PlaceUpdate = {
   id?: string;
+  user_id?: string;
   name?: string;
   category?: string;
   region?: string;

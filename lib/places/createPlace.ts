@@ -1,11 +1,16 @@
 import { supabase } from "@/lib/supabase/client";
+import { requireCurrentUser } from "@/lib/auth/getCurrentUser";
 import type { PlaceInsert, PlaceRow } from "@/types/database";
 
-export async function createPlace(place: PlaceInsert): Promise<PlaceRow> {
+export async function createPlace(
+  place: Omit<PlaceInsert, "user_id">,
+): Promise<PlaceRow> {
   try {
+    const user = await requireCurrentUser();
+
     const { data, error } = await supabase
       .from("places")
-      .insert([place])
+      .insert([{ ...place, user_id: user.id }])
       .select()
       .single();
 

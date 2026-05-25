@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { getCurrentUser } from "@/lib/auth/getCurrentUser";
 import { deletePlace } from "@/lib/places/deletePlace";
 import { getPlaceById } from "@/lib/places/getPlaceById";
 import type { PlaceRow } from "@/types/database";
@@ -48,13 +49,17 @@ export default function PlaceDetail({ id }: PlaceDetailProps) {
   const [actionError, setActionError] = useState("");
   const [isNotFound, setIsNotFound] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [canManagePlace, setCanManagePlace] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
 
     async function loadPlace() {
       try {
-        const nextPlace = await getPlaceById(id);
+        const [nextPlace, currentUser] = await Promise.all([
+          getPlaceById(id),
+          getCurrentUser(),
+        ]);
 
         if (!isMounted) {
           return;
@@ -67,6 +72,7 @@ export default function PlaceDetail({ id }: PlaceDetailProps) {
         }
 
         setPlace(nextPlace);
+        setCanManagePlace(Boolean(currentUser && nextPlace.user_id === currentUser.id));
         setErrorMessage("");
         setIsNotFound(false);
       } catch (error) {
@@ -179,21 +185,24 @@ export default function PlaceDetail({ id }: PlaceDetailProps) {
         </div>
 
         <div className="flex flex-wrap gap-3">
-          {/* 로그인 도입 후 작성자만 수정 가능하도록 제한 필요 */}
-          <Link
-            href={`/places/${place.id}/edit`}
-            className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#A8B2A1] px-5 py-3 text-lg font-semibold text-[#2F362D] shadow-[0_8px_18px_rgba(77,87,72,0.12)] transition hover:bg-[#4D5748] hover:text-white focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748]"
-          >
-            수정하기
-          </Link>
-          <button
-            type="button"
-            onClick={handleDelete}
-            disabled={isDeleting}
-            className="inline-flex min-h-12 items-center justify-center rounded-full border border-[#D9C3B6] bg-[#FFF8F4] px-5 py-3 text-lg font-semibold text-[#7A4B3A] transition hover:border-[#B89282] hover:bg-[#F6EAE3] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#7A4B3A] disabled:cursor-not-allowed disabled:opacity-70"
-          >
-            {isDeleting ? "삭제하는 중..." : "삭제하기"}
-          </button>
+          {canManagePlace && (
+            <>
+              <Link
+                href={`/places/${place.id}/edit`}
+                className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#A8B2A1] px-5 py-3 text-lg font-semibold text-[#2F362D] shadow-[0_8px_18px_rgba(77,87,72,0.12)] transition hover:bg-[#4D5748] hover:text-white focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748]"
+              >
+                수정하기
+              </Link>
+              <button
+                type="button"
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="inline-flex min-h-12 items-center justify-center rounded-full border border-[#D9C3B6] bg-[#FFF8F4] px-5 py-3 text-lg font-semibold text-[#7A4B3A] transition hover:border-[#B89282] hover:bg-[#F6EAE3] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#7A4B3A] disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {isDeleting ? "삭제하는 중..." : "삭제하기"}
+              </button>
+            </>
+          )}
         </div>
       </div>
 

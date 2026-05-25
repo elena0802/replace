@@ -22,7 +22,6 @@ export default function MyPlacesPage() {
         </Link>
       </div>
 
-      {/* 로그인 도입 후 user_id 기준 필터링 필요 */}
       <MyPlacesList />
     </div>
   );

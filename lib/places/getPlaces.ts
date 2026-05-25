@@ -3,9 +3,16 @@ import type { PlaceRow } from "@/types/database";
 
 export async function getPlaces(): Promise<PlaceRow[]> {
   try {
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+
+    if (userError || !userData.user) {
+      return [];
+    }
+
     const { data, error } = await supabase
       .from("places")
       .select("*")
+      .eq("user_id", userData.user.id)
       .order("created_at", { ascending: false });
 
     if (error) {

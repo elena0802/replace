@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import PlaceCard from "@/components/PlaceCard";
+import { getCurrentUser } from "@/lib/auth/getCurrentUser";
 import { getPlaces } from "@/lib/places/getPlaces";
 import type { PlaceRow } from "@/types/database";
 
@@ -10,17 +11,30 @@ export default function MyPlacesList() {
   const [places, setPlaces] = useState<PlaceRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+  const [requiresLogin, setRequiresLogin] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
 
     async function loadPlaces() {
       try {
+        const user = await getCurrentUser();
+
+        if (!user) {
+          if (isMounted) {
+            setRequiresLogin(true);
+            setPlaces([]);
+            setErrorMessage("");
+          }
+          return;
+        }
+
         const nextPlaces = await getPlaces();
 
         if (isMounted) {
           setPlaces(nextPlaces);
           setErrorMessage("");
+          setRequiresLogin(false);
         }
       } catch (error) {
         console.error(error);
@@ -61,6 +75,25 @@ export default function MyPlacesList() {
         role="alert"
       >
         {errorMessage}
+      </div>
+    );
+  }
+
+  if (requiresLogin) {
+    return (
+      <div className="rounded-3xl border border-[#E5E0D8] bg-[#FCFBF8] px-5 py-12 text-center shadow-[0_14px_34px_rgba(77,87,72,0.06)] sm:px-8">
+        <h2 className="text-3xl font-semibold tracking-normal text-[#3F3F3B]">
+          내 장소 기록을 보려면 로그인이 필요해요.
+        </h2>
+        <p className="mx-auto mt-3 max-w-xl text-xl leading-9 text-[#6B6B68]">
+          로그인 후 내가 남긴 좋은 장소와 시간을 모아볼 수 있어요.
+        </p>
+        <Link
+          href="/login"
+          className="mt-7 inline-flex min-h-14 items-center justify-center rounded-full bg-[#A8B2A1] px-7 py-4 text-xl font-semibold text-[#2F362D] shadow-[0_10px_24px_rgba(77,87,72,0.14)] transition hover:bg-[#4D5748] hover:text-white focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748]"
+        >
+          로그인하기
+        </Link>
       </div>
     );
   }

@@ -1,7 +1,9 @@
 import type { PlaceInsert } from "@/types/database";
 import type { PlaceFormValues } from "@/types/place";
 
-export function mapPlaceFormToInsert(values: PlaceFormValues): PlaceInsert {
+export function mapPlaceFormToInsert(
+  values: PlaceFormValues,
+): Omit<PlaceInsert, "user_id"> {
   return {
     name: values.name.trim(),
     category: values.category,

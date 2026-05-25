@@ -43,19 +43,28 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 3. SQL Editor에 붙여넣고 실행합니다.
 4. 실행 후 **Table Editor**에서 `places` 테이블이 생성되었는지 확인합니다.
 
-현재 SQL은 MVP 테스트를 위한 초기 구조입니다. 로그인 기능이 아직 없으므로 `user_id` 컬럼을 만들지 않고, 공개 장소 조회, `/my-places` 전체 조회, anon insert/update/delete 테스트 정책을 포함합니다.
+현재 SQL은 이메일 로그인 기반 MVP 구조입니다. `places.user_id`는 `auth.users(id)`를 참조하고, 공개 장소 조회와 사용자별 장소 생성/조회/수정/삭제 RLS 정책을 포함합니다.
 
-로그인 도입 후에는 `user_id` 컬럼을 추가하고, 사용자별 select/insert/update/delete RLS 정책으로 반드시 강화해야 합니다.
+기존 테스트 정책이 남아 있다면 `supabase/schema.sql`을 다시 실행해 anon insert/update/delete 정책을 제거하고 사용자별 정책으로 교체합니다.
 
-현재 `/my-places`, 장소 수정, 장소 삭제는 로그인 전 임시 화면이라 anon key로 공개/비공개 장소를 조회하고 변경할 수 있게 열려 있습니다. 실제 서비스 전환 시 이 정책은 제거하고 사용자 본인 데이터만 조회/수정/삭제되도록 바꿔야 합니다.
+기존에 생성한 row는 `user_id`가 비어 있을 수 있습니다. 새 로그인 구조에서는 새로 저장한 장소부터 로그인 사용자 id가 저장됩니다.
 
-## 6. 다음 단계 places 테이블 초안
+## 6. Supabase Auth 설정
+
+1. Supabase 프로젝트 대시보드에서 **Authentication**을 엽니다.
+2. **Providers > Email**에서 Email provider가 활성화되어 있는지 확인합니다.
+3. 이번 MVP는 email/password 방식만 사용합니다.
+4. 이메일 확인을 켜둔 경우 회원가입 후 메일 확인을 마쳐야 로그인 세션이 생성됩니다.
+5. 로컬 테스트 URL은 필요하면 **URL Configuration**의 Site URL 또는 Redirect URLs에 `http://localhost:3000` 또는 현재 dev 서버 URL을 추가합니다.
+
+## 7. places 테이블 구조
 
 다음 단계에서 실제 저장 기능을 연결할 때 만들 places 테이블 초안입니다.
 
 | column | type | note |
 | --- | --- | --- |
 | id | uuid | primary key |
+| user_id | uuid | auth.users(id) 참조 |
 | name | text | 장소명 |
 | category | text | 카페, 음식점, 공원, 여행지, 호텔, 기타 |
 | region | text | 지역 |
@@ -69,4 +78,4 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 | created_at | timestamptz | 생성일 |
 | updated_at | timestamptz | 수정일 |
 
-이번 단계에서는 SQL과 타입만 준비합니다. 앱에서 실제 테이블 조회, 저장, 인증, 이미지 업로드는 아직 구현하지 않습니다.
+현재 구현 범위는 이메일 로그인, 사용자별 장소 저장/조회/수정/삭제입니다. 이미지 업로드, 프로필, 소셜 로그인은 아직 구현하지 않습니다.

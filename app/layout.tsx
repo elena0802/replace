@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import AuthNav from "@/components/AuthNav";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -30,16 +31,19 @@ export default function RootLayout({
             >
               Re:Place
             </Link>
-            <div className="flex flex-wrap gap-2 text-lg font-medium text-[#6B6B68]">
-              {navigation.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="rounded-full px-4 py-2 transition hover:bg-[#EAE3D8] hover:text-[#4D5748] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[#4D5748]"
-                >
-                  {item.name}
-                </Link>
-              ))}
+            <div className="flex flex-wrap items-center gap-2 text-lg font-medium text-[#6B6B68]">
+              <div className="flex flex-wrap gap-2">
+                {navigation.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="rounded-full px-4 py-2 transition hover:bg-[#EAE3D8] hover:text-[#4D5748] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[#4D5748]"
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+              </div>
+              <AuthNav />
             </div>
           </nav>
         </header>

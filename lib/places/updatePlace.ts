@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase/client";
+import { requireCurrentUser } from "@/lib/auth/getCurrentUser";
 import type { PlaceRow, PlaceUpdate } from "@/types/database";
 
 export async function updatePlace(
@@ -6,6 +7,8 @@ export async function updatePlace(
   place: PlaceUpdate,
 ): Promise<PlaceRow> {
   try {
+    await requireCurrentUser();
+
     const { data, error } = await supabase
       .from("places")
       .update(place)
