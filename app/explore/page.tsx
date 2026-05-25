@@ -1,9 +1,6 @@
-import PlaceCard from "@/components/PlaceCard";
-import { mockPlaces } from "@/lib/mockPlaces";
+import ExplorePlacesList from "@/components/ExplorePlacesList";
 
 export default function ExplorePage() {
-  const publicPlaces = mockPlaces.filter((place) => place.isPublic);
-
   return (
     <div className="mx-auto w-full max-w-6xl px-5 py-12 lg:px-8 lg:py-16">
       <div className="mb-8 max-w-3xl space-y-3">
@@ -16,11 +13,7 @@ export default function ExplorePage() {
         </p>
       </div>
 
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {publicPlaces.map((place) => (
-          <PlaceCard key={place.id} place={place} />
-        ))}
-      </div>
+      <ExplorePlacesList />
     </div>
   );
 }

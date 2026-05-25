@@ -46,11 +46,21 @@ using (is_public = true);
 
 -- MVP test policy:
 -- 로그인 도입 후 user_id 컬럼과 사용자별 RLS 정책으로 교체해야 한다.
+-- 현재는 /my-places에서 로그인 없이 공개/비공개 테스트 데이터를 모두 확인하기 위한 임시 정책이다.
+drop policy if exists "Anon can select all places during MVP testing" on public.places;
+create policy "Anon can select all places during MVP testing"
+on public.places
+for select
+to anon, authenticated
+using (true);
+
+-- MVP test policy:
+-- 로그인 도입 후 user_id 컬럼과 사용자별 RLS 정책으로 교체해야 한다.
 drop policy if exists "Anon can insert places during MVP testing" on public.places;
 create policy "Anon can insert places during MVP testing"
 on public.places
 for insert
-to anon
+to anon, authenticated
 with check (true);
 
 grant select, insert on public.places to anon;
