@@ -37,12 +37,12 @@ export const mockPlaces: Place[] = [
   },
   {
     id: "haneul-park",
-    name: "하늘빛 산책공원",
+    name: "호숫가 산책공원",
     category: "공원",
-    region: "대전 유성",
+    region: "경기 양평",
     imageUrl:
-      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
-    shortReview: "길이 평탄하고 벤치가 많아 천천히 걷기 좋았습니다.",
+      "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1200&q=80",
+    shortReview: "길이 평탄하고 벤치가 많아 천천히 걷기 좋았어요.",
     revisitLevel: "계절마다 가고 싶어요",
     seniorTags: ["걷기 좋음", "벤치 많음", "화장실 가까움"],
     isPublic: true,
