@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import PlaceCard from "@/components/PlaceCard";
 import { mockPlaces } from "@/lib/mockPlaces";
 
 const heroImages = {
@@ -101,26 +100,63 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="space-y-6">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+      <section className="space-y-8">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-lg font-medium text-[#4D5748]">
+            <p className="text-base font-medium text-[#6B6B68]">
               공개 아카이브
             </p>
-            <h2 className="mt-1 text-3xl font-semibold tracking-normal text-[#3F3F3B]">
+            <h2 className="mt-2 text-[2rem] font-semibold leading-tight tracking-normal text-[#3F3F3B]">
               다른 사람들이 남긴 좋은 시간
             </h2>
           </div>
           <Link
             href="/explore"
-            className="text-lg font-semibold text-[#4D5748] hover:text-[#3F3F3B]"
+            className="text-base font-semibold text-[#6B6B68] transition hover:text-[#4D5748] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748]"
           >
             전체 보기
           </Link>
         </div>
-        <div className="grid gap-5 md:grid-cols-3">
+        <div className="grid gap-7 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
           {recentPublicPlaces.map((place) => (
-            <PlaceCard key={place.id} place={place} href={null} />
+            <article
+              key={place.id}
+              className="overflow-hidden rounded-[24px] border border-[#E5E0D8]/80 bg-[#FCFBF8] shadow-[0_18px_38px_rgba(77,87,72,0.045)]"
+            >
+              <div className="relative h-[236px] w-full overflow-hidden bg-[#EAE3D8] sm:h-[252px] lg:h-[260px]">
+                <Image
+                  src={place.imageUrl}
+                  alt={`${place.name} 사진`}
+                  fill
+                  sizes="(min-width: 1024px) 340px, (min-width: 768px) 50vw, 100vw"
+                  className="object-cover"
+                />
+              </div>
+              <div className="flex min-h-[270px] flex-col px-6 pb-6 pt-5 sm:px-7 sm:pb-7 sm:pt-6">
+                <div className="flex flex-wrap items-center gap-2 text-sm font-medium text-[#6B6B68]">
+                  <span className="rounded-full bg-[#EAE3D8]/80 px-3 py-1 text-[#4D5748]">
+                    {place.category}
+                  </span>
+                  <span>{place.region}</span>
+                </div>
+                <div className="mt-5 space-y-3">
+                  <h3 className="text-[1.45rem] font-semibold leading-snug tracking-normal text-[#3F3F3B]">
+                    {place.name}
+                  </h3>
+                  <p className="text-[17px] leading-8 text-[#6B6B68]">
+                    {place.shortReview}
+                  </p>
+                </div>
+                <div className="mt-auto border-t border-[#EFEAE2] pt-5">
+                  <p className="text-sm font-medium text-[#8A857D]">
+                    다시 가고 싶은 마음
+                  </p>
+                  <p className="mt-2 text-base font-semibold leading-7 text-[#4D5748]">
+                    {place.revisitLevel}
+                  </p>
+                </div>
+              </div>
+            </article>
           ))}
         </div>
       </section>
