@@ -26,13 +26,11 @@ export default function LoginPage() {
           className="relative flex min-h-screen items-center justify-center overflow-x-hidden px-5 py-5 sm:px-6 sm:py-6 lg:px-8"
           style={{
             backgroundImage:
-              "linear-gradient(180deg, rgba(247, 243, 236, 0.86) 0%, rgba(247, 243, 236, 0.72) 48%, rgba(247, 243, 236, 0.9) 100%), url('https://images.unsplash.com/photo-1643148636637-58b3eb95cdad?auto=format&fit=crop&w=1800&q=85')",
+              "linear-gradient(180deg, rgba(247, 243, 236, 0.78) 0%, rgba(247, 243, 236, 0.76) 48%, rgba(247, 243, 236, 0.82) 100%), url('https://images.unsplash.com/photo-1643148636637-58b3eb95cdad?auto=format&fit=crop&w=1800&q=85')",
             backgroundPosition: "center",
             backgroundSize: "cover",
           }}
         >
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-48 bg-[radial-gradient(circle_at_top,rgba(252,251,248,0.86),rgba(252,251,248,0))]" />
-
           <div className="relative mx-auto flex w-full max-w-[350px] min-w-0 flex-col items-stretch sm:max-w-2xl sm:items-center">
             <header className="w-full text-center">
               <Link
@@ -41,11 +39,7 @@ export default function LoginPage() {
               >
                 Re:Place
               </Link>
-              <h1 className="mt-5 text-[1.8rem] font-semibold leading-tight tracking-normal text-[#30322E] sm:mt-6 sm:text-[2.1rem]">
-                <span className="block sm:inline">좋은 장소와 시간을</span>{" "}
-                <span className="block sm:inline">기록하세요</span>
-              </h1>
-              <p className="mx-auto mt-3 max-w-xl text-base leading-7 text-[#6F6A62]">
+              <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-[#6F6A62] sm:mt-5">
                 <span className="block sm:inline">기록은 쌓이고,</span>{" "}
                 <span className="block sm:inline">좋아했던 순간은 오래 남습니다.</span>
               </p>
