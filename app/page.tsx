@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import CollectionsSection from "@/components/CollectionsSection";
 import FeaturedPlacesList from "@/components/FeaturedPlacesList";
 
 const heroImages = {
@@ -97,6 +98,8 @@ export default function Home() {
       </section>
 
       <FeaturedPlacesList />
+
+      <CollectionsSection />
     </div>
   );
 }
