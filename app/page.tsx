@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import BottomCtaSection from "@/components/BottomCtaSection";
 import CollectionsSection from "@/components/CollectionsSection";
 import FeaturedPlacesList from "@/components/FeaturedPlacesList";
 
@@ -100,6 +101,8 @@ export default function Home() {
       <FeaturedPlacesList />
 
       <CollectionsSection />
+
+      <BottomCtaSection />
     </div>
   );
 }
