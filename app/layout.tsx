@@ -32,7 +32,9 @@ export default function RootLayout({
               >
                 Re:Place
               </Link>
-              <AuthNav />
+              <div className="shrink-0">
+                <AuthNav />
+              </div>
             </div>
             <div className="-mx-1 overflow-x-auto pb-1">
               <div className="flex min-w-max gap-2 px-1 text-lg font-medium text-[#6B6B68]">

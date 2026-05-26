@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
+import ImageCropModal from "@/components/ImageCropModal";
 import { AuthRequiredError, requireCurrentUser } from "@/lib/auth/getCurrentUser";
 import { createPlace } from "@/lib/places/createPlace";
 import { mapPlaceFormToInsert } from "@/lib/places/mapPlaceFormToInsert";
@@ -131,6 +132,8 @@ export default function PlaceForm({
   const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState("");
   const [imageFileName, setImageFileName] = useState("");
+  const [pendingImageFile, setPendingImageFile] = useState<File | null>(null);
+  const [cropSourceUrl, setCropSourceUrl] = useState("");
 
   const nameRef = useRef<HTMLInputElement>(null);
   const categoryRef = useRef<HTMLSelectElement>(null);
@@ -138,6 +141,7 @@ export default function PlaceForm({
   const memoryRef = useRef<HTMLTextAreaElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const imageObjectUrlRef = useRef<string | null>(null);
+  const cropSourceObjectUrlRef = useRef<string | null>(null);
   const redirectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const hasErrors = Object.keys(errors).length > 0;
@@ -155,6 +159,10 @@ export default function PlaceForm({
 
       if (imageObjectUrlRef.current) {
         URL.revokeObjectURL(imageObjectUrlRef.current);
+      }
+
+      if (cropSourceObjectUrlRef.current) {
+        URL.revokeObjectURL(cropSourceObjectUrlRef.current);
       }
     };
   }, []);
@@ -207,25 +215,49 @@ export default function PlaceForm({
     }
   }
 
+  function clearCropSourceObjectUrl() {
+    if (cropSourceObjectUrlRef.current) {
+      URL.revokeObjectURL(cropSourceObjectUrlRef.current);
+      cropSourceObjectUrlRef.current = null;
+    }
+  }
+
   function handleImageChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0] ?? null;
 
-    clearImageObjectUrl();
+    event.target.value = "";
     setSuccessMessage("");
     setSubmitError("");
 
     if (!file) {
-      setSelectedImageFile(null);
-      setImagePreviewUrl("");
-      setImageFileName("");
       return;
     }
 
+    clearCropSourceObjectUrl();
     const nextPreviewUrl = URL.createObjectURL(file);
+    cropSourceObjectUrlRef.current = nextPreviewUrl;
+    setPendingImageFile(file);
+    setCropSourceUrl(nextPreviewUrl);
+  }
+
+  function handleImageSceneCancel() {
+    clearCropSourceObjectUrl();
+    setPendingImageFile(null);
+    setCropSourceUrl("");
+  }
+
+  function handleImageSceneComplete(croppedFile: File) {
+    const originalFileName = pendingImageFile?.name ?? croppedFile.name;
+    const nextPreviewUrl = URL.createObjectURL(croppedFile);
+
+    clearImageObjectUrl();
     imageObjectUrlRef.current = nextPreviewUrl;
-    setSelectedImageFile(file);
+    setSelectedImageFile(croppedFile);
     setImagePreviewUrl(nextPreviewUrl);
-    setImageFileName(file.name);
+    setImageFileName(originalFileName);
+    setSuccessMessage("");
+    setSubmitError("");
+    handleImageSceneCancel();
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -590,7 +622,8 @@ export default function PlaceForm({
             사진
           </h2>
           <p className="text-lg leading-8 text-[#6B6B68]">
-            대표 사진은 한 장만 선택할 수 있어요.
+            대표 사진은 한 장만 선택할 수 있어요. 좋은 순간이 잘 보이도록
+            장면을 맞춰보세요.
           </p>
         </div>
 
@@ -636,6 +669,15 @@ export default function PlaceForm({
           </p>
         )}
       </section>
+
+      {cropSourceUrl && pendingImageFile && (
+        <ImageCropModal
+          imageSrc={cropSourceUrl}
+          sourceFile={pendingImageFile}
+          onCancel={handleImageSceneCancel}
+          onComplete={handleImageSceneComplete}
+        />
+      )}
 
       <div className="flex flex-col gap-4 border-t border-[#EFEAE2] pt-7 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-base leading-7 text-[#6B6B68]">

@@ -4,38 +4,38 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { User } from "@supabase/supabase-js";
-import { getCurrentUser } from "@/lib/auth/getCurrentUser";
 import { supabase } from "@/lib/supabase/client";
 
 export default function AuthNav() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     let isMounted = true;
     let unsubscribe: (() => void) | undefined;
 
-    async function loadUser() {
-      const currentUser = await getCurrentUser();
+    async function loadSession() {
+      try {
+        const { data } = await supabase.auth.getSession();
 
-      if (isMounted) {
-        setUser(currentUser);
-        setIsLoading(false);
+        if (isMounted) {
+          setUser(data.session?.user ?? null);
+        }
+      } catch (error) {
+        console.error(error);
       }
     }
-
-    loadUser();
 
     try {
       const { data } = supabase.auth.onAuthStateChange((_event, session) => {
         setUser(session?.user ?? null);
-        setIsLoading(false);
       });
       unsubscribe = () => data.subscription.unsubscribe();
     } catch (error) {
       console.error(error);
     }
+
+    loadSession();
 
     return () => {
       isMounted = false;
@@ -49,19 +49,11 @@ export default function AuthNav() {
     router.push("/");
   }
 
-  if (isLoading) {
-    return (
-      <span className="inline-flex min-h-11 items-center rounded-full px-4 py-2 text-[#6B6B68]">
-        확인 중
-      </span>
-    );
-  }
-
   if (!user) {
     return (
       <Link
         href="/login"
-        className="inline-flex min-h-11 items-center rounded-full bg-[#FCFBF8] px-4 py-2 text-[#4D5748] shadow-[0_8px_18px_rgba(77,87,72,0.06)] transition hover:bg-[#EAE3D8] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[#4D5748]"
+        className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-full border border-[#E5E0D8] bg-[#FCFBF8] px-5 py-2 text-lg font-semibold text-[#4D5748] shadow-[0_8px_18px_rgba(77,87,72,0.08)] transition hover:border-[#A8B2A1] hover:bg-[#EAE3D8] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[#4D5748]"
       >
         로그인
       </Link>
@@ -72,7 +64,7 @@ export default function AuthNav() {
     <button
       type="button"
       onClick={handleLogout}
-      className="inline-flex min-h-11 items-center rounded-full bg-[#FCFBF8] px-4 py-2 text-[#4D5748] shadow-[0_8px_18px_rgba(77,87,72,0.06)] transition hover:bg-[#EAE3D8] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[#4D5748]"
+      className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-full border border-[#E5E0D8] bg-[#FCFBF8] px-5 py-2 text-lg font-semibold text-[#4D5748] shadow-[0_8px_18px_rgba(77,87,72,0.08)] transition hover:border-[#A8B2A1] hover:bg-[#EAE3D8] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[#4D5748]"
     >
       로그아웃
     </button>
