@@ -6,7 +6,24 @@ export const metadata: Metadata = {
   title: "로그인 | Re:Place",
 };
 
-export default function LoginPage() {
+type LoginPageProps = {
+  searchParams?: Promise<{
+    error?: string | string[];
+  }>;
+};
+
+function getInitialLoginErrorMessage(error: string | string[] | undefined) {
+  const errorValue = Array.isArray(error) ? error[0] : error;
+
+  return errorValue?.startsWith("oauth_")
+    ? "카카오 로그인을 완료하지 못했습니다. 다시 시도해주세요."
+    : "";
+}
+
+export default async function LoginPage({ searchParams }: LoginPageProps) {
+  const params = await searchParams;
+  const initialErrorMessage = getInitialLoginErrorMessage(params?.error);
+
   return (
     <>
       <style>
@@ -46,7 +63,7 @@ export default function LoginPage() {
             </header>
 
             <div className="mt-7 w-full min-w-0 sm:mt-8 sm:max-w-[560px]">
-              <LoginForm />
+              <LoginForm initialErrorMessage={initialErrorMessage} />
             </div>
 
             <footer className="w-full pt-5 text-center text-xs leading-6 text-[#7D786F] sm:text-sm">

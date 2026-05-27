@@ -3,19 +3,32 @@
 import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { getSafeAuthRedirectPath } from "@/lib/auth/redirect";
 import { supabase } from "@/lib/supabase/client";
 
 const fieldClass =
   "min-h-[52px] w-full rounded-2xl border border-[#DED8CE] bg-[#FCFBF8]/90 px-4 text-base font-medium text-[#3F3F3B] outline-none transition placeholder:text-[#9A948B] focus:border-[#A8B2A1] focus:ring-3 focus:ring-[#A8B2A1]/20";
 
-export default function LoginForm() {
+type LoginFormProps = {
+  initialErrorMessage?: string;
+};
+
+export default function LoginForm({ initialErrorMessage = "" }: LoginFormProps) {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState(initialErrorMessage);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isKakaoSubmitting, setIsKakaoSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  const isAuthPending = isSubmitting || isKakaoSubmitting;
+
+  function getLoginRedirectPath() {
+    const params = new URLSearchParams(window.location.search);
+    return getSafeAuthRedirectPath(params.get("next"));
+  }
 
   async function handleAuth(action: "login" | "signup") {
     setMessage("");
@@ -48,7 +61,7 @@ export default function LoginForm() {
         return;
       }
 
-      router.push("/my-places");
+      router.push(getLoginRedirectPath());
     } catch (error) {
       console.error(error);
       setErrorMessage(
@@ -64,13 +77,16 @@ export default function LoginForm() {
   async function handleKakaoLogin() {
     setMessage("");
     setErrorMessage("");
-    setIsSubmitting(true);
+    setIsKakaoSubmitting(true);
 
     try {
+      const callbackUrl = new URL("/auth/callback", window.location.origin);
+      callbackUrl.searchParams.set("next", getLoginRedirectPath());
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "kakao",
         options: {
-          redirectTo: `${window.location.origin}/my-places`,
+          redirectTo: callbackUrl.toString(),
         },
       });
 
@@ -80,7 +96,7 @@ export default function LoginForm() {
     } catch (error) {
       console.error(error);
       setErrorMessage("카카오 로그인을 시작하지 못했습니다. 잠시 후 다시 시도해주세요.");
-      setIsSubmitting(false);
+      setIsKakaoSubmitting(false);
     }
   }
 
@@ -96,7 +112,7 @@ export default function LoginForm() {
     >
       <button
         type="button"
-        disabled={isSubmitting}
+        disabled={isAuthPending}
         onClick={handleKakaoLogin}
         className="flex min-h-14 w-full items-center justify-center gap-3 rounded-2xl bg-[#FEE500] px-5 py-3.5 text-base font-bold text-[#2A221E] shadow-[0_8px_20px_rgba(77,65,18,0.08)] transition hover:bg-[#F8D900] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748] disabled:cursor-not-allowed disabled:opacity-70 sm:text-lg"
       >
@@ -104,7 +120,7 @@ export default function LoginForm() {
           <span className="h-4 w-5 rounded-full bg-[#2A221E]" />
           <span className="absolute bottom-0 left-1 h-2 w-2 rotate-45 bg-[#2A221E]" />
         </span>
-        카카오로 시작하기
+        {isKakaoSubmitting ? "카카오로 이동 중..." : "카카오로 시작하기"}
       </button>
 
       <div className="my-3 flex items-center gap-3 text-sm font-medium text-[#7D786F] sm:my-4 sm:text-base">
@@ -204,14 +220,14 @@ export default function LoginForm() {
       <div className="mt-4 space-y-2">
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isAuthPending}
           className="inline-flex min-h-14 w-full items-center justify-center rounded-2xl bg-[#87977F] px-7 py-3.5 text-base font-semibold text-[#FCFBF8] shadow-[0_8px_20px_rgba(77,87,72,0.12)] transition hover:bg-[#4D5748] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748] disabled:cursor-not-allowed disabled:opacity-70 sm:text-lg"
         >
           {isSubmitting ? "처리 중..." : "로그인"}
         </button>
         <button
           type="button"
-          disabled={isSubmitting}
+          disabled={isAuthPending}
           onClick={() => handleAuth("signup")}
           className="inline-flex min-h-14 w-full items-center justify-center rounded-2xl border border-[#D8D1C6] bg-[#FCFBF8] px-7 py-3.5 text-base font-semibold text-[#4D5748] transition hover:border-[#A8B2A1] hover:bg-[#F3EFE8] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748] disabled:cursor-not-allowed disabled:opacity-70 sm:text-lg"
         >
