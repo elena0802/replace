@@ -98,6 +98,12 @@ function parseCoordinate(
     : null;
 }
 
+function createNaverMapSearchUrl(name: string) {
+  const mapSearchQuery = encodeURIComponent(name);
+
+  return `https://map.naver.com/p/search/${mapSearchQuery}`;
+}
+
 function normalizeSearchItem(
   item: NaverLocalSearchItem,
   index: number,
@@ -106,10 +112,10 @@ function normalizeSearchItem(
   const category = stripHtml(item.category);
   const address = stripHtml(item.address);
   const roadAddress = stripHtml(item.roadAddress);
-  const mapUrl = item.link ?? "";
+  const mapUrl = createNaverMapSearchUrl(name);
   const longitude = parseCoordinate(item.mapx, -180, 180);
   const latitude = parseCoordinate(item.mapy, -90, 90);
-  const idBase = mapUrl || `${name}-${roadAddress || address}-${item.mapx ?? ""}-${item.mapy ?? ""}`;
+  const idBase = `${name}-${roadAddress || address}-${item.mapx ?? ""}-${item.mapy ?? ""}`;
 
   return {
     id: idBase || `naver-place-${index}`,

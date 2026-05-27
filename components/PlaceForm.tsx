@@ -813,7 +813,7 @@ export default function PlaceForm({
                   <a
                     href={selectedPlace.mapUrl}
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noreferrer noopener"
                     className="mt-3 inline-flex text-sm font-semibold text-[#4D5748] underline decoration-[#A8B2A1] underline-offset-4"
                   >
                     네이버 지도에서 보기
