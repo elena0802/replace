@@ -5,6 +5,8 @@ export function mapPlaceFormToInsert(
   values: PlaceFormValues,
   imageUrl: string | null = null,
 ): Omit<PlaceInsert, "user_id"> {
+  // TODO: places 테이블에 컬럼이 추가되면 naverPlaceId, roadAddress, mapUrl,
+  // latitude, longitude도 함께 insert payload에 매핑한다.
   return {
     name: values.name.trim(),
     category: values.category,
