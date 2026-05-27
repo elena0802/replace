@@ -11,6 +11,11 @@ export type PlaceRow = {
   space_tags: string[];
   is_public: boolean;
   image_url: string | null;
+  naver_place_id: string | null;
+  road_address: string | null;
+  map_url: string | null;
+  latitude: number | null;
+  longitude: number | null;
   created_at: string;
   updated_at: string;
 };
@@ -28,6 +33,11 @@ export type PlaceInsert = {
   space_tags?: string[];
   is_public?: boolean;
   image_url?: string | null;
+  naver_place_id?: string | null;
+  road_address?: string | null;
+  map_url?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
   created_at?: string;
   updated_at?: string;
 };
@@ -45,6 +55,11 @@ export type PlaceUpdate = {
   space_tags?: string[];
   is_public?: boolean;
   image_url?: string | null;
+  naver_place_id?: string | null;
+  road_address?: string | null;
+  map_url?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
   created_at?: string;
   updated_at?: string;
 };

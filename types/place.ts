@@ -31,9 +31,9 @@ export interface PlaceFormValues {
   revisitLevel: RevisitLevel;
   isPublic: boolean;
   spaceTags: string[];
-  naverPlaceId?: string;
-  roadAddress?: string;
-  mapUrl?: string;
+  naverPlaceId?: string | null;
+  roadAddress?: string | null;
+  mapUrl?: string | null;
   latitude?: number | null;
   longitude?: number | null;
 }

@@ -52,5 +52,10 @@ export function mapPlaceRowToForm(place: PlaceRow): PlaceFormValues {
     revisitLevel: toRevisitLevel(place.revisit_level),
     isPublic: place.is_public,
     spaceTags: place.space_tags ?? [],
+    naverPlaceId: place.naver_place_id ?? undefined,
+    roadAddress: place.road_address ?? undefined,
+    mapUrl: place.map_url ?? undefined,
+    latitude: place.latitude ?? undefined,
+    longitude: place.longitude ?? undefined,
   };
 }

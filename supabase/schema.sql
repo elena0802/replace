@@ -13,12 +13,32 @@ create table if not exists public.places (
   space_tags text[] not null default '{}',
   is_public boolean not null default true,
   image_url text null,
+  naver_place_id text null,
+  road_address text null,
+  map_url text null,
+  latitude double precision null,
+  longitude double precision null,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
 
 alter table public.places
 add column if not exists user_id uuid references auth.users(id) on delete cascade;
+
+alter table public.places
+add column if not exists naver_place_id text null;
+
+alter table public.places
+add column if not exists road_address text null;
+
+alter table public.places
+add column if not exists map_url text null;
+
+alter table public.places
+add column if not exists latitude double precision null;
+
+alter table public.places
+add column if not exists longitude double precision null;
 
 create index if not exists places_user_id_created_at_idx
 on public.places (user_id, created_at desc);

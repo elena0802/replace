@@ -10,9 +10,17 @@ import {
   useState,
 } from "react";
 import ImageCropModal from "@/components/ImageCropModal";
+import PlaceSearchDropdown from "@/components/PlaceSearchDropdown";
+import SelectedPlaceCard from "@/components/SelectedPlaceCard";
+import { useNaverPlaceSearch } from "@/hooks/useNaverPlaceSearch";
 import { AuthRequiredError, requireCurrentUser } from "@/lib/auth/getCurrentUser";
 import { createPlace } from "@/lib/places/createPlace";
 import { mapPlaceFormToInsert } from "@/lib/places/mapPlaceFormToInsert";
+import {
+  getPlaceAddress,
+  getSelectedPlaceFromFormValues,
+  mapNaverCategoryToPlaceCategory,
+} from "@/lib/places/naverPlace";
 import {
   PlaceImageUploadError,
   uploadPlaceImage,
@@ -53,8 +61,6 @@ const spaceTagOptions = [
   "오래 머물기 좋아요",
   "사진 찍기 좋아요",
 ];
-const placeSearchMinLength = 2;
-const placeSearchDebounceMs = 400;
 
 const emptyPlaceFormValues: PlaceFormValues = {
   name: "",
@@ -106,11 +112,6 @@ type PlaceFormProps = {
   successRedirectPath?: string;
 };
 
-type NaverPlaceSearchResponse = {
-  results?: NaverPlaceSearchResult[];
-  error?: string;
-};
-
 function isRequiredField(field: keyof PlaceFormValues): field is RequiredField {
   return (
     field === "name" ||
@@ -128,56 +129,6 @@ function getSubmitRedirectPath(result: unknown) {
   const redirectCandidate = (result as { redirectPath?: unknown }).redirectPath;
 
   return typeof redirectCandidate === "string" ? redirectCandidate : undefined;
-}
-
-function mapNaverCategoryToPlaceCategory(category: string): PlaceCategory {
-  if (category.includes("카페") || category.includes("커피")) {
-    return "카페";
-  }
-
-  if (
-    category.includes("음식") ||
-    category.includes("식당") ||
-    category.includes("레스토랑") ||
-    category.includes("한식") ||
-    category.includes("중식") ||
-    category.includes("일식") ||
-    category.includes("양식") ||
-    category.includes("분식")
-  ) {
-    return "음식점";
-  }
-
-  if (category.includes("공원")) {
-    return "공원";
-  }
-
-  if (
-    category.includes("호텔") ||
-    category.includes("숙박") ||
-    category.includes("리조트") ||
-    category.includes("펜션") ||
-    category.includes("모텔")
-  ) {
-    return "호텔";
-  }
-
-  if (
-    category.includes("여행") ||
-    category.includes("관광") ||
-    category.includes("명소") ||
-    category.includes("문화") ||
-    category.includes("유적") ||
-    category.includes("궁궐")
-  ) {
-    return "여행지";
-  }
-
-  return "기타";
-}
-
-function getPlaceAddress(place: NaverPlaceSearchResult) {
-  return place.roadAddress || place.address;
 }
 
 export default function PlaceForm({
@@ -200,13 +151,9 @@ export default function PlaceForm({
   const [pendingImageFile, setPendingImageFile] = useState<File | null>(null);
   const [cropSourceUrl, setCropSourceUrl] = useState("");
   const [selectedPlace, setSelectedPlace] =
-    useState<NaverPlaceSearchResult | null>(null);
-  const [placeSearchResults, setPlaceSearchResults] = useState<
-    NaverPlaceSearchResult[]
-  >([]);
-  const [isSearchingPlaces, setIsSearchingPlaces] = useState(false);
-  const [placeSearchError, setPlaceSearchError] = useState("");
-  const [isPlaceSearchOpen, setIsPlaceSearchOpen] = useState(false);
+    useState<NaverPlaceSearchResult | null>(() =>
+      getSelectedPlaceFromFormValues(initialValues),
+    );
 
   const nameRef = useRef<HTMLInputElement>(null);
   const categoryRef = useRef<HTMLSelectElement>(null);
@@ -216,9 +163,6 @@ export default function PlaceForm({
   const imageObjectUrlRef = useRef<string | null>(null);
   const cropSourceObjectUrlRef = useRef<string | null>(null);
   const redirectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const placeSearchCloseTimeoutRef =
-    useRef<ReturnType<typeof setTimeout> | null>(null);
-  const placeSearchAbortRef = useRef<AbortController | null>(null);
 
   const hasErrors = Object.keys(errors).length > 0;
   const isSubmitDisabled = isSubmitting || Boolean(successMessage);
@@ -226,13 +170,14 @@ export default function PlaceForm({
   const redirectPath =
     successRedirectPath ?? (mode === "create" ? "/my-places" : undefined);
   const visibleImageUrl = imagePreviewUrl || initialImageUrl;
-  const isPlaceSearchEnabled = mode === "create";
   const placeNameQuery = values.name.trim();
+  const placeSearch = useNaverPlaceSearch({
+    enabled: true,
+    query: placeNameQuery,
+    selectedPlaceName: selectedPlace?.name,
+  });
   const shouldShowPlaceSearch =
-    isPlaceSearchEnabled &&
-    isPlaceSearchOpen &&
-    placeNameQuery.length >= placeSearchMinLength &&
-    !selectedPlace;
+    placeSearch.isOpen && placeSearch.canSearch && !selectedPlace;
 
   useEffect(() => {
     return () => {
@@ -247,80 +192,8 @@ export default function PlaceForm({
       if (cropSourceObjectUrlRef.current) {
         URL.revokeObjectURL(cropSourceObjectUrlRef.current);
       }
-
-      if (placeSearchCloseTimeoutRef.current) {
-        clearTimeout(placeSearchCloseTimeoutRef.current);
-      }
-
-      placeSearchAbortRef.current?.abort();
     };
   }, []);
-
-  useEffect(() => {
-    if (!isPlaceSearchEnabled) {
-      return;
-    }
-
-    if (
-      !placeNameQuery ||
-      placeNameQuery.length < placeSearchMinLength ||
-      selectedPlace?.name === placeNameQuery
-    ) {
-      return;
-    }
-
-    const controller = new AbortController();
-    placeSearchAbortRef.current = controller;
-    const timeoutId = setTimeout(async () => {
-      if (controller.signal.aborted) {
-        return;
-      }
-
-      try {
-        setIsSearchingPlaces(true);
-        setIsPlaceSearchOpen(true);
-
-        const searchParams = new URLSearchParams({
-          q: placeNameQuery,
-          display: "5",
-        });
-        const response = await fetch(
-          `/api/naver/search-place?${searchParams.toString()}`,
-          { signal: controller.signal },
-        );
-
-        if (!response.ok) {
-          throw new Error(`Place search failed with status ${response.status}`);
-        }
-
-        const data = (await response.json()) as NaverPlaceSearchResponse;
-        setPlaceSearchResults((data.results ?? []).slice(0, 5));
-        setPlaceSearchError("");
-        setIsPlaceSearchOpen(true);
-      } catch (error) {
-        if (error instanceof DOMException && error.name === "AbortError") {
-          return;
-        }
-
-        console.error("Place autocomplete failed:", error);
-        setPlaceSearchResults([]);
-        setPlaceSearchError("검색 결과를 불러오지 못했어요");
-        setIsPlaceSearchOpen(true);
-      } finally {
-        if (!controller.signal.aborted) {
-          setIsSearchingPlaces(false);
-        }
-      }
-    }, placeSearchDebounceMs);
-
-    return () => {
-      controller.abort();
-      clearTimeout(timeoutId);
-      if (placeSearchAbortRef.current === controller) {
-        placeSearchAbortRef.current = null;
-      }
-    };
-  }, [isPlaceSearchEnabled, placeNameQuery, selectedPlace?.name]);
 
   function focusField(field: RequiredField) {
     const refs = {
@@ -352,18 +225,12 @@ export default function PlaceForm({
   function clearSelectedPlaceMetadata() {
     setValues((current) => ({
       ...current,
-      naverPlaceId: undefined,
-      roadAddress: undefined,
-      mapUrl: undefined,
+      naverPlaceId: null,
+      roadAddress: null,
+      mapUrl: null,
       latitude: null,
       longitude: null,
     }));
-  }
-
-  function abortPlaceSearch() {
-    placeSearchAbortRef.current?.abort();
-    placeSearchAbortRef.current = null;
-    setIsSearchingPlaces(false);
   }
 
   function handlePlaceNameChange(event: ChangeEvent<HTMLInputElement>) {
@@ -379,54 +246,25 @@ export default function PlaceForm({
       clearSelectedPlaceMetadata();
     }
 
-    if (!nextQuery) {
-      abortPlaceSearch();
-      setPlaceSearchResults([]);
-      setPlaceSearchError("");
-      setIsPlaceSearchOpen(false);
-      return;
-    }
-
-    if (nextQuery.length < placeSearchMinLength) {
-      abortPlaceSearch();
-      setPlaceSearchResults([]);
-      setPlaceSearchError("");
-      setIsPlaceSearchOpen(false);
-      return;
-    }
-
-    if (!selectedPlace || shouldClearSelectedPlace) {
-      setIsSearchingPlaces(true);
-      setIsPlaceSearchOpen(true);
-    }
+    placeSearch.handleQueryInput(
+      nextQuery,
+      !selectedPlace || shouldClearSelectedPlace,
+    );
   }
 
   function handlePlaceNameFocus() {
-    if (placeSearchCloseTimeoutRef.current) {
-      clearTimeout(placeSearchCloseTimeoutRef.current);
-      placeSearchCloseTimeoutRef.current = null;
-    }
-
-    if (
-      isPlaceSearchEnabled &&
-      placeNameQuery.length >= placeSearchMinLength &&
-      !selectedPlace
-    ) {
-      setIsPlaceSearchOpen(true);
+    if (!selectedPlace) {
+      placeSearch.openIfReady();
     }
   }
 
   function handlePlaceNameBlur() {
-    placeSearchCloseTimeoutRef.current = setTimeout(() => {
-      abortPlaceSearch();
-      setIsPlaceSearchOpen(false);
-    }, 180);
+    placeSearch.closeSoon();
   }
 
   function handlePlaceNameKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     if (event.key === "Escape") {
-      abortPlaceSearch();
-      setIsPlaceSearchOpen(false);
+      placeSearch.close();
     }
   }
 
@@ -434,10 +272,8 @@ export default function PlaceForm({
     const nextAddress = getPlaceAddress(place);
 
     setSelectedPlace(place);
-    abortPlaceSearch();
-    setPlaceSearchResults([]);
-    setPlaceSearchError("");
-    setIsPlaceSearchOpen(false);
+    placeSearch.close();
+    placeSearch.clearResults();
     setValues((current) => ({
       ...current,
       name: place.name,
@@ -462,10 +298,16 @@ export default function PlaceForm({
     setSubmitError("");
   }
 
+  function handleClearSelectedPlace() {
+    setSelectedPlace(null);
+    clearSelectedPlaceMetadata();
+    placeSearch.close();
+  }
+
   function handleChangeSelectedPlace() {
     setSelectedPlace(null);
     clearSelectedPlaceMetadata();
-    setIsPlaceSearchOpen(placeNameQuery.length >= placeSearchMinLength);
+    placeSearch.openIfReady();
     window.setTimeout(() => {
       nameRef.current?.focus();
     }, 0);
@@ -692,20 +534,14 @@ export default function PlaceForm({
               type="text"
               ref={nameRef}
               value={values.name}
-              onChange={
-                isPlaceSearchEnabled
-                  ? handlePlaceNameChange
-                  : (event) => updateValue("name", event.target.value)
-              }
-              onFocus={isPlaceSearchEnabled ? handlePlaceNameFocus : undefined}
-              onBlur={isPlaceSearchEnabled ? handlePlaceNameBlur : undefined}
-              onKeyDown={
-                isPlaceSearchEnabled ? handlePlaceNameKeyDown : undefined
-              }
+              onChange={handlePlaceNameChange}
+              onFocus={handlePlaceNameFocus}
+              onBlur={handlePlaceNameBlur}
+              onKeyDown={handlePlaceNameKeyDown}
               placeholder="예: 봄날 정원 카페"
               autoComplete="off"
               className={fieldClass}
-              aria-autocomplete={isPlaceSearchEnabled ? "list" : undefined}
+              aria-autocomplete="list"
               aria-controls={
                 shouldShowPlaceSearch ? "place-search-results" : undefined
               }
@@ -714,112 +550,24 @@ export default function PlaceForm({
               aria-required="true"
             />
             {shouldShowPlaceSearch && (
-              <div
-                id="place-search-results"
-                role="listbox"
-                className="absolute left-0 right-0 top-full z-30 mt-2 overflow-hidden rounded-2xl border border-[#E5E0D8] bg-[#FFFDF8] shadow-[0_16px_36px_rgba(77,87,72,0.13)]"
-              >
-                {isSearchingPlaces ? (
-                  <p className="px-4 py-4 text-base font-medium text-[#6B6B68]">
-                    장소를 찾는 중...
-                  </p>
-                ) : placeSearchError ? (
-                  <p className="px-4 py-4 text-base font-medium text-[#7A4B3A]">
-                    {placeSearchError}
-                  </p>
-                ) : placeSearchResults.length === 0 ? (
-                  <p className="px-4 py-4 text-base font-medium text-[#6B6B68]">
-                    검색 결과가 없어요
-                  </p>
-                ) : (
-                  <ul className="divide-y divide-[#EFEAE2]">
-                    {placeSearchResults.map((place, index) => {
-                      const address = getPlaceAddress(place);
-
-                      return (
-                        <li key={`${place.id}-${index}`}>
-                          <button
-                            type="button"
-                            onMouseDown={(event) => event.preventDefault()}
-                            onClick={() => handleSelectPlace(place)}
-                            className="block w-full px-4 py-3 text-left transition hover:bg-[#F8F6F2] focus:bg-[#F8F6F2] focus:outline-none"
-                            role="option"
-                            aria-selected="false"
-                          >
-                            <span className="block text-lg font-semibold text-[#3F3F3B]">
-                              {place.name}
-                            </span>
-                            {place.category && (
-                              <span className="mt-1 block text-sm font-medium text-[#4D5748]">
-                                {place.category}
-                              </span>
-                            )}
-                            {address && (
-                              <span className="mt-1 block text-sm font-medium leading-6 text-[#6B6B68]">
-                                {address}
-                              </span>
-                            )}
-                          </button>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                )}
-              </div>
+              <PlaceSearchDropdown
+                errorMessage={placeSearch.errorMessage}
+                isSearching={placeSearch.isSearching}
+                onSelectPlace={handleSelectPlace}
+                results={placeSearch.results}
+              />
             )}
             {errors.name && (
               <span id="name-error" className="block text-base text-[#7A4B3A]">
                 {errors.name}
               </span>
             )}
-            {isPlaceSearchEnabled && selectedPlace && (
-              <div className="rounded-2xl border border-[#E5E0D8] bg-[#FFFDF8] p-4 shadow-[0_10px_24px_rgba(77,87,72,0.08)]">
-                <div className="flex items-start justify-between gap-3">
-                  <p className="text-sm font-semibold text-[#4D5748]">
-                    선택한 장소
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={handleChangeSelectedPlace}
-                      className="rounded-full border border-[#DCD5C8] px-3 py-1 text-sm font-semibold text-[#4D5748] transition hover:border-[#4D5748] hover:bg-[#F8F6F2]"
-                    >
-                      변경
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleChangeSelectedPlace}
-                      className="flex size-8 items-center justify-center rounded-full border border-[#DCD5C8] text-lg font-semibold leading-none text-[#6B6B68] transition hover:border-[#4D5748] hover:bg-[#F8F6F2] hover:text-[#3F3F3B]"
-                      aria-label="선택한 장소 지우기"
-                    >
-                      ×
-                    </button>
-                  </div>
-                </div>
-                <p className="mt-2 text-lg font-semibold text-[#3F3F3B]">
-                  {selectedPlace.name}
-                </p>
-                {selectedPlace.category && (
-                  <p className="mt-1 text-sm font-medium text-[#4D5748]">
-                    {selectedPlace.category}
-                  </p>
-                )}
-                {getPlaceAddress(selectedPlace) && (
-                  <p className="mt-1 text-sm font-medium leading-6 text-[#6B6B68]">
-                    {getPlaceAddress(selectedPlace)}
-                  </p>
-                )}
-                {selectedPlace.mapUrl && (
-                  <a
-                    href={selectedPlace.mapUrl}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    className="mt-3 inline-flex text-sm font-semibold text-[#4D5748] underline decoration-[#A8B2A1] underline-offset-4"
-                  >
-                    네이버 지도에서 보기
-                  </a>
-                )}
-              </div>
+            {selectedPlace && (
+              <SelectedPlaceCard
+                onChangePlace={handleChangeSelectedPlace}
+                onClearPlace={handleClearSelectedPlace}
+                place={selectedPlace}
+              />
             )}
           </div>
 

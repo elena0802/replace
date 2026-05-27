@@ -16,5 +16,14 @@ export function mapPlaceFormToUpdate(
     space_tags: values.spaceTags,
     is_public: values.isPublic,
     ...(imageUrl !== undefined ? { image_url: imageUrl } : {}),
+    ...(values.naverPlaceId !== undefined
+      ? { naver_place_id: values.naverPlaceId }
+      : {}),
+    ...(values.roadAddress !== undefined
+      ? { road_address: values.roadAddress }
+      : {}),
+    ...(values.mapUrl !== undefined ? { map_url: values.mapUrl } : {}),
+    ...(values.latitude !== undefined ? { latitude: values.latitude } : {}),
+    ...(values.longitude !== undefined ? { longitude: values.longitude } : {}),
   };
 }

@@ -5,8 +5,6 @@ export function mapPlaceFormToInsert(
   values: PlaceFormValues,
   imageUrl: string | null = null,
 ): Omit<PlaceInsert, "user_id"> {
-  // TODO: places 테이블에 컬럼이 추가되면 naverPlaceId, roadAddress, mapUrl,
-  // latitude, longitude도 함께 insert payload에 매핑한다.
   return {
     name: values.name.trim(),
     category: values.category,
@@ -18,5 +16,14 @@ export function mapPlaceFormToInsert(
     space_tags: values.spaceTags,
     is_public: values.isPublic,
     image_url: imageUrl,
+    ...(values.naverPlaceId !== undefined
+      ? { naver_place_id: values.naverPlaceId }
+      : {}),
+    ...(values.roadAddress !== undefined
+      ? { road_address: values.roadAddress }
+      : {}),
+    ...(values.mapUrl !== undefined ? { map_url: values.mapUrl } : {}),
+    ...(values.latitude !== undefined ? { latitude: values.latitude } : {}),
+    ...(values.longitude !== undefined ? { longitude: values.longitude } : {}),
   };
 }
