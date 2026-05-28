@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import EmptyState from "@/components/EmptyState";
 import KakaoShareButton from "@/components/KakaoShareButton";
+import PlaceLocationCard from "@/components/PlaceLocationCard";
 import StatusMessage from "@/components/StatusMessage";
 import { getCurrentUser } from "@/lib/auth/getCurrentUser";
 import { deletePlace } from "@/lib/places/deletePlace";
@@ -14,6 +15,35 @@ import type { PlaceRow } from "@/types/database";
 type PlaceDetailProps = {
   id: string;
 };
+
+type PlaceLocationFields = PlaceRow & {
+  address?: string | null;
+  jibun_address?: string | null;
+  lat?: number | null;
+  lng?: number | null;
+  location?: string | null;
+  place_address?: string | null;
+};
+
+function firstNonEmptyString(values: Array<string | null | undefined>) {
+  return values.find((value) => value?.trim())?.trim() ?? null;
+}
+
+function getPlaceLocationData(place: PlaceRow) {
+  const locationFields = place as PlaceLocationFields;
+
+  return {
+    address: firstNonEmptyString([
+      locationFields.road_address,
+      locationFields.address,
+      locationFields.jibun_address,
+      locationFields.location,
+      locationFields.place_address,
+    ]),
+    latitude: locationFields.latitude ?? locationFields.lat ?? null,
+    longitude: locationFields.longitude ?? locationFields.lng ?? null,
+  };
+}
 
 function formatDate(value: string | null | undefined) {
   if (!value) {
@@ -73,6 +103,13 @@ export default function PlaceDetail({ id }: PlaceDetailProps) {
           setPlace(null);
           return;
         }
+
+        console.log("place location data", {
+          place: nextPlace,
+          road_address: nextPlace.road_address,
+          latitude: nextPlace.latitude,
+          longitude: nextPlace.longitude,
+        });
 
         setPlace(nextPlace);
         setCanManagePlace(Boolean(currentUser && nextPlace.user_id === currentUser.id));
@@ -151,6 +188,8 @@ export default function PlaceDetail({ id }: PlaceDetailProps) {
       </div>
     );
   }
+
+  const placeLocation = getPlaceLocationData(place);
 
   return (
     <div className="mx-auto w-full max-w-6xl px-5 py-12 lg:px-8 lg:py-16">
@@ -264,6 +303,12 @@ export default function PlaceDetail({ id }: PlaceDetailProps) {
                 </p>
               )}
             </section>
+
+            <PlaceLocationCard
+              address={placeLocation.address}
+              latitude={placeLocation.latitude}
+              longitude={placeLocation.longitude}
+            />
           </div>
 
           <aside className="space-y-5 rounded-2xl bg-[#F8F6F2] p-5">
