@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import EmptyState from "@/components/EmptyState";
+import KakaoShareButton from "@/components/KakaoShareButton";
 import StatusMessage from "@/components/StatusMessage";
 import { getCurrentUser } from "@/lib/auth/getCurrentUser";
 import { deletePlace } from "@/lib/places/deletePlace";
@@ -170,6 +171,7 @@ export default function PlaceDetail({ id }: PlaceDetailProps) {
         </div>
 
         <div className="flex flex-wrap gap-3">
+          <KakaoShareButton place={place} onError={setActionError} />
           {canManagePlace && (
             <>
               <Link
