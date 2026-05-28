@@ -45,7 +45,7 @@ function LocationIcon() {
   return (
     <svg
       aria-hidden="true"
-      className="h-5 w-5 shrink-0 text-[#4D5748]"
+      className="mt-1 h-5 w-5 shrink-0 text-[#8A857D]"
       fill="none"
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"
@@ -72,7 +72,7 @@ function CopyIcon() {
   return (
     <svg
       aria-hidden="true"
-      className="h-4 w-4 shrink-0"
+      className="h-4 w-4 shrink-0 text-current"
       fill="none"
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"
@@ -131,13 +131,13 @@ export default function PlaceLocationCard({
   }
 
   return (
-    <section className="rounded-3xl border border-[#E5E0D8] bg-[#FCFBF8] p-5 shadow-[0_14px_34px_rgba(77,87,72,0.06)] sm:p-6">
-      <h2 className="mb-4 text-2xl font-semibold text-[#3F3F3B]">위치</h2>
+    <section className="space-y-5 py-2">
+      <h2 className="text-2xl font-semibold text-[#3F3F3B]">위치</h2>
 
       <PlaceMap latitude={latitude} longitude={longitude} />
 
-      <div className="mt-4 flex flex-col gap-3 rounded-2xl border border-[#EFEAE2] bg-[#F8F6F2] p-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex min-w-0 items-start gap-2 text-lg font-medium leading-8 text-[#3F3F3B]">
+      <div className="flex flex-col gap-4 pt-1 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex min-w-0 items-start gap-3 text-lg font-normal leading-8 text-[#5D5D59]">
           <LocationIcon />
           <p>{trimmedAddress || "주소 정보가 아직 없어요."}</p>
         </div>
@@ -146,7 +146,7 @@ export default function PlaceLocationCard({
           type="button"
           onClick={handleCopyAddress}
           disabled={!trimmedAddress}
-          className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-full border border-[#D9D2C8] bg-[#FCFBF8] px-4 py-2 text-base font-semibold text-[#4D5748] transition hover:border-[#A8B2A1] hover:bg-[#EAE3D8] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748] disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 self-start rounded-full px-3 py-2 text-base font-medium text-[#4D5748] transition hover:bg-[#EAE3D8]/60 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748] disabled:cursor-not-allowed disabled:text-[#A7A19A] disabled:hover:bg-transparent"
         >
           <CopyIcon />
           {isCopied ? "복사됨" : "복사"}
@@ -156,7 +156,7 @@ export default function PlaceLocationCard({
       <button
         type="button"
         onClick={() => console.log("TODO: directions")}
-        className="mt-3 inline-flex min-h-12 w-full items-center justify-center rounded-full border border-[#A8B2A1] bg-transparent px-5 py-3 text-lg font-semibold text-[#4D5748] transition hover:border-[#4D5748] hover:bg-[#EAE3D8] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748]"
+        className="inline-flex min-h-11 w-full items-center justify-center rounded-full border border-[#D9D2C8] bg-transparent px-5 py-2.5 text-base font-medium text-[#4D5748] transition hover:border-[#A8B2A1] hover:bg-[#F8F6F2] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748]"
       >
         길찾기
       </button>

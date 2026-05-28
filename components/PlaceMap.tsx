@@ -112,14 +112,14 @@ export default function PlaceMap({ latitude, longitude }: PlaceMapProps) {
 
   if (!hasCoordinates) {
     return (
-      <div className="flex h-48 items-center justify-center rounded-2xl border border-dashed border-[#D9D2C8] bg-[#F8F6F2] px-5 text-center text-lg font-semibold leading-8 text-[#6B6B68] md:h-64">
+      <div className="flex h-48 items-center justify-center rounded-2xl bg-[#F8F6F2]/70 px-5 text-center text-lg font-normal leading-8 text-[#8A857D] md:h-64">
         지도 위치 정보가 아직 없어요.
       </div>
     );
   }
 
   return (
-    <div className="relative h-48 overflow-hidden rounded-2xl border border-[#E5E0D8] bg-[#EAE3D8] md:h-64">
+    <div className="relative h-48 overflow-hidden rounded-2xl bg-[#EAE3D8] md:h-64">
       {naverMapClientId && (
         <Script
           id="replace-naver-map-script"
@@ -141,7 +141,7 @@ export default function PlaceMap({ latitude, longitude }: PlaceMapProps) {
       />
 
       {(!naverMapClientId || hasScriptError || !isScriptReady) && (
-        <div className="absolute inset-0 flex items-center justify-center bg-[#F8F6F2] px-5 text-center text-lg font-semibold leading-8 text-[#6B6B68]">
+        <div className="absolute inset-0 flex items-center justify-center bg-[#F8F6F2]/95 px-5 text-center text-lg font-normal leading-8 text-[#8A857D]">
           {!naverMapClientId || hasScriptError
             ? "지도를 불러오지 못했어요."
             : "지도를 불러오는 중..."}
