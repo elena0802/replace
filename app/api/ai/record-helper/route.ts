@@ -11,23 +11,29 @@ const minimumMemoLength = 5;
 const maximumMemoLength = 500;
 const maximumPlaceNameLength = 120;
 const maximumCategoryLength = 80;
-const maximumAddressLength = 200;
 
 const systemPrompt = [
   "너는 Re:Place의 기록 도우미다.",
+  "Re:Place는 장소 정보보다 사용자의 기억과 순간을 기록하는 서비스다.",
   "",
   "좋은 장소를 평가하지 않는다.",
+  "장소를 리뷰하지 않는다.",
   "리뷰처럼 쓰지 않는다.",
   "광고처럼 쓰지 않는다.",
+  "주소를 설명하지 않는다.",
+  "위치 정보를 소개하지 않는다.",
   "",
-  "사용자가 남긴 기억을",
-  "짧고 따뜻한 기록으로 정리한다.",
+  "사용자의 감정, 분위기, 경험을 중심으로 작성한다.",
+  "사용자가 남긴 기억을 짧고 따뜻한 기록으로 정리한다.",
+  "마치 일기나 짧은 회고처럼 작성한다.",
   "",
   "2~4문장으로 작성한다.",
+  "담백하고 따뜻하게 쓴다.",
   "",
   "사용자가 제공하지 않은 사실은 만들지 않는다.",
+  "사용자가 제공하지 않은 장소 특징은 만들지 않는다.",
   "",
-  "‘최고’, ‘강력 추천’, ‘무조건 가봐야 한다’ 같은 표현은 사용하지 않는다.",
+  "‘인근’, ‘위치한’, ‘명소’, ‘추천’, ‘최고’, ‘강력 추천’, ‘무조건 가봐야 한다’ 같은 표현은 사용하지 않는다.",
   "",
   "부모님 세대가 카카오톡으로 공유해도 자연스럽게 읽히는 문체를 사용한다.",
 ].join("\n");
@@ -56,35 +62,37 @@ function getRecord(value: unknown): Record<string, unknown> | null {
 }
 
 function createUserPrompt({
-  address,
   category,
   memo,
   placeName,
 }: {
-  address: string;
   category: string;
   memo: string;
   placeName: string;
 }) {
   return [
-    "장소명:",
+    "장소명(기억을 정리하기 위한 참고 정보):",
     placeName,
-    "카테고리:",
+    "카테고리(필요할 때만 참고):",
     category || "제공되지 않음",
-    "주소:",
-    address || "제공되지 않음",
     "사용자 메모:",
     memo,
     "",
-    "이 정보를 바탕으로 2~4문장의 한국어 기록을 작성해줘.",
+    "이 정보를 바탕으로 사용자의 기억과 순간을 2~4문장의 한국어 기록으로 작성해줘.",
     "중요:",
+    "- 주소를 설명하지 않기",
+    "- 위치 정보를 소개하지 않기",
     "- 리뷰처럼 평가하지 않기",
+    "- 장소 소개문처럼 쓰지 않기",
     "- 과장하지 않기",
     "- 광고 문구처럼 쓰지 않기",
+    "- ‘인근’, ‘위치한’, ‘명소’, ‘추천’ 같은 표현 사용 금지",
+    "- 사용자의 감정, 분위기, 경험 중심으로 작성",
+    "- 마치 일기나 짧은 회고처럼 작성",
     "- 따뜻하고 담백하게",
     "- 부모님 세대가 카카오톡에 공유해도 자연스러운 문장",
     "- 사용자가 쓴 내용을 바탕으로만 작성",
-    "- 없는 정보 지어내지 않기",
+    "- 없는 장소 특징이나 사실 지어내지 않기",
     "- 한국어로 작성",
     "- 900자 이하",
     "- 이모지 사용 금지",
@@ -153,7 +161,6 @@ export async function POST(request: NextRequest) {
   const placeName = getLimitedText(body.placeName, maximumPlaceNameLength);
   const memo = getLimitedText(body.memo, maximumMemoLength);
   const category = getLimitedText(body.category, maximumCategoryLength);
-  const address = getLimitedText(body.address, maximumAddressLength);
 
   if (!placeName || !memo) {
     return NextResponse.json({ error: inputRequiredMessage }, { status: 400 });
@@ -189,7 +196,6 @@ export async function POST(request: NextRequest) {
             content: [
               {
                 text: createUserPrompt({
-                  address,
                   category,
                   memo,
                   placeName,
