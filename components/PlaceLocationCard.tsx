@@ -1,15 +1,29 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import DirectionsBottomSheet from "@/components/DirectionsBottomSheet";
+import DirectionsBottomSheet, {
+  getDirectionsQuery,
+} from "@/components/DirectionsBottomSheet";
 import PlaceMap from "@/components/PlaceMap";
+
+type CoordinateValue = number | string | null | undefined;
 
 type PlaceLocationCardProps = {
   name?: string;
   address?: string | null;
-  latitude?: number | null;
-  longitude?: number | null;
+  latitude?: CoordinateValue;
+  longitude?: CoordinateValue;
 };
+
+function toMapCoordinate(value: CoordinateValue) {
+  if (value === null || value === undefined || value === "") {
+    return null;
+  }
+
+  const numberValue = Number(value);
+
+  return Number.isFinite(numberValue) ? numberValue : null;
+}
 
 async function copyText(text: string) {
   try {
@@ -106,14 +120,10 @@ export default function PlaceLocationCard({
   const [isCopied, setIsCopied] = useState(false);
   const [isDirectionsOpen, setIsDirectionsOpen] = useState(false);
   const trimmedAddress = address?.trim() ?? "";
-  const trimmedName = name?.trim() ?? "";
+  const mapLatitude = toMapCoordinate(latitude);
+  const mapLongitude = toMapCoordinate(longitude);
   const hasDirectionsTarget = Boolean(
-    trimmedAddress ||
-      trimmedName ||
-      (typeof latitude === "number" &&
-        Number.isFinite(latitude) &&
-        typeof longitude === "number" &&
-        Number.isFinite(longitude)),
+    getDirectionsQuery({ name, address, latitude, longitude }),
   );
 
   useEffect(() => {
@@ -147,7 +157,7 @@ export default function PlaceLocationCard({
     <section className="space-y-5 py-2">
       <h2 className="text-2xl font-semibold text-[#3F3F3B]">위치</h2>
 
-      <PlaceMap latitude={latitude} longitude={longitude} />
+      <PlaceMap latitude={mapLatitude} longitude={mapLongitude} />
 
       <div className="flex flex-col gap-4 pt-1 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex min-w-0 items-start gap-3 text-lg font-normal leading-8 text-[#5D5D59]">

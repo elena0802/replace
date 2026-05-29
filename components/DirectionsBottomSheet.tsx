@@ -2,13 +2,15 @@
 
 import { useEffect, useMemo } from "react";
 
+type CoordinateValue = number | string | null | undefined;
+
 type DirectionsBottomSheetProps = {
   isOpen: boolean;
   onClose: () => void;
   name?: string;
   address?: string | null;
-  latitude?: number | null;
-  longitude?: number | null;
+  latitude?: CoordinateValue;
+  longitude?: CoordinateValue;
 };
 
 type DirectionsTarget = Pick<
@@ -17,6 +19,7 @@ type DirectionsTarget = Pick<
 >;
 
 type DirectionsOption = {
+  service: string;
   label: string;
   helperText: string;
   iconLabel: string;
@@ -29,75 +32,121 @@ function getTrimmedValue(value?: string | null) {
   return trimmedValue ? trimmedValue : null;
 }
 
-function getDestinationQuery({ address, name }: DirectionsTarget) {
-  return getTrimmedValue(address) ?? getTrimmedValue(name);
+function toFiniteNumber(value: CoordinateValue) {
+  if (value === null || value === undefined || value === "") {
+    return null;
+  }
+
+  const numberValue = Number(value);
+
+  return Number.isFinite(numberValue) ? numberValue : null;
 }
 
-function hasCoordinates({
+function getValidCoordinates({
   latitude,
   longitude,
 }: Pick<DirectionsTarget, "latitude" | "longitude">) {
-  return (
-    typeof latitude === "number" &&
-    Number.isFinite(latitude) &&
-    typeof longitude === "number" &&
-    Number.isFinite(longitude)
-  );
+  const parsedLatitude = toFiniteNumber(latitude);
+  const parsedLongitude = toFiniteNumber(longitude);
+
+  if (parsedLatitude === null || parsedLongitude === null) {
+    return null;
+  }
+
+  return {
+    latitude: parsedLatitude,
+    longitude: parsedLongitude,
+  };
+}
+
+export function hasValidCoordinates(target: DirectionsTarget) {
+  return Boolean(getValidCoordinates(target));
+}
+
+export function getDirectionsQuery(target: DirectionsTarget) {
+  const addressQuery = getTrimmedValue(target.address);
+  const nameQuery = getTrimmedValue(target.name);
+  const coordinates = getValidCoordinates(target);
+
+  if (addressQuery) {
+    return addressQuery;
+  }
+
+  if (nameQuery) {
+    return nameQuery;
+  }
+
+  if (coordinates) {
+    return `${coordinates.latitude},${coordinates.longitude}`;
+  }
+
+  return null;
 }
 
 export function buildNaverMapUrl(target: DirectionsTarget) {
-  const query = getDestinationQuery(target);
-  const hasDestinationCoordinates = hasCoordinates(target);
+  const query = getDirectionsQuery(target);
 
-  if (query) {
-    const encodedQuery = encodeURIComponent(query);
-    const centerQuery = hasDestinationCoordinates
-      ? `?c=${target.longitude},${target.latitude},15,0,0,0,dh`
-      : "";
-
-    return `https://map.naver.com/v5/search/${encodedQuery}${centerQuery}`;
+  if (!query) {
+    return null;
   }
 
-  if (hasDestinationCoordinates) {
-    return `https://map.naver.com/v5/?c=${target.longitude},${target.latitude},15,0,0,0,dh`;
-  }
-
-  return null;
+  return `https://map.naver.com/v5/search/${encodeURIComponent(query)}`;
 }
 
 export function buildKakaoMapUrl(target: DirectionsTarget) {
-  const query = getDestinationQuery(target);
-  const hasDestinationCoordinates = hasCoordinates(target);
+  const addressQuery = getTrimmedValue(target.address);
+  const nameQuery = getTrimmedValue(target.name);
+  const coordinates = getValidCoordinates(target);
+  const query = getDirectionsQuery(target);
 
-  if (query && hasDestinationCoordinates) {
-    return `https://map.kakao.com/link/map/${encodeURIComponent(query)},${target.latitude},${target.longitude}`;
+  if (addressQuery) {
+    return `https://map.kakao.com/link/search/${encodeURIComponent(addressQuery)}`;
   }
 
-  if (query) {
-    return `https://map.kakao.com/link/search/${encodeURIComponent(query)}`;
+  if (nameQuery && coordinates) {
+    return `https://map.kakao.com/link/map/${encodeURIComponent(nameQuery)},${coordinates.latitude},${coordinates.longitude}`;
   }
 
-  if (hasDestinationCoordinates) {
-    return `https://map.kakao.com/link/map/${encodeURIComponent("목적지")},${target.latitude},${target.longitude}`;
+  if (!query) {
+    return null;
   }
 
-  return null;
+  return `https://map.kakao.com/link/search/${encodeURIComponent(query)}`;
 }
 
 export function buildTmapUrl(target: DirectionsTarget) {
-  const query = getDestinationQuery(target);
+  const query = getDirectionsQuery(target);
 
-  if (query) {
-    return `https://www.tmap.co.kr/search?query=${encodeURIComponent(query)}`;
+  if (!query) {
+    return null;
   }
 
-  if (hasCoordinates(target)) {
-    return `https://www.tmap.co.kr/search?query=${encodeURIComponent(
-      `${target.latitude},${target.longitude}`,
-    )}`;
+  // TODO: Replace with TMAP's confirmed web/app destination deep link in a later sprint.
+  return `https://www.tmap.co.kr/search/search.do?searchKeyword=${encodeURIComponent(
+    query,
+  )}`;
+}
+
+export function openDirectionsUrl(
+  service: string,
+  url: string | null,
+  target: DirectionsTarget,
+  onOpen?: () => void,
+) {
+  console.log("[Directions]", service, url, {
+    name: target.name,
+    address: target.address,
+    latitude: target.latitude,
+    longitude: target.longitude,
+  });
+
+  if (!url) {
+    window.alert("장소 정보가 부족해요.");
+    return;
   }
 
-  return null;
+  window.open(url, "_blank", "noopener,noreferrer");
+  onOpen?.();
 }
 
 function CloseIcon() {
@@ -167,28 +216,35 @@ export default function DirectionsBottomSheet({
   latitude = null,
   longitude = null,
 }: DirectionsBottomSheetProps) {
+  const directionsTarget = useMemo(
+    () => ({ name, address, latitude, longitude }),
+    [address, latitude, longitude, name],
+  );
   const options = useMemo<DirectionsOption[]>(
     () => [
       {
+        service: "tmap",
         label: "TMAP",
         helperText: "티맵 검색으로 열기",
         iconLabel: "T",
-        url: buildTmapUrl({ name, address, latitude, longitude }),
+        url: buildTmapUrl(directionsTarget),
       },
       {
+        service: "naver",
         label: "네이버 지도",
         helperText: "네이버 지도에서 목적지 보기",
         iconLabel: "N",
-        url: buildNaverMapUrl({ name, address, latitude, longitude }),
+        url: buildNaverMapUrl(directionsTarget),
       },
       {
+        service: "kakao",
         label: "카카오맵",
         helperText: "카카오맵에서 목적지 보기",
         iconLabel: "K",
-        url: buildKakaoMapUrl({ name, address, latitude, longitude }),
+        url: buildKakaoMapUrl(directionsTarget),
       },
     ],
-    [address, latitude, longitude, name],
+    [directionsTarget],
   );
 
   useEffect(() => {
@@ -255,27 +311,22 @@ export default function DirectionsBottomSheet({
 
         <div className="mt-5 space-y-3">
           {options.map((option) => (
-            option.url ? (
-              <a
-                key={option.label}
-                href={option.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={onClose}
-                className={optionClassName}
-              >
-                <DirectionsOptionContent option={option} />
-              </a>
-            ) : (
-              <button
-                key={option.label}
-                type="button"
-                disabled
-                className={`${optionClassName} cursor-not-allowed opacity-55 hover:border-[#EFEAE2] hover:bg-[#F8F6F2]`}
-              >
-                <DirectionsOptionContent option={option} />
-              </button>
-            )
+            <button
+              key={option.label}
+              type="button"
+              onClick={() =>
+                openDirectionsUrl(
+                  option.service,
+                  option.url,
+                  directionsTarget,
+                  onClose,
+                )
+              }
+              disabled={!option.url}
+              className={`${optionClassName} disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:border-[#EFEAE2] disabled:hover:bg-[#F8F6F2]`}
+            >
+              <DirectionsOptionContent option={option} />
+            </button>
           ))}
         </div>
 
