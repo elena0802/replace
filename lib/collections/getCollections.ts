@@ -20,6 +20,60 @@ function normalizeJoinedCoverPlace(place: CollectionCoverQueryRow["places"]) {
   return Array.isArray(place) ? (place[0] ?? null) : place;
 }
 
+async function getCoverImagesByCollectionId(collectionIds: string[]) {
+  const coverImageByCollectionId = new Map<string, string | null>();
+
+  if (collectionIds.length === 0) {
+    return coverImageByCollectionId;
+  }
+
+  const { data: coverData, error: coverError } = await supabase
+    .from("collection_places")
+    .select("collection_id, created_at, places(image_url)")
+    .in("collection_id", collectionIds)
+    .order("created_at", { ascending: false });
+
+  if (coverError) {
+    throw new Error(
+      `Supabase collection cover select failed: ${coverError.message} (${coverError.code ?? "no-code"})`,
+    );
+  }
+
+  const coverRows = (coverData ?? []) as unknown as CollectionCoverQueryRow[];
+
+  coverRows.forEach((row) => {
+    if (coverImageByCollectionId.has(row.collection_id)) {
+      return;
+    }
+
+    coverImageByCollectionId.set(
+      row.collection_id,
+      normalizeJoinedCoverPlace(row.places)?.image_url ?? null,
+    );
+  });
+
+  return coverImageByCollectionId;
+}
+
+async function mapCollectionRows(
+  rows: CollectionQueryRow[],
+): Promise<CollectionListItem[]> {
+  const coverImageByCollectionId = await getCoverImagesByCollectionId(
+    rows.map((row) => row.id),
+  );
+
+  return rows.map((row) => ({
+    id: row.id,
+    user_id: row.user_id,
+    name: row.name,
+    description: row.description,
+    is_public: row.is_public,
+    created_at: row.created_at,
+    placeCount: row.collection_places[0]?.count ?? 0,
+    coverImageUrl: coverImageByCollectionId.get(row.id) ?? null,
+  }));
+}
+
 export async function getCollections(
   userId: string,
 ): Promise<CollectionListItem[]> {
@@ -36,44 +90,29 @@ export async function getCollections(
   }
 
   const rows = (data ?? []) as unknown as CollectionQueryRow[];
-  const collectionIds = rows.map((row) => row.id);
-  const coverImageByCollectionId = new Map<string, string | null>();
+  return mapCollectionRows(rows);
+}
 
-  if (collectionIds.length > 0) {
-    const { data: coverData, error: coverError } = await supabase
-      .from("collection_places")
-      .select("collection_id, created_at, places(image_url)")
-      .in("collection_id", collectionIds)
-      .order("created_at", { ascending: false });
+export async function getPublicCollections(
+  excludeUserId?: string | null,
+): Promise<CollectionListItem[]> {
+  let query = supabase
+    .from("collections")
+    .select("*, collection_places(count)")
+    .eq("is_public", true)
+    .order("created_at", { ascending: false });
 
-    if (coverError) {
-      throw new Error(
-        `Supabase collection cover select failed: ${coverError.message} (${coverError.code ?? "no-code"})`,
-      );
-    }
-
-    const coverRows = (coverData ?? []) as unknown as CollectionCoverQueryRow[];
-
-    coverRows.forEach((row) => {
-      if (coverImageByCollectionId.has(row.collection_id)) {
-        return;
-      }
-
-      coverImageByCollectionId.set(
-        row.collection_id,
-        normalizeJoinedCoverPlace(row.places)?.image_url ?? null,
-      );
-    });
+  if (excludeUserId) {
+    query = query.neq("user_id", excludeUserId);
   }
 
-  return rows.map((row) => ({
-    id: row.id,
-    user_id: row.user_id,
-    name: row.name,
-    description: row.description,
-    is_public: row.is_public,
-    created_at: row.created_at,
-    placeCount: row.collection_places[0]?.count ?? 0,
-    coverImageUrl: coverImageByCollectionId.get(row.id) ?? null,
-  }));
+  const { data, error } = await query;
+
+  if (error) {
+    throw new Error(
+      `Supabase public collections select failed: ${error.message} (${error.code ?? "no-code"})`,
+    );
+  }
+
+  return mapCollectionRows((data ?? []) as unknown as CollectionQueryRow[]);
 }
