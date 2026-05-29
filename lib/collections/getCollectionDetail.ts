@@ -24,13 +24,12 @@ function normalizeJoinedPlace(place: CollectionPlaceQueryRow["places"]) {
 
 export async function getCollectionDetail(
   collectionId: string,
-  userId: string,
+  userId: string | null,
 ): Promise<CollectionDetail | null> {
   const { data: collection, error: collectionError } = await supabase
     .from("collections")
     .select("*")
     .eq("id", collectionId)
-    .eq("user_id", userId)
     .maybeSingle();
 
   if (collectionError) {
@@ -40,6 +39,10 @@ export async function getCollectionDetail(
   }
 
   if (!collection) {
+    return null;
+  }
+
+  if (!collection.is_public && collection.user_id !== userId) {
     return null;
   }
 

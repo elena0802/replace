@@ -126,6 +126,7 @@ export type CollectionRow = {
   user_id: string;
   name: string;
   description: string | null;
+  is_public: boolean;
   created_at: string;
 };
 
@@ -134,6 +135,7 @@ export type CollectionInsert = {
   user_id: string;
   name: string;
   description?: string | null;
+  is_public?: boolean;
   created_at?: string;
 };
 
@@ -142,6 +144,7 @@ export type CollectionUpdate = {
   user_id?: string;
   name?: string;
   description?: string | null;
+  is_public?: boolean;
   created_at?: string;
 };
 

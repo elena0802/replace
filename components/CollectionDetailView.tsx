@@ -50,6 +50,7 @@ export default function CollectionDetailView({ id }: CollectionDetailViewProps) 
   const [isDeletingCollection, setIsDeletingCollection] = useState(false);
   const [editName, setEditName] = useState("");
   const [editDescription, setEditDescription] = useState("");
+  const [editIsPublic, setEditIsPublic] = useState(false);
   const [editError, setEditError] = useState("");
 
   useEffect(() => {
@@ -59,21 +60,12 @@ export default function CollectionDetailView({ id }: CollectionDetailViewProps) 
       try {
         const user = await getSessionUser();
 
-        if (!user) {
-          if (isMounted) {
-            setRequiresLogin(true);
-            setDetail(null);
-            setCurrentUserId(null);
-          }
-          return;
-        }
-
         if (isMounted) {
-          setCurrentUserId(user.id);
+          setCurrentUserId(user?.id ?? null);
         }
 
         const nextDetail = await withTimeout(
-          getCollectionDetail(id, user.id),
+          getCollectionDetail(id, user?.id ?? null),
           6000,
           "컬렉션 상세 조회 시간이 초과되었습니다.",
         );
@@ -83,7 +75,8 @@ export default function CollectionDetailView({ id }: CollectionDetailViewProps) 
         }
 
         if (!nextDetail) {
-          setIsNotFound(true);
+          setRequiresLogin(!user);
+          setIsNotFound(Boolean(user));
           setDetail(null);
           return;
         }
@@ -164,6 +157,7 @@ export default function CollectionDetailView({ id }: CollectionDetailViewProps) 
 
     setEditName(detail.collection.name);
     setEditDescription(detail.collection.description ?? "");
+    setEditIsPublic(detail.collection.is_public);
     setActionError("");
     setSuccessMessage("");
     setEditError("");
@@ -206,6 +200,7 @@ export default function CollectionDetailView({ id }: CollectionDetailViewProps) 
         .update({
           name: trimmedName,
           description: trimmedDescription || null,
+          is_public: editIsPublic,
         })
         .eq("id", detail.collection.id)
         .eq("user_id", currentUserId)
@@ -296,7 +291,7 @@ export default function CollectionDetailView({ id }: CollectionDetailViewProps) 
     );
   }
 
-  const canEditCollection = detail.collection.user_id === currentUserId;
+  const canManageCollection = detail.collection.user_id === currentUserId;
   const coverImageUrl = detail.places[0]?.place.image_url ?? null;
 
   return (
@@ -320,9 +315,14 @@ export default function CollectionDetailView({ id }: CollectionDetailViewProps) 
 
         <div className="mt-6 flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
           <div className="max-w-3xl space-y-3">
-            <p className="text-lg font-medium text-[#4D5748]">
-              {detail.places.length}개의 장소
-            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="text-lg font-medium text-[#4D5748]">
+                {detail.places.length}개의 장소
+              </p>
+              <span className="rounded-full border border-[#E5E0D8] bg-[#FCFBF8] px-3 py-1 text-base font-medium text-[#6B6B68]">
+                {detail.collection.is_public ? "공개" : "나만 보기"}
+              </span>
+            </div>
             <h1 className="text-4xl font-semibold leading-tight tracking-normal text-[#3F3F3B] sm:text-5xl">
               {detail.collection.name}
             </h1>
@@ -335,7 +335,7 @@ export default function CollectionDetailView({ id }: CollectionDetailViewProps) 
             <span className="rounded-full bg-[#EAE3D8] px-4 py-2 text-base font-medium text-[#4D5748]">
               생성일 {formatDate(detail.collection.created_at)}
             </span>
-            {canEditCollection && (
+            {canManageCollection && (
               <>
                 <button
                   type="button"
@@ -389,16 +389,18 @@ export default function CollectionDetailView({ id }: CollectionDetailViewProps) 
                   추가일 {formatDate(item.addedAt)}
                 </span>
               </div>
-              <button
-                type="button"
-                onClick={() => handleRemovePlace(item.collectionPlaceId)}
-                disabled={removingPlaceId === item.collectionPlaceId}
-                className="inline-flex min-h-11 w-full items-center justify-center rounded-full border border-[#D9C3B6] bg-[#FFF8F4] px-5 py-2.5 text-base font-semibold text-[#7A4B3A] transition hover:border-[#B89282] hover:bg-[#F6EAE3] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-[#7A4B3A] disabled:cursor-not-allowed disabled:opacity-70"
-              >
-                {removingPlaceId === item.collectionPlaceId
-                  ? "제거하는 중..."
-                  : "컬렉션에서 제거"}
-              </button>
+              {canManageCollection && (
+                <button
+                  type="button"
+                  onClick={() => handleRemovePlace(item.collectionPlaceId)}
+                  disabled={removingPlaceId === item.collectionPlaceId}
+                  className="inline-flex min-h-11 w-full items-center justify-center rounded-full border border-[#D9C3B6] bg-[#FFF8F4] px-5 py-2.5 text-base font-semibold text-[#7A4B3A] transition hover:border-[#B89282] hover:bg-[#F6EAE3] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-[#7A4B3A] disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  {removingPlaceId === item.collectionPlaceId
+                    ? "제거하는 중..."
+                    : "컬렉션에서 제거"}
+                </button>
+              )}
             </div>
           ))}
         </div>
@@ -466,6 +468,23 @@ export default function CollectionDetailView({ id }: CollectionDetailViewProps) 
                 className="mt-2 w-full resize-none rounded-2xl border border-[#E5E0D8] bg-[#F8F6F2] px-4 py-3 text-lg leading-8 text-[#3F3F3B] outline-none transition focus:border-[#A8B2A1] focus:bg-[#FCFBF8]"
                 placeholder="이 컬렉션에 담긴 장소의 분위기"
               />
+            </label>
+
+            <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-2xl border border-[#E5E0D8] bg-[#F8F6F2] p-4 transition has-[:checked]:border-[#A8B2A1] has-[:checked]:bg-[#EAE3D8]/55">
+              <input
+                type="checkbox"
+                checked={editIsPublic}
+                onChange={(event) => setEditIsPublic(event.target.checked)}
+                className="mt-1 size-5 accent-[#4D5748]"
+              />
+              <span>
+                <span className="block text-base font-semibold text-[#4D5748]">
+                  공개 컬렉션으로 설정
+                </span>
+                <span className="mt-1 block text-base leading-7 text-[#6B6B68]">
+                  공개하면 다른 사람도 이 컬렉션을 볼 수 있어요.
+                </span>
+              </span>
             </label>
 
             {editError && (

@@ -71,6 +71,7 @@ export async function getCollections(
     user_id: row.user_id,
     name: row.name,
     description: row.description,
+    is_public: row.is_public,
     created_at: row.created_at,
     placeCount: row.collection_places[0]?.count ?? 0,
     coverImageUrl: coverImageByCollectionId.get(row.id) ?? null,

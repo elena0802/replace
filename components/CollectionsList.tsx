@@ -35,6 +35,7 @@ export default function CollectionsList() {
   const [userId, setUserId] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [isPublic, setIsPublic] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -122,6 +123,7 @@ export default function CollectionsList() {
         user_id: userId,
         name: trimmedName,
         description: trimmedDescription || null,
+        is_public: isPublic,
       });
 
       if (error) {
@@ -130,6 +132,7 @@ export default function CollectionsList() {
 
       setName("");
       setDescription("");
+      setIsPublic(false);
       setSuccessMessage("새 컬렉션을 만들었습니다.");
       await loadCollections();
     } catch (error) {
@@ -193,6 +196,23 @@ export default function CollectionsList() {
           />
         </label>
 
+        <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-2xl border border-[#E5E0D8] bg-[#F8F6F2] p-4 transition has-[:checked]:border-[#A8B2A1] has-[:checked]:bg-[#EAE3D8]/55">
+          <input
+            type="checkbox"
+            checked={isPublic}
+            onChange={(event) => setIsPublic(event.target.checked)}
+            className="mt-1 size-5 accent-[#4D5748]"
+          />
+          <span>
+            <span className="block text-base font-semibold text-[#4D5748]">
+              공개 컬렉션으로 설정
+            </span>
+            <span className="mt-1 block text-base leading-7 text-[#6B6B68]">
+              공개하면 다른 사람도 이 컬렉션을 볼 수 있어요.
+            </span>
+          </span>
+        </label>
+
         <button
           type="submit"
           disabled={isCreating}
@@ -245,9 +265,14 @@ export default function CollectionsList() {
               />
 
               <div className="mt-5 flex items-start justify-between gap-4">
-                <span className="rounded-full bg-[#EAE3D8] px-3 py-1 text-base font-medium text-[#4D5748]">
-                  {collection.placeCount}곳
-                </span>
+                <div className="flex flex-wrap gap-2">
+                  <span className="rounded-full bg-[#EAE3D8] px-3 py-1 text-base font-medium text-[#4D5748]">
+                    {collection.placeCount}곳
+                  </span>
+                  <span className="rounded-full border border-[#E5E0D8] bg-[#FCFBF8] px-3 py-1 text-base font-medium text-[#6B6B68]">
+                    {collection.is_public ? "공개" : "나만 보기"}
+                  </span>
+                </div>
                 <span className="text-base font-medium text-[#8A857D]">
                   {formatDate(collection.created_at)}
                 </span>
