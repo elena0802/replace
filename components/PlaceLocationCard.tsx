@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import DirectionsBottomSheet from "@/components/DirectionsBottomSheet";
 import PlaceMap from "@/components/PlaceMap";
 
 type PlaceLocationCardProps = {
+  name?: string;
   address?: string | null;
   latitude?: number | null;
   longitude?: number | null;
@@ -96,12 +98,23 @@ function CopyIcon() {
 }
 
 export default function PlaceLocationCard({
+  name,
   address,
   latitude = null,
   longitude = null,
 }: PlaceLocationCardProps) {
   const [isCopied, setIsCopied] = useState(false);
+  const [isDirectionsOpen, setIsDirectionsOpen] = useState(false);
   const trimmedAddress = address?.trim() ?? "";
+  const trimmedName = name?.trim() ?? "";
+  const hasDirectionsTarget = Boolean(
+    trimmedAddress ||
+      trimmedName ||
+      (typeof latitude === "number" &&
+        Number.isFinite(latitude) &&
+        typeof longitude === "number" &&
+        Number.isFinite(longitude)),
+  );
 
   useEffect(() => {
     if (!isCopied) {
@@ -155,11 +168,21 @@ export default function PlaceLocationCard({
 
       <button
         type="button"
-        onClick={() => console.log("TODO: directions")}
-        className="inline-flex min-h-11 w-full items-center justify-center rounded-full border border-[#D9D2C8] bg-transparent px-5 py-2.5 text-base font-medium text-[#4D5748] transition hover:border-[#A8B2A1] hover:bg-[#F8F6F2] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748]"
+        onClick={() => setIsDirectionsOpen(true)}
+        disabled={!hasDirectionsTarget}
+        className="inline-flex min-h-11 w-full items-center justify-center rounded-full border border-[#D9D2C8] bg-transparent px-5 py-2.5 text-base font-medium text-[#4D5748] transition hover:border-[#A8B2A1] hover:bg-[#F8F6F2] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748] disabled:cursor-not-allowed disabled:border-[#E5E0D8] disabled:text-[#A7A19A] disabled:hover:bg-transparent"
       >
         길찾기
       </button>
+
+      <DirectionsBottomSheet
+        isOpen={isDirectionsOpen}
+        onClose={() => setIsDirectionsOpen(false)}
+        name={name}
+        address={address}
+        latitude={latitude}
+        longitude={longitude}
+      />
     </section>
   );
 }

@@ -305,6 +305,7 @@ export default function PlaceDetail({ id }: PlaceDetailProps) {
             </section>
 
             <PlaceLocationCard
+              name={place.name}
               address={placeLocation.address}
               latitude={placeLocation.latitude}
               longitude={placeLocation.longitude}
