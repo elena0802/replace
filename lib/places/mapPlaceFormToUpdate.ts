@@ -7,8 +7,8 @@ export function mapPlaceFormToUpdate(
 ): PlaceUpdate {
   return {
     name: values.name.trim(),
-    category: values.category,
-    region: values.region.trim(),
+    category: values.category || "기타",
+    region: values.region.trim() || "위치 미정",
     memory: values.memory.trim(),
     visited_date: values.visitedDate || null,
     companion: values.companion || null,
