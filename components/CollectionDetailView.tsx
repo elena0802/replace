@@ -11,6 +11,7 @@ import {
   getCollectionDetail,
   type CollectionDetail,
 } from "@/lib/collections/getCollectionDetail";
+import { supabase } from "@/lib/supabase/client";
 
 type CollectionDetailViewProps = {
   id: string;
@@ -34,8 +35,10 @@ export default function CollectionDetailView({ id }: CollectionDetailViewProps) 
   const [detail, setDetail] = useState<CollectionDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+  const [actionError, setActionError] = useState("");
   const [requiresLogin, setRequiresLogin] = useState(false);
   const [isNotFound, setIsNotFound] = useState(false);
+  const [removingPlaceId, setRemovingPlaceId] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -70,6 +73,7 @@ export default function CollectionDetailView({ id }: CollectionDetailViewProps) 
 
         setDetail(nextDetail);
         setErrorMessage("");
+        setActionError("");
         setRequiresLogin(false);
         setIsNotFound(false);
       } catch (error) {
@@ -93,6 +97,45 @@ export default function CollectionDetailView({ id }: CollectionDetailViewProps) 
       isMounted = false;
     };
   }, [id]);
+
+  async function handleRemovePlace(collectionPlaceId: string) {
+    if (removingPlaceId) {
+      return;
+    }
+
+    setRemovingPlaceId(collectionPlaceId);
+    setActionError("");
+
+    try {
+      const { error } = await supabase
+        .from("collection_places")
+        .delete()
+        .eq("id", collectionPlaceId)
+        .eq("collection_id", id);
+
+      if (error) {
+        throw error;
+      }
+
+      setDetail((currentDetail) => {
+        if (!currentDetail) {
+          return currentDetail;
+        }
+
+        return {
+          collection: currentDetail.collection,
+          places: currentDetail.places.filter(
+            (item) => item.collectionPlaceId !== collectionPlaceId,
+          ),
+        };
+      });
+    } catch (error) {
+      console.error(error);
+      setActionError("컬렉션에서 장소를 제거하지 못했습니다.");
+    } finally {
+      setRemovingPlaceId(null);
+    }
+  }
 
   if (isLoading) {
     return <StatusMessage>컬렉션을 불러오는 중...</StatusMessage>;
@@ -146,21 +189,42 @@ export default function CollectionDetailView({ id }: CollectionDetailViewProps) 
         </div>
       </section>
 
+      {actionError && (
+        <StatusMessage tone="error" className="text-left">
+          {actionError}
+        </StatusMessage>
+      )}
+
       {detail.places.length === 0 ? (
         <EmptyState
-          title="아직 담긴 장소가 없어요."
-          description="장소 상세 페이지에서 컬렉션에 저장 버튼으로 장소를 추가해보세요."
+          title="아직 이 컬렉션에 담긴 장소가 없어요."
+          description="마음에 드는 장소를 컬렉션에 저장해보세요."
           actionHref="/explore"
-          actionLabel="장소 둘러보기"
+          actionLabel="둘러보러 가기"
         />
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {detail.places.map((item) => (
-            <div key={item.collectionPlaceId} className="relative h-full">
-              <PlaceCard place={item.place} />
-              <span className="absolute right-4 top-4 rounded-full bg-[#FCFBF8]/95 px-3 py-1 text-base font-medium text-[#4D5748] shadow-[0_8px_18px_rgba(77,87,72,0.08)]">
-                추가일 {formatDate(item.addedAt)}
-              </span>
+            <div
+              key={item.collectionPlaceId}
+              className="flex h-full flex-col gap-3"
+            >
+              <div className="relative flex-1">
+                <PlaceCard place={item.place} />
+                <span className="absolute right-4 top-4 rounded-full bg-[#FCFBF8]/95 px-3 py-1 text-base font-medium text-[#4D5748] shadow-[0_8px_18px_rgba(77,87,72,0.08)]">
+                  추가일 {formatDate(item.addedAt)}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleRemovePlace(item.collectionPlaceId)}
+                disabled={removingPlaceId === item.collectionPlaceId}
+                className="inline-flex min-h-11 w-full items-center justify-center rounded-full border border-[#D9C3B6] bg-[#FFF8F4] px-5 py-2.5 text-base font-semibold text-[#7A4B3A] transition hover:border-[#B89282] hover:bg-[#F6EAE3] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-[#7A4B3A] disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {removingPlaceId === item.collectionPlaceId
+                  ? "제거하는 중..."
+                  : "컬렉션에서 제거"}
+              </button>
             </div>
           ))}
         </div>
