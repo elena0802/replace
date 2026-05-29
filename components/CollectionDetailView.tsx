@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
 import EmptyState from "@/components/EmptyState";
 import PlaceCard from "@/components/PlaceCard";
@@ -32,6 +33,7 @@ function formatDate(value: string) {
 }
 
 export default function CollectionDetailView({ id }: CollectionDetailViewProps) {
+  const router = useRouter();
   const [detail, setDetail] = useState<CollectionDetail | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -43,6 +45,8 @@ export default function CollectionDetailView({ id }: CollectionDetailViewProps) 
   const [removingPlaceId, setRemovingPlaceId] = useState<string | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isSavingEdit, setIsSavingEdit] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isDeletingCollection, setIsDeletingCollection] = useState(false);
   const [editName, setEditName] = useState("");
   const [editDescription, setEditDescription] = useState("");
   const [editError, setEditError] = useState("");
@@ -165,6 +169,16 @@ export default function CollectionDetailView({ id }: CollectionDetailViewProps) 
     setIsEditOpen(true);
   }
 
+  function openDeleteModal() {
+    if (!detail || detail.collection.user_id !== currentUserId) {
+      return;
+    }
+
+    setActionError("");
+    setSuccessMessage("");
+    setIsDeleteOpen(true);
+  }
+
   async function handleSaveCollection(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -221,6 +235,36 @@ export default function CollectionDetailView({ id }: CollectionDetailViewProps) 
     }
   }
 
+  async function handleDeleteCollection() {
+    if (!detail || !currentUserId || isDeletingCollection) {
+      return;
+    }
+
+    setIsDeletingCollection(true);
+    setActionError("");
+    setSuccessMessage("");
+
+    try {
+      const { error } = await supabase
+        .from("collections")
+        .delete()
+        .eq("id", detail.collection.id)
+        .eq("user_id", currentUserId);
+
+      if (error) {
+        throw error;
+      }
+
+      router.push("/collections");
+    } catch (error) {
+      console.error(error);
+      setActionError("컬렉션을 삭제하지 못했어요. 잠시 후 다시 시도해주세요.");
+      setIsDeleteOpen(false);
+    } finally {
+      setIsDeletingCollection(false);
+    }
+  }
+
   if (isLoading) {
     return <StatusMessage>컬렉션을 불러오는 중...</StatusMessage>;
   }
@@ -274,13 +318,22 @@ export default function CollectionDetailView({ id }: CollectionDetailViewProps) 
               생성일 {formatDate(detail.collection.created_at)}
             </span>
             {canEditCollection && (
-              <button
-                type="button"
-                onClick={openEditModal}
-                className="inline-flex min-h-11 items-center justify-center rounded-full border border-[#D7DED0] bg-[#FCFBF8] px-5 py-2.5 text-base font-semibold text-[#4D5748] transition hover:bg-[#EAE3D8]/45 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-[#4D5748]"
-              >
-                수정
-              </button>
+              <>
+                <button
+                  type="button"
+                  onClick={openEditModal}
+                  className="inline-flex min-h-11 items-center justify-center rounded-full border border-[#D7DED0] bg-[#FCFBF8] px-5 py-2.5 text-base font-semibold text-[#4D5748] transition hover:bg-[#EAE3D8]/45 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-[#4D5748]"
+                >
+                  수정
+                </button>
+                <button
+                  type="button"
+                  onClick={openDeleteModal}
+                  className="inline-flex min-h-11 items-center justify-center rounded-full border border-[#D9C3B6] bg-[#FFF8F4] px-5 py-2.5 text-base font-semibold text-[#7A4B3A] transition hover:border-[#B89282] hover:bg-[#F6EAE3] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-[#7A4B3A]"
+                >
+                  컬렉션 삭제
+                </button>
+              </>
             )}
           </div>
         </div>
@@ -420,6 +473,60 @@ export default function CollectionDetailView({ id }: CollectionDetailViewProps) 
               </button>
             </div>
           </form>
+        </div>
+      )}
+
+      {isDeleteOpen && (
+        <div
+          className="fixed inset-0 z-30 flex items-end bg-[#3F3F3B]/35 px-4 py-4 sm:items-center sm:justify-center"
+          role="dialog"
+          aria-modal="true"
+          aria-label="컬렉션 삭제"
+        >
+          <div className="w-full max-w-md rounded-3xl border border-[#E5C8BA] bg-[#FCFBF8] p-5 shadow-[0_24px_70px_rgba(63,63,59,0.24)] sm:p-6">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-2xl font-semibold text-[#3F3F3B]">
+                  이 컬렉션을 삭제할까요?
+                </h2>
+                <p className="mt-3 text-lg leading-8 text-[#6B6B68]">
+                  컬렉션만 삭제되고, 장소 기록은 그대로 남아 있어요.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsDeleteOpen(false)}
+                disabled={isDeletingCollection}
+                className="inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-[#E5E0D8] text-xl font-semibold text-[#6B6B68] transition hover:bg-[#F8F6F2] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-[#4D5748] disabled:cursor-not-allowed disabled:opacity-70"
+                aria-label="닫기"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="mt-6 rounded-2xl bg-[#FFF8F4] px-4 py-4 text-base leading-7 text-[#7A4B3A]">
+              {detail.collection.name}
+            </div>
+
+            <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={() => setIsDeleteOpen(false)}
+                disabled={isDeletingCollection}
+                className="inline-flex min-h-12 items-center justify-center rounded-full border border-[#D7DED0] px-5 py-3 text-lg font-semibold text-[#4D5748] transition hover:bg-[#EAE3D8]/45 disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                취소
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteCollection}
+                disabled={isDeletingCollection}
+                className="inline-flex min-h-12 items-center justify-center rounded-full border border-[#D9C3B6] bg-[#FFF8F4] px-5 py-3 text-lg font-semibold text-[#7A4B3A] transition hover:border-[#B89282] hover:bg-[#F6EAE3] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#7A4B3A] disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {isDeletingCollection ? "삭제하는 중..." : "삭제하기"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
