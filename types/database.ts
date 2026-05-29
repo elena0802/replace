@@ -64,6 +64,42 @@ export type PlaceUpdate = {
   updated_at?: string;
 };
 
+export type PaymentRow = {
+  id: string;
+  user_id: string;
+  order_id: string;
+  payment_key: string | null;
+  amount: number;
+  status: string;
+  plan: string;
+  created_at: string;
+  approved_at: string | null;
+};
+
+export type PaymentInsert = {
+  id?: string;
+  user_id: string;
+  order_id: string;
+  payment_key?: string | null;
+  amount: number;
+  status?: string;
+  plan?: string;
+  created_at?: string;
+  approved_at?: string | null;
+};
+
+export type PaymentUpdate = {
+  id?: string;
+  user_id?: string;
+  order_id?: string;
+  payment_key?: string | null;
+  amount?: number;
+  status?: string;
+  plan?: string;
+  created_at?: string;
+  approved_at?: string | null;
+};
+
 export interface Database {
   public: {
     Tables: {
@@ -71,6 +107,12 @@ export interface Database {
         Row: PlaceRow;
         Insert: PlaceInsert;
         Update: PlaceUpdate;
+        Relationships: [];
+      };
+      payments: {
+        Row: PaymentRow;
+        Insert: PaymentInsert;
+        Update: PaymentUpdate;
         Relationships: [];
       };
     };

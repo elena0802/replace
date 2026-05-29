@@ -13,6 +13,7 @@ const navigation = [
   { name: "기록하기", href: "/places/new" },
   { name: "둘러보기", href: "/explore" },
   { name: "내 장소", href: "/my-places" },
+  { name: "요금제", href: "/pricing" },
 ];
 
 export default function RootLayout({
