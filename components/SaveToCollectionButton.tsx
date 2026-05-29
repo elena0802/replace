@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { User } from "@supabase/supabase-js";
 import { withTimeout } from "@/lib/async/withTimeout";
@@ -16,73 +17,114 @@ import {
 
 type SaveToCollectionButtonProps = {
   placeId: string;
-  onNotice?: (notice: CollectionSaveNotice | null) => void;
-};
-
-export type CollectionSaveNotice = {
-  tone: "info" | "error" | "success";
-  message: string;
 };
 
 export default function SaveToCollectionButton({
   placeId,
-  onNotice,
 }: SaveToCollectionButtonProps) {
+  const router = useRouter();
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [collections, setCollections] = useState<CollectionListItem[]>([]);
   const [selectedCollectionId, setSelectedCollectionId] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-
-  function publishNotice(notice: CollectionSaveNotice | null) {
-    onNotice?.(notice);
-  }
+  const [isSaved, setIsSaved] = useState(false);
+  const [hasLoadedCollections, setHasLoadedCollections] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
 
-    async function loadUser() {
+    async function loadInitialState() {
       try {
         const user = await getSessionUser();
 
+        if (!isMounted) {
+          return;
+        }
+
+        setCurrentUser(user);
+
+        if (!user) {
+          setCollections([]);
+          setIsSaved(false);
+          setHasLoadedCollections(false);
+          return;
+        }
+
+        const nextCollections = await withTimeout(
+          getCollections(user.id),
+          6000,
+          "컬렉션 목록 조회 시간이 초과되었습니다.",
+        );
+
+        if (!isMounted) {
+          return;
+        }
+
+        setCollections(nextCollections);
+        setHasLoadedCollections(true);
+        setSelectedCollectionId(
+          (current) => current || nextCollections[0]?.id || "",
+        );
+
+        if (nextCollections.length === 0) {
+          setIsSaved(false);
+          return;
+        }
+
+        const collectionIds = nextCollections.map((collection) => collection.id);
+        const { data, error } = await supabase
+          .from("collection_places")
+          .select("id")
+          .eq("place_id", placeId)
+          .in("collection_id", collectionIds)
+          .limit(1)
+          .maybeSingle();
+
+        if (error) {
+          throw error;
+        }
+
         if (isMounted) {
-          setCurrentUser(user);
+          setIsSaved(Boolean(data));
         }
       } catch (error) {
         console.error(error);
+
+        if (isMounted) {
+          setHasLoadedCollections(true);
+          setIsSaved(false);
+        }
       }
     }
 
-    loadUser();
+    loadInitialState();
 
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [placeId]);
 
   async function openCollectionPicker() {
     const environment = getSupabaseEnvironmentStatus();
 
     if (!environment.configured) {
-      publishNotice({
-        tone: "error",
-        message: "컬렉션 기능 설정이 필요합니다.",
-      });
       return;
     }
 
     if (!currentUser) {
-      publishNotice({
-        tone: "info",
-        message: "로그인이 필요합니다.",
-      });
+      router.push("/login");
       return;
     }
 
     setIsOpen(true);
+
+    if (hasLoadedCollections) {
+      return;
+    }
+
     setIsLoading(true);
-    publishNotice(null);
 
     try {
       const nextCollections = await withTimeout(
@@ -91,15 +133,13 @@ export default function SaveToCollectionButton({
         "컬렉션 목록 조회 시간이 초과되었습니다.",
       );
       setCollections(nextCollections);
+      setHasLoadedCollections(true);
       setSelectedCollectionId(
         (current) => current || nextCollections[0]?.id || "",
       );
     } catch (error) {
       console.error(error);
-      publishNotice({
-        tone: "error",
-        message: "컬렉션 목록을 불러오지 못했습니다.",
-      });
+      setHasLoadedCollections(true);
     } finally {
       setIsLoading(false);
     }
@@ -111,7 +151,6 @@ export default function SaveToCollectionButton({
     }
 
     setIsSaving(true);
-    publishNotice(null);
 
     try {
       const { error } = await supabase.from("collection_places").insert({
@@ -123,33 +162,33 @@ export default function SaveToCollectionButton({
         throw error;
       }
 
-      publishNotice({
-        tone: "success",
-        message:
-          error?.code === "23505"
-            ? "이미 이 컬렉션에 담긴 장소입니다."
-            : "컬렉션에 저장했습니다.",
-      });
+      setIsSaved(true);
       setIsOpen(false);
     } catch (error) {
       console.error(error);
-      publishNotice({
-        tone: "error",
-        message: "컬렉션에 저장하지 못했습니다.",
-      });
     } finally {
       setIsSaving(false);
     }
   }
+
+  const buttonLabel = isSaving
+    ? "저장 중..."
+    : isSaved
+      ? "컬렉션에 저장됨"
+      : "컬렉션에 저장";
+
+  const buttonClassName = isSaved
+    ? "inline-flex min-h-12 min-w-44 items-center justify-center rounded-full border border-[#A8B2A1] bg-[#EAE3D8] px-5 py-3 text-lg font-semibold text-[#3F4A3D] transition hover:bg-[#DDE6D8] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748]"
+    : "inline-flex min-h-12 min-w-44 items-center justify-center rounded-full border border-[#D7DED0] bg-[#FCFBF8] px-5 py-3 text-lg font-semibold text-[#4D5748] transition hover:bg-[#EAE3D8]/45 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748]";
 
   return (
     <>
       <button
         type="button"
         onClick={openCollectionPicker}
-        className="inline-flex min-h-12 min-w-36 items-center justify-center rounded-full border border-[#D7DED0] bg-[#FCFBF8] px-5 py-3 text-lg font-semibold text-[#4D5748] transition hover:bg-[#EAE3D8]/45 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748]"
+        className={buttonClassName}
       >
-        컬렉션에 저장
+        {buttonLabel}
       </button>
 
       {isOpen && (
@@ -237,10 +276,12 @@ export default function SaveToCollectionButton({
               <button
                 type="button"
                 onClick={handleSaveToCollection}
-                disabled={collections.length === 0 || !selectedCollectionId || isSaving}
+                disabled={
+                  collections.length === 0 || !selectedCollectionId || isSaving
+                }
                 className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#A8B2A1] px-5 py-3 text-lg font-semibold text-[#2F362D] shadow-[0_10px_24px_rgba(77,87,72,0.14)] transition hover:bg-[#4D5748] hover:text-white disabled:cursor-not-allowed disabled:opacity-70"
               >
-                {isSaving ? "저장하는 중..." : "저장"}
+                {isSaving ? "저장 중..." : "저장"}
               </button>
             </div>
           </div>

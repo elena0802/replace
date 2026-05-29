@@ -7,9 +7,7 @@ import EmptyState from "@/components/EmptyState";
 import KakaoShareButton from "@/components/KakaoShareButton";
 import PlaceLocationCard from "@/components/PlaceLocationCard";
 import SavePlaceButton from "@/components/SavePlaceButton";
-import SaveToCollectionButton, {
-  type CollectionSaveNotice,
-} from "@/components/SaveToCollectionButton";
+import SaveToCollectionButton from "@/components/SaveToCollectionButton";
 import StatusMessage from "@/components/StatusMessage";
 import { getCurrentUser } from "@/lib/auth/getCurrentUser";
 import { deletePlace } from "@/lib/places/deletePlace";
@@ -87,8 +85,6 @@ export default function PlaceDetail({ id }: PlaceDetailProps) {
   const [isNotFound, setIsNotFound] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [canManagePlace, setCanManagePlace] = useState(false);
-  const [collectionNotice, setCollectionNotice] =
-    useState<CollectionSaveNotice | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -220,10 +216,7 @@ export default function PlaceDetail({ id }: PlaceDetailProps) {
         <div className="flex flex-col items-start gap-2 sm:items-end">
           <div className="flex flex-wrap items-center gap-3 sm:justify-end">
             {place.is_public && <SavePlaceButton placeId={place.id} />}
-            <SaveToCollectionButton
-              placeId={place.id}
-              onNotice={setCollectionNotice}
-            />
+            <SaveToCollectionButton placeId={place.id} />
             <KakaoShareButton place={place} onError={setActionError} />
             {canManagePlace && (
               <>
@@ -244,26 +237,6 @@ export default function PlaceDetail({ id }: PlaceDetailProps) {
               </>
             )}
           </div>
-          {collectionNotice && (
-            <p
-              aria-live="polite"
-              className={
-                collectionNotice.tone === "error"
-                  ? "w-full text-sm font-medium leading-6 text-[#7A4B3A] sm:text-right"
-                  : "w-full text-sm font-medium leading-6 text-[#6B6B68] sm:text-right"
-              }
-            >
-              {collectionNotice.message}
-              {collectionNotice.message === "로그인이 필요합니다." && (
-                <>
-                  {" "}
-                  <Link className="underline underline-offset-4" href="/login">
-                    로그인
-                  </Link>
-                </>
-              )}
-            </p>
-          )}
         </div>
       </div>
 
