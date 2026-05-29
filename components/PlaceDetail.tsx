@@ -7,6 +7,9 @@ import EmptyState from "@/components/EmptyState";
 import KakaoShareButton from "@/components/KakaoShareButton";
 import PlaceLocationCard from "@/components/PlaceLocationCard";
 import SavePlaceButton from "@/components/SavePlaceButton";
+import SaveToCollectionButton, {
+  type CollectionSaveNotice,
+} from "@/components/SaveToCollectionButton";
 import StatusMessage from "@/components/StatusMessage";
 import { getCurrentUser } from "@/lib/auth/getCurrentUser";
 import { deletePlace } from "@/lib/places/deletePlace";
@@ -84,6 +87,8 @@ export default function PlaceDetail({ id }: PlaceDetailProps) {
   const [isNotFound, setIsNotFound] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [canManagePlace, setCanManagePlace] = useState(false);
+  const [collectionNotice, setCollectionNotice] =
+    useState<CollectionSaveNotice | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -212,26 +217,52 @@ export default function PlaceDetail({ id }: PlaceDetailProps) {
           </Link>
         </div>
 
-        <div className="flex flex-wrap gap-3">
-          {place.is_public && <SavePlaceButton placeId={place.id} />}
-          <KakaoShareButton place={place} onError={setActionError} />
-          {canManagePlace && (
-            <>
-              <Link
-                href={`/places/${place.id}/edit`}
-                className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#A8B2A1] px-5 py-3 text-lg font-semibold text-[#2F362D] shadow-[0_8px_18px_rgba(77,87,72,0.12)] transition hover:bg-[#4D5748] hover:text-white focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748]"
-              >
-                수정하기
-              </Link>
-              <button
-                type="button"
-                onClick={handleDelete}
-                disabled={isDeleting}
-                className="inline-flex min-h-12 items-center justify-center rounded-full border border-[#D9C3B6] bg-[#FFF8F4] px-5 py-3 text-lg font-semibold text-[#7A4B3A] transition hover:border-[#B89282] hover:bg-[#F6EAE3] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#7A4B3A] disabled:cursor-not-allowed disabled:opacity-70"
-              >
-                {isDeleting ? "삭제하는 중..." : "삭제하기"}
-              </button>
-            </>
+        <div className="flex flex-col items-start gap-2 sm:items-end">
+          <div className="flex flex-wrap items-center gap-3 sm:justify-end">
+            {place.is_public && <SavePlaceButton placeId={place.id} />}
+            <SaveToCollectionButton
+              placeId={place.id}
+              onNotice={setCollectionNotice}
+            />
+            <KakaoShareButton place={place} onError={setActionError} />
+            {canManagePlace && (
+              <>
+                <Link
+                  href={`/places/${place.id}/edit`}
+                  className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#A8B2A1] px-5 py-3 text-lg font-semibold text-[#2F362D] shadow-[0_8px_18px_rgba(77,87,72,0.12)] transition hover:bg-[#4D5748] hover:text-white focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748]"
+                >
+                  수정하기
+                </Link>
+                <button
+                  type="button"
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                  className="inline-flex min-h-12 items-center justify-center rounded-full border border-[#D9C3B6] bg-[#FFF8F4] px-5 py-3 text-lg font-semibold text-[#7A4B3A] transition hover:border-[#B89282] hover:bg-[#F6EAE3] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#7A4B3A] disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  {isDeleting ? "삭제하는 중..." : "삭제하기"}
+                </button>
+              </>
+            )}
+          </div>
+          {collectionNotice && (
+            <p
+              aria-live="polite"
+              className={
+                collectionNotice.tone === "error"
+                  ? "w-full text-sm font-medium leading-6 text-[#7A4B3A] sm:text-right"
+                  : "w-full text-sm font-medium leading-6 text-[#6B6B68] sm:text-right"
+              }
+            >
+              {collectionNotice.message}
+              {collectionNotice.message === "로그인이 필요합니다." && (
+                <>
+                  {" "}
+                  <Link className="underline underline-offset-4" href="/login">
+                    로그인
+                  </Link>
+                </>
+              )}
+            </p>
           )}
         </div>
       </div>

@@ -121,6 +121,51 @@ export type SavedPlaceUpdate = {
   created_at?: string;
 };
 
+export type CollectionRow = {
+  id: string;
+  user_id: string;
+  name: string;
+  description: string | null;
+  created_at: string;
+};
+
+export type CollectionInsert = {
+  id?: string;
+  user_id: string;
+  name: string;
+  description?: string | null;
+  created_at?: string;
+};
+
+export type CollectionUpdate = {
+  id?: string;
+  user_id?: string;
+  name?: string;
+  description?: string | null;
+  created_at?: string;
+};
+
+export type CollectionPlaceRow = {
+  id: string;
+  collection_id: string;
+  place_id: string;
+  created_at: string;
+};
+
+export type CollectionPlaceInsert = {
+  id?: string;
+  collection_id: string;
+  place_id: string;
+  created_at?: string;
+};
+
+export type CollectionPlaceUpdate = {
+  id?: string;
+  collection_id?: string;
+  place_id?: string;
+  created_at?: string;
+};
+
 export interface Database {
   public: {
     Tables: {
@@ -140,6 +185,18 @@ export interface Database {
         Row: SavedPlaceRow;
         Insert: SavedPlaceInsert;
         Update: SavedPlaceUpdate;
+        Relationships: [];
+      };
+      collections: {
+        Row: CollectionRow;
+        Insert: CollectionInsert;
+        Update: CollectionUpdate;
+        Relationships: [];
+      };
+      collection_places: {
+        Row: CollectionPlaceRow;
+        Insert: CollectionPlaceInsert;
+        Update: CollectionPlaceUpdate;
         Relationships: [];
       };
     };
