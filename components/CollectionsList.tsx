@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
+import CollectionCoverImage from "@/components/CollectionCoverImage";
 import EmptyState from "@/components/EmptyState";
 import StatusMessage from "@/components/StatusMessage";
 import { withTimeout } from "@/lib/async/withTimeout";
@@ -226,9 +227,24 @@ export default function CollectionsList() {
             <Link
               key={collection.id}
               href={`/collections/${collection.id}`}
-              className="group flex min-h-56 flex-col rounded-3xl border border-[#E5E0D8] bg-[#FCFBF8] p-5 shadow-[0_14px_34px_rgba(77,87,72,0.06)] transition hover:-translate-y-0.5 hover:border-[#A8B2A1] hover:shadow-[0_18px_44px_rgba(77,87,72,0.1)] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748]"
+              className="group flex h-full flex-col rounded-3xl border border-[#E5E0D8] bg-[#FCFBF8] p-4 shadow-[0_14px_34px_rgba(77,87,72,0.06)] transition hover:-translate-y-0.5 hover:border-[#A8B2A1] hover:shadow-[0_18px_44px_rgba(77,87,72,0.1)] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748]"
             >
-              <div className="flex items-start justify-between gap-4">
+              <CollectionCoverImage
+                imageUrl={collection.coverImageUrl}
+                title={collection.name}
+                placeholderTitle={
+                  collection.placeCount === 0
+                    ? "아직 담긴 장소가 없어요"
+                    : "커버 이미지가 없어요"
+                }
+                placeholderDescription={
+                  collection.placeCount === 0
+                    ? "장소를 담으면 커버가 채워집니다"
+                    : "이미지가 있는 장소를 담으면 커버가 채워집니다"
+                }
+              />
+
+              <div className="mt-5 flex items-start justify-between gap-4">
                 <span className="rounded-full bg-[#EAE3D8] px-3 py-1 text-base font-medium text-[#4D5748]">
                   {collection.placeCount}곳
                 </span>
@@ -236,7 +252,7 @@ export default function CollectionsList() {
                   {formatDate(collection.created_at)}
                 </span>
               </div>
-              <div className="mt-7 space-y-3">
+              <div className="mt-5 space-y-3">
                 <h3 className="text-3xl font-semibold leading-tight tracking-normal text-[#3F3F3B]">
                   {collection.name}
                 </h3>

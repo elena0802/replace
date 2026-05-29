@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
+import CollectionCoverImage from "@/components/CollectionCoverImage";
 import EmptyState from "@/components/EmptyState";
 import PlaceCard from "@/components/PlaceCard";
 import StatusMessage from "@/components/StatusMessage";
@@ -296,11 +297,28 @@ export default function CollectionDetailView({ id }: CollectionDetailViewProps) 
   }
 
   const canEditCollection = detail.collection.user_id === currentUserId;
+  const coverImageUrl = detail.places[0]?.place.image_url ?? null;
 
   return (
     <div className="space-y-8">
       <section className="rounded-3xl border border-[#E5E0D8] bg-[#FCFBF8] p-5 shadow-[0_14px_34px_rgba(77,87,72,0.06)] sm:p-7">
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+        <CollectionCoverImage
+          imageUrl={coverImageUrl}
+          title={detail.collection.name}
+          className="shadow-[0_12px_30px_rgba(77,87,72,0.06)]"
+          placeholderTitle={
+            detail.places.length === 0
+              ? "아직 담긴 장소가 없어요"
+              : "커버 이미지가 없어요"
+          }
+          placeholderDescription={
+            detail.places.length === 0
+              ? "마음에 드는 장소를 컬렉션에 저장해보세요"
+              : "이미지가 있는 장소를 담으면 커버가 채워집니다"
+          }
+        />
+
+        <div className="mt-6 flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
           <div className="max-w-3xl space-y-3">
             <p className="text-lg font-medium text-[#4D5748]">
               {detail.places.length}개의 장소
