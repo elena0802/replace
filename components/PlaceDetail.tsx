@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import EmptyState from "@/components/EmptyState";
 import KakaoShareButton from "@/components/KakaoShareButton";
 import PlaceLocationCard from "@/components/PlaceLocationCard";
+import SavePlaceButton from "@/components/SavePlaceButton";
 import StatusMessage from "@/components/StatusMessage";
 import { getCurrentUser } from "@/lib/auth/getCurrentUser";
 import { deletePlace } from "@/lib/places/deletePlace";
@@ -112,7 +113,9 @@ export default function PlaceDetail({ id }: PlaceDetailProps) {
         });
 
         setPlace(nextPlace);
-        setCanManagePlace(Boolean(currentUser && nextPlace.user_id === currentUser.id));
+        setCanManagePlace(
+          Boolean(currentUser && nextPlace.user_id === currentUser.id),
+        );
         setErrorMessage("");
         setIsNotFound(false);
       } catch (error) {
@@ -210,6 +213,7 @@ export default function PlaceDetail({ id }: PlaceDetailProps) {
         </div>
 
         <div className="flex flex-wrap gap-3">
+          {place.is_public && <SavePlaceButton placeId={place.id} />}
           <KakaoShareButton place={place} onError={setActionError} />
           {canManagePlace && (
             <>
