@@ -3,8 +3,15 @@ import { NextRequest, NextResponse } from "next/server";
 const openAIResponsesUrl = "https://api.openai.com/v1/responses";
 const defaultModel = process.env.OPENAI_MODEL ?? "gpt-4.1-mini";
 const fallbackErrorMessage =
-  "AI 기록을 불러오지 못했어요. 잠시 후 다시 시도해주세요.";
+  "지금은 기록을 다듬지 못했어요. 잠시 후 다시 시도해주세요.";
 const inputRequiredMessage = "장소명과 한 줄 기록을 먼저 입력해주세요.";
+const shortMemoMessage =
+  "조금만 더 적어주시면 자연스럽게 다듬을 수 있어요.";
+const minimumMemoLength = 5;
+const maximumMemoLength = 500;
+const maximumPlaceNameLength = 120;
+const maximumCategoryLength = 80;
+const maximumAddressLength = 200;
 
 const systemPrompt = [
   "너는 Re:Place의 기록 도우미다.",
@@ -36,6 +43,10 @@ type RecordHelperRequestBody = {
 
 function getText(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
+}
+
+function getLimitedText(value: unknown, maximumLength: number) {
+  return getText(value).slice(0, maximumLength);
 }
 
 function getRecord(value: unknown): Record<string, unknown> | null {
@@ -139,18 +150,26 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: inputRequiredMessage }, { status: 400 });
   }
 
-  const placeName = getText(body.placeName);
-  const memo = getText(body.memo);
-  const category = getText(body.category);
-  const address = getText(body.address);
+  const placeName = getLimitedText(body.placeName, maximumPlaceNameLength);
+  const memo = getLimitedText(body.memo, maximumMemoLength);
+  const category = getLimitedText(body.category, maximumCategoryLength);
+  const address = getLimitedText(body.address, maximumAddressLength);
 
   if (!placeName || !memo) {
     return NextResponse.json({ error: inputRequiredMessage }, { status: 400 });
   }
 
+  if (memo.length < minimumMemoLength) {
+    return NextResponse.json({ error: shortMemoMessage }, { status: 400 });
+  }
+
   const apiKey = process.env.OPENAI_API_KEY;
 
   if (!apiKey) {
+    console.error("[AI Record Helper]", {
+      reason: "OPENAI_API_KEY is not configured.",
+    });
+
     return NextResponse.json(
       { error: fallbackErrorMessage },
       { status: 500 },
@@ -204,7 +223,9 @@ export async function POST(request: NextRequest) {
     const suggestion = extractSuggestion(data);
 
     if (!suggestion) {
-      console.error("OpenAI record helper returned an empty suggestion.");
+      console.error("[AI Record Helper]", {
+        reason: "OpenAI returned an empty suggestion.",
+      });
 
       return NextResponse.json(
         { error: fallbackErrorMessage },
@@ -214,7 +235,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ suggestion });
   } catch (error) {
-    console.error("OpenAI record helper request failed:", error);
+    console.error("[AI Record Helper]", {
+      error,
+      reason: "OpenAI request failed.",
+    });
 
     return NextResponse.json(
       { error: fallbackErrorMessage },
