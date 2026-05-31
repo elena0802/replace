@@ -5,10 +5,12 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import EmptyState from "@/components/EmptyState";
 import KakaoShareButton from "@/components/KakaoShareButton";
+import FeaturedInSecondSeason from "@/components/place-detail/FeaturedInSecondSeason";
 import PlaceLocationCard from "@/components/PlaceLocationCard";
 import SavePlaceButton from "@/components/SavePlaceButton";
 import SaveToCollectionButton from "@/components/SaveToCollectionButton";
 import StatusMessage from "@/components/StatusMessage";
+import { placeEssayRelations } from "@/data/placeEssayRelations";
 import { getCurrentUser } from "@/lib/auth/getCurrentUser";
 import { deletePlace } from "@/lib/places/deletePlace";
 import { getPlaceById } from "@/lib/places/getPlaceById";
@@ -194,6 +196,7 @@ export default function PlaceDetail({ id }: PlaceDetailProps) {
   }
 
   const placeLocation = getPlaceLocationData(place);
+  const relatedEssay = placeEssayRelations[place.id];
 
   return (
     <div className="mx-auto w-full max-w-6xl px-5 py-12 lg:px-8 lg:py-16">
@@ -336,6 +339,8 @@ export default function PlaceDetail({ id }: PlaceDetailProps) {
             </div>
           </aside>
         </div>
+
+        {relatedEssay ? <FeaturedInSecondSeason essay={relatedEssay} /> : null}
       </article>
     </div>
   );
