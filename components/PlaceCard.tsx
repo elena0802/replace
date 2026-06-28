@@ -1,49 +1,23 @@
 import Link from "next/link";
-import type { Place } from "@/lib/mockPlaces";
 import type { PlaceRow } from "@/types/database";
 
 type PlaceCardProps = {
-  place: Place | PlaceRow;
+  place: PlaceRow;
   href?: string | null;
 };
 
-function normalizePlace(place: Place | PlaceRow) {
-  if ("imageUrl" in place) {
-    return {
-      id: place.id,
-      name: place.name,
-      category: place.category,
-      region: place.region,
-      imageUrl: place.imageUrl,
-      memory: place.shortReview,
-      revisitLevel: place.revisitLevel,
-    };
-  }
-
-  return {
-    id: place.id,
-    name: place.name,
-    category: place.category,
-    region: place.region,
-    imageUrl: place.image_url,
-    memory: place.memory,
-    revisitLevel: place.revisit_level,
-  };
-}
-
 export default function PlaceCard({ place, href }: PlaceCardProps) {
-  const normalizedPlace = normalizePlace(place);
-  const cardHref = href === undefined ? `/places/${normalizedPlace.id}` : href;
+  const cardHref = href === undefined ? `/places/${place.id}` : href;
 
   const cardContent = (
     <>
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-[color:var(--color-accent)]">
-        {normalizedPlace.imageUrl ? (
+        {place.image_url ? (
           <div
             className="h-full w-full bg-cover bg-center transition duration-300 group-hover:scale-105"
             role="img"
-            aria-label={`${normalizedPlace.name} 사진`}
-            style={{ backgroundImage: `url("${normalizedPlace.imageUrl}")` }}
+            aria-label={`${place.name} 사진`}
+            style={{ backgroundImage: `url("${place.image_url}")` }}
           />
         ) : (
           <div className="flex h-full w-full flex-col items-center justify-center gap-2 px-6 text-center">
@@ -59,24 +33,20 @@ export default function PlaceCard({ place, href }: PlaceCardProps) {
       <div className="flex flex-1 flex-col gap-5 p-5 sm:p-6">
         <div className="flex flex-wrap items-center gap-2 text-base font-medium">
           <span className="rounded-full bg-[color:var(--color-accent)] px-3 py-1 text-link">
-            {normalizedPlace.category}
+            {place.category}
           </span>
-          <span className="text-stone">{normalizedPlace.region}</span>
+          <span className="text-stone">{place.region}</span>
         </div>
         <div className="space-y-2">
           <h3 className="text-2xl font-semibold tracking-normal text-ink">
-            {normalizedPlace.name}
+            {place.name}
           </h3>
-          <p className="text-lg leading-8 text-stone">
-            {normalizedPlace.memory}
-          </p>
+          <p className="text-lg leading-8 text-stone">{place.memory}</p>
         </div>
         <div className="mt-auto border-t border-border-muted pt-4">
-          <p className="text-base font-medium text-stone">
-            다시 가고 싶은 마음
-          </p>
+          <p className="text-base font-medium text-stone">다시 가고 싶은 마음</p>
           <p className="mt-1 text-lg font-semibold text-link">
-            {normalizedPlace.revisitLevel}
+            {place.revisit_level}
           </p>
         </div>
       </div>
@@ -94,7 +64,7 @@ export default function PlaceCard({ place, href }: PlaceCardProps) {
     <Link
       href={cardHref}
       className={className}
-      aria-label={`${normalizedPlace.name} 상세 보기`}
+      aria-label={`${place.name} 상세 보기`}
     >
       {cardContent}
     </Link>
