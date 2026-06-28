@@ -11,14 +11,14 @@ export default function StatusMessage({
 }: StatusMessageProps) {
   const toneClass =
     tone === "error"
-      ? "border-[#E5C8BA] bg-[#FFF8F4] text-[#7A4B3A]"
+      ? "border-danger-border bg-danger-surface text-danger"
       : tone === "success"
-        ? "border-[#A8B2A1] bg-[#A8B2A1]/20 text-[#4D5748]"
-        : "border-[#E5E0D8] bg-[#FCFBF8] text-[#4D5748]";
+        ? "border-[color:var(--color-success-border)] bg-[color:var(--color-success-surface)] text-link"
+        : "border-default bg-surface text-link";
 
   return (
     <div
-      className={`rounded-3xl border px-5 py-8 text-center text-lg font-semibold leading-8 shadow-[0_14px_34px_rgba(77,87,72,0.06)] ${toneClass} ${className}`}
+      className={`rounded-xl border px-5 py-8 text-center text-lg font-semibold leading-8 shadow-card ${toneClass} ${className}`}
       role={tone === "loading" ? "status" : "alert"}
     >
       {children}

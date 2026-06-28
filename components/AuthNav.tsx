@@ -7,7 +7,7 @@ import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase/client";
 
 const authButtonClass =
-  "inline-flex min-h-9 shrink-0 items-center justify-center rounded-full border border-black/[0.1] bg-transparent px-3.5 py-1.5 text-base font-medium text-[#4D5748] transition hover:bg-[#EAE3D8]/45 hover:opacity-85 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-[#4D5748]";
+  "inline-flex min-h-9 shrink-0 items-center justify-center rounded-full border border-default/30 bg-transparent px-3.5 py-1.5 text-base font-medium text-link transition hover:bg-[color:var(--color-accent-subtle)] hover:opacity-85 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-brand-hover";
 
 export default function AuthNav() {
   const router = useRouter();
