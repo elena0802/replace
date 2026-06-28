@@ -1,21 +1,210 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f7f5ef;
-  --foreground: #3f3f3b;
-  --card: #fcfbf8;
-  --soft-beige: #eae3d8;
-  --sage-green: #a8b2a1;
-  --deep-olive: #4d5748;
-  --text-primary: #3f3f3b;
-  --text-secondary: #6b6b68;
-  --border: #e5e0d8;
-  --divider: #efeae2;
+  /* -------------------------------------------------------------------------
+     Background
+     ------------------------------------------------------------------------- */
+  --color-bg-page: #f7f5ef;
+  --color-bg-subtle: #f8f6f2;
+  --color-bg-tint: #eee8de;
+
+  /* -------------------------------------------------------------------------
+     Surface
+     ------------------------------------------------------------------------- */
+  --color-surface-default: #fcfbf8;
+  --color-surface-raised: #fcfbf8;
+  --color-surface-overlay: rgba(252, 251, 248, 0.92);
+  --color-surface-scrim: rgba(47, 54, 45, 0.4);
+
+  /* -------------------------------------------------------------------------
+     Brand / Primary action
+     ------------------------------------------------------------------------- */
+  --color-primary: #87977f;
+  --color-primary-hover: #4d5748;
+  --color-primary-foreground: #fcfbf8;
+  --color-primary-muted: #a8b2a1;
+
+  /* -------------------------------------------------------------------------
+     Secondary action
+     ------------------------------------------------------------------------- */
+  --color-secondary: #a8b2a1;
+  --color-secondary-hover: #4d5748;
+  --color-secondary-foreground: #2f362d;
+  --color-secondary-foreground-inverse: #fcfbf8;
+
+  /* -------------------------------------------------------------------------
+     Accent (taxonomy chips, highlights)
+     ------------------------------------------------------------------------- */
+  --color-accent: #eae3d8;
+  --color-accent-foreground: #4d5748;
+  --color-accent-subtle: rgba(234, 227, 216, 0.55);
+
+  /* -------------------------------------------------------------------------
+     Text
+     ------------------------------------------------------------------------- */
+  --color-text-primary: #3f3f3b;
+  --color-text-secondary: #6b6b68;
+  --color-text-tertiary: #8a857d;
+  --color-text-inverse: #fcfbf8;
+  --color-text-brand: #4d5748;
+
+  /* -------------------------------------------------------------------------
+     Border
+     ------------------------------------------------------------------------- */
+  --color-border-default: #e5e0d8;
+  --color-border-subtle: #efeae2;
+  --color-border-strong: #d9d2c8;
+  --color-border-focus: #a8b2a1;
+  --color-border-interactive: #a8b2a1;
+
+  /* -------------------------------------------------------------------------
+     Feedback — Success
+     ------------------------------------------------------------------------- */
+  --color-success: #4d5748;
+  --color-success-surface: rgba(168, 178, 161, 0.2);
+  --color-success-border: #a8b2a1;
+
+  /* -------------------------------------------------------------------------
+     Feedback — Warning
+     ------------------------------------------------------------------------- */
+  --color-warning: #8a6b3a;
+  --color-warning-surface: #fbf6ee;
+  --color-warning-border: #e8d5b0;
+
+  /* -------------------------------------------------------------------------
+     Feedback — Error / Danger
+     ------------------------------------------------------------------------- */
+  --color-error: #7a4b3a;
+  --color-error-surface: #fff8f4;
+  --color-error-border: #e5c8ba;
+  --color-error-hover-border: #b89282;
+
+  /* -------------------------------------------------------------------------
+     Overlay
+     ------------------------------------------------------------------------- */
+  --color-overlay-scrim: var(--color-surface-scrim);
+  --color-overlay-panel: var(--color-surface-overlay);
+
+  /* -------------------------------------------------------------------------
+     Radius
+     ------------------------------------------------------------------------- */
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* -------------------------------------------------------------------------
+     Shadow
+     ------------------------------------------------------------------------- */
+  --shadow-none: none;
+  --shadow-sm: 0 4px 12px rgba(47, 54, 45, 0.06);
+  --shadow-md: 0 8px 24px rgba(47, 54, 45, 0.08);
+  --shadow-lg: 0 16px 40px rgba(47, 54, 45, 0.1);
+  --shadow-xl: 0 24px 64px rgba(47, 54, 45, 0.14);
+  --shadow-card: var(--shadow-md);
+  --shadow-floating: var(--shadow-lg);
+
+  /* -------------------------------------------------------------------------
+     Motion
+     ------------------------------------------------------------------------- */
+  --motion-fast: 120ms;
+  --motion-base: 200ms;
+  --motion-slow: 320ms;
+  --motion-emphasis: 400ms;
+  --motion-ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-ease-emphasis: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* -------------------------------------------------------------------------
+     Focus ring
+     ------------------------------------------------------------------------- */
+  --focus-ring-color: var(--color-primary-hover);
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 4px;
+  --focus-ring-input: rgba(168, 178, 161, 0.25);
+
+  /* -------------------------------------------------------------------------
+     Legacy aliases (backwards compatibility)
+     ------------------------------------------------------------------------- */
+  --background: var(--color-bg-page);
+  --foreground: var(--color-text-primary);
+  --card: var(--color-surface-default);
+  --soft-beige: var(--color-accent);
+  --sage-green: var(--color-secondary);
+  --deep-olive: var(--color-primary-hover);
+  --text-primary: var(--color-text-primary);
+  --text-secondary: var(--color-text-secondary);
+  --border: var(--color-border-default);
+  --divider: var(--color-border-subtle);
 }
 
 @theme inline {
+  /* Backwards compatibility */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  /* Background */
+  --color-page: var(--color-bg-page);
+  --color-subtle: var(--color-bg-subtle);
+  --color-tint: var(--color-bg-tint);
+
+  /* Surface */
+  --color-surface: var(--color-surface-default);
+  --color-elevated: var(--color-surface-raised);
+  --color-overlay: var(--color-surface-overlay);
+  --color-scrim: var(--color-surface-scrim);
+
+  /* Brand */
+  --color-brand: var(--color-primary);
+  --color-brand-hover: var(--color-primary-hover);
+  --color-brand-foreground: var(--color-primary-foreground);
+  --color-brand-muted: var(--color-primary-muted);
+
+  /* Text — use text-ink / text-stone / text-foreground (not --color-primary; that is brand moss in :root) */
+  --color-ink: var(--color-text-primary);
+  --color-stone: var(--color-text-secondary);
+  --color-meta: var(--color-text-tertiary);
+  --color-inverse: var(--color-text-inverse);
+  --color-link: var(--color-text-brand);
+
+  /* Border */
+  --color-default: var(--color-border-default);
+  --color-border-muted: var(--color-border-subtle);
+
+  /* Action secondary (button family) */
+  --color-action-secondary: var(--color-secondary);
+  --color-action-secondary-hover: var(--color-secondary-hover);
+  --color-action-secondary-foreground: var(--color-secondary-foreground);
+
+  /* Feedback */
+  --color-danger: var(--color-error);
+  --color-danger-surface: var(--color-error-surface);
+  --color-danger-border: var(--color-error-border);
+  --color-danger-border-hover: var(--color-error-hover-border);
+
+  /* Radius */
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-full: var(--radius-full);
+
+  /* Shadow */
+  --shadow-none: var(--shadow-none);
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-xl: var(--shadow-xl);
+  --shadow-card: var(--shadow-card);
+  --shadow-floating: var(--shadow-floating);
+
+  /* Motion */
+  --transition-duration-fast: var(--motion-fast);
+  --transition-duration-base: var(--motion-base);
+  --transition-duration-slow: var(--motion-slow);
+  --transition-duration-emphasis: var(--motion-emphasis);
+  --ease-standard: var(--motion-ease-standard);
+  --ease-emphasis: var(--motion-ease-emphasis);
 }
 
 body {
@@ -30,4 +219,13 @@ input,
 select,
 textarea {
   letter-spacing: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-fast: 0ms;
+    --motion-base: 0ms;
+    --motion-slow: 0ms;
+    --motion-emphasis: 0ms;
+  }
 }
