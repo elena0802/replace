@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import AuthNav from "@/components/AuthNav";
+import MobileNavMenu from "@/components/MobileNavMenu";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -15,6 +16,7 @@ const navigation = [
   { name: "저장한 장소", href: "/saved" },
   { name: "컬렉션", href: "/collections" },
   { name: "내 장소", href: "/my-places" },
+  // TODO(Navigation RFC): 요금제 may be hidden or moved after nav IA is finalized.
   { name: "요금제", href: "/pricing" },
 ];
 
@@ -50,22 +52,7 @@ export default function RootLayout({
             </div>
 
             <div className="flex shrink-0 items-center gap-2">
-              <details className="relative md:hidden">
-                <summary className="inline-flex min-h-9 cursor-pointer list-none items-center rounded-full border border-default/30 bg-transparent px-3.5 py-1.5 text-base font-medium text-link transition hover:bg-[color:var(--color-accent-subtle)] hover:opacity-85 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-brand-hover [&::-webkit-details-marker]:hidden">
-                  메뉴
-                </summary>
-                <div className="absolute right-0 top-full mt-3 w-44 rounded-xl border border-default/30 bg-surface p-2 shadow-floating">
-                  {navigation.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className="flex min-h-11 items-center rounded-md px-4 text-base font-medium text-stone transition hover:bg-subtle hover:text-ink focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-brand-hover"
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
-                </div>
-              </details>
+              <MobileNavMenu items={navigation} />
 
               <AuthNav />
             </div>
