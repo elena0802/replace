@@ -11,57 +11,57 @@ type PlaceCardProps = {
   variant?: PlaceCardVariant;
 };
 
+const sharedShellClassName =
+  "group flex h-full flex-col rounded-xl bg-surface shadow-card transition duration-200 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover md:hover:-translate-y-[3px] md:hover:shadow-floating";
+
 const variantStyles = {
   grid: {
-    shell:
-      "group flex h-full flex-col overflow-hidden rounded-md border border-default bg-surface shadow-card transition hover:-translate-y-0.5 hover:border-brand-muted hover:shadow-floating focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover",
-    media: "relative aspect-[4/3] w-full overflow-hidden bg-[color:var(--color-accent)]",
+    shell: sharedShellClassName,
+    media:
+      "relative aspect-[5/4] w-full shrink-0 overflow-hidden rounded-t-xl bg-[color:var(--color-accent)] sm:aspect-[4/3]",
     image:
-      "object-cover transition duration-300 group-hover:scale-105",
+      "object-cover transition duration-200 md:group-hover:scale-[1.02]",
     imageSizes:
       "(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw",
-    body: "flex flex-1 flex-col gap-5 p-5 sm:p-6",
-    meta: "flex min-h-8 items-center gap-2 text-base font-medium",
-    categoryChip:
-      "shrink-0 rounded-full bg-[color:var(--color-accent)] px-3 py-1 text-link",
-    region: "min-w-0 truncate text-stone",
-    title: "text-2xl font-semibold tracking-normal text-ink",
-    titleWrap: "space-y-2",
-    memory: "text-lg leading-8 text-stone",
-    footer: "mt-auto border-t border-border-muted pt-4",
-    footerLabel: "text-base font-medium text-stone",
-    footerValue: "mt-1 text-lg font-semibold text-link",
-    emptyTitle: "text-xl font-semibold text-link",
-    emptyDescription: "text-base font-medium leading-7 text-stone",
+    body: "flex flex-1 flex-col gap-3 p-4 sm:gap-4 sm:p-5",
+    title: "line-clamp-2 text-xl font-semibold leading-snug tracking-normal text-ink",
+    story:
+      "line-clamp-2 text-sm leading-relaxed text-stone sm:line-clamp-3",
+    footer: "mt-auto border-t border-border-muted/80 pt-3",
+    footerLabel: "text-xs font-medium text-meta",
+    footerValue: "mt-1 line-clamp-2 text-sm leading-6 text-stone",
+    metadata: "line-clamp-1 text-xs text-meta",
+    emptyTitle: "text-lg font-semibold text-link",
+    emptyDescription: "text-sm leading-6 text-stone",
     emptyWrap:
       "flex h-full w-full flex-col items-center justify-center gap-2 px-6 text-center",
   },
   featured: {
-    shell:
-      "block overflow-hidden rounded-xl border border-default/80 bg-surface shadow-card focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover",
+    shell: sharedShellClassName,
     media:
-      "relative h-[236px] w-full overflow-hidden bg-[color:var(--color-accent)] sm:h-[252px] lg:h-[260px]",
-    image: "object-cover",
+      "relative aspect-[5/4] w-full shrink-0 overflow-hidden rounded-t-xl bg-[color:var(--color-accent)] sm:aspect-[4/3]",
+    image:
+      "object-cover transition duration-200 md:group-hover:scale-[1.02]",
     imageSizes:
       "(min-width: 1024px) 340px, (min-width: 768px) 50vw, 100vw",
-    body: "flex min-h-[270px] flex-col px-6 pb-6 pt-5 sm:px-7 sm:pb-7 sm:pt-6",
-    meta: "flex min-h-7 items-center gap-2 text-sm font-medium text-stone",
-    categoryChip:
-      "shrink-0 rounded-full bg-[color:var(--color-accent)]/80 px-3 py-1 text-link",
-    region: "min-w-0 truncate",
-    title:
-      "text-[1.45rem] font-semibold leading-snug tracking-normal text-ink",
-    titleWrap: "mt-5 space-y-3",
-    memory: "text-[17px] leading-8 text-stone",
-    footer: "mt-auto border-t border-border-muted pt-5",
-    footerLabel: "text-sm font-medium text-stone/80",
-    footerValue: "mt-2 text-base font-semibold leading-7 text-link",
-    emptyTitle: "text-base font-semibold leading-7 text-link",
+    body: "flex flex-1 flex-col gap-3 p-4 sm:gap-4 sm:p-5",
+    title: "line-clamp-2 text-xl font-semibold leading-snug tracking-normal text-ink",
+    story:
+      "line-clamp-2 text-sm leading-relaxed text-stone sm:line-clamp-3",
+    footer: "mt-auto border-t border-border-muted/80 pt-3",
+    footerLabel: "text-xs font-medium text-meta",
+    footerValue: "mt-1 line-clamp-2 text-sm leading-6 text-stone",
+    metadata: "line-clamp-1 text-xs text-meta",
+    emptyTitle: "text-base font-semibold text-link",
     emptyDescription: "",
     emptyWrap:
       "flex h-full w-full items-center justify-center px-6 text-center",
   },
 } as const;
+
+function buildMetadataLine(category: string, regionLabel: string) {
+  return [category, regionLabel].filter(Boolean).join(" · ");
+}
 
 function PlaceCardMedia({
   place,
@@ -106,25 +106,26 @@ export default function PlaceCard({
   const cardHref = href === undefined ? `/places/${place.id}` : href;
   const styles = variantStyles[variant];
   const regionLabel = formatRegionLabel(place.road_address ?? place.region);
+  const metadataLine = buildMetadataLine(place.category, regionLabel);
 
   const cardContent = (
     <>
       <PlaceCardMedia place={place} variant={variant} />
       <div className={styles.body}>
-        <div className={styles.meta}>
-          <span className={styles.categoryChip}>{place.category}</span>
-          {regionLabel ? (
-            <span className={styles.region}>{regionLabel}</span>
-          ) : null}
-        </div>
-        <div className={styles.titleWrap}>
-          <h3 className={styles.title}>{place.name}</h3>
-          <p className={styles.memory}>{place.memory}</p>
-        </div>
+        <h3 className={styles.title}>{place.name}</h3>
+
+        {place.memory.trim() ? (
+          <p className={styles.story}>{place.memory}</p>
+        ) : null}
+
         <div className={styles.footer}>
           <p className={styles.footerLabel}>다시 가고 싶은 마음</p>
           <p className={styles.footerValue}>{place.revisit_level}</p>
         </div>
+
+        {metadataLine ? (
+          <p className={styles.metadata}>{metadataLine}</p>
+        ) : null}
       </div>
     </>
   );
