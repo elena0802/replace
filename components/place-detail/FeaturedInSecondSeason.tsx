@@ -14,38 +14,42 @@ export default function FeaturedInSecondSeason({
   const essayUrl = `${SECOND_SEASON_URL}/journal/${essay.slug}`;
 
   return (
-    <section className="border-t border-[#EFEAE2] px-5 py-8 sm:px-8 sm:py-10">
-      <div className="mx-auto max-w-2xl space-y-5">
-        <p className="text-sm font-medium tracking-[0.14em] text-[#8A857D]">
-          SECOND SEASON
+    <section
+      aria-labelledby="second-season-heading"
+      className="border-t border-border-muted px-5 py-8 sm:px-8 sm:py-10 lg:px-10"
+    >
+      <div className="mx-auto max-w-2xl space-y-4">
+        <p className="text-sm font-medium tracking-wide text-meta">
+          관련 글
         </p>
 
-        <div className="space-y-3">
-          <h2 className="text-2xl font-semibold tracking-normal text-[#3F3F3B] sm:text-[1.65rem]">
-            Featured in Second Season
+        <div className="space-y-2">
+          <h2
+            id="second-season-heading"
+            className="text-lg font-semibold text-ink"
+          >
+            Second Season에 소개된 장소
           </h2>
-          <p className="text-lg leading-8 text-[#6B6B68]">
-            This place was featured in a Second Season essay.
+          <p className="text-base leading-7 text-stone">
+            이 장소는 Second Season 에세이에서 다뤄졌어요.
           </p>
         </div>
 
-        <div className="rounded-2xl border border-[#E5E0D8] bg-[#F8F6F2] p-5 sm:p-6">
-          <div className="space-y-3">
-            <h3 className="text-xl font-semibold leading-snug text-[#3F3F3B]">
-              {essay.title}
-            </h3>
-            {essay.excerpt ? (
-              <p className="text-base leading-7 text-[#6B6B68]">{essay.excerpt}</p>
-            ) : null}
-          </div>
+        <div className="rounded-xl border border-default bg-subtle p-5">
+          <h3 className="text-base font-semibold leading-snug text-ink">
+            {essay.title}
+          </h3>
+          {essay.excerpt ? (
+            <p className="mt-2 text-sm leading-7 text-stone">{essay.excerpt}</p>
+          ) : null}
 
           <a
             href={essayUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-5 inline-flex items-center gap-1.5 text-base font-medium text-[#4D5748] underline decoration-[#C9C2B8] underline-offset-4 transition hover:text-[#3F3F3B] hover:decoration-[#4D5748] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748]"
+            className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-link underline decoration-border-muted underline-offset-4 transition hover:text-ink hover:decoration-brand-muted focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover"
           >
-            Read Essay
+            에세이 읽기
             <span aria-hidden="true">→</span>
           </a>
         </div>

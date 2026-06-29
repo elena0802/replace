@@ -17,10 +17,12 @@ import {
 
 type SaveToCollectionButtonProps = {
   placeId: string;
+  size?: "default" | "compact";
 };
 
 export default function SaveToCollectionButton({
   placeId,
+  size = "default",
 }: SaveToCollectionButtonProps) {
   const router = useRouter();
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -177,9 +179,22 @@ export default function SaveToCollectionButton({
       ? "컬렉션에 저장됨"
       : "컬렉션에 저장";
 
+  const compactSavedClassName =
+    "inline-flex min-h-11 items-center justify-center rounded-full border border-brand-muted bg-[color:var(--color-accent)] px-4 py-2.5 text-base font-medium text-action-secondary-foreground transition hover:bg-[color:var(--color-accent-subtle)] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover";
+  const compactDefaultClassName =
+    "inline-flex min-h-11 items-center justify-center rounded-full border border-default bg-surface px-4 py-2.5 text-base font-medium text-link transition hover:bg-[color:var(--color-accent)]/45 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover";
+  const defaultSavedClassName =
+    "inline-flex min-h-12 min-w-44 items-center justify-center rounded-full border border-brand-muted bg-[color:var(--color-accent)] px-5 py-3 text-lg font-semibold text-action-secondary-foreground transition hover:bg-[color:var(--color-accent-subtle)] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover";
+  const defaultDefaultClassName =
+    "inline-flex min-h-12 min-w-44 items-center justify-center rounded-full border border-default bg-surface px-5 py-3 text-lg font-semibold text-link transition hover:bg-[color:var(--color-accent)]/45 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover";
+
   const buttonClassName = isSaved
-    ? "inline-flex min-h-12 min-w-44 items-center justify-center rounded-full border border-brand-muted bg-[color:var(--color-accent)] px-5 py-3 text-lg font-semibold text-action-secondary-foreground transition hover:bg-[color:var(--color-accent-subtle)] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover"
-    : "inline-flex min-h-12 min-w-44 items-center justify-center rounded-full border border-default bg-surface px-5 py-3 text-lg font-semibold text-link transition hover:bg-[color:var(--color-accent)]/45 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover";
+    ? size === "compact"
+      ? compactSavedClassName
+      : defaultSavedClassName
+    : size === "compact"
+      ? compactDefaultClassName
+      : defaultDefaultClassName;
 
   return (
     <>

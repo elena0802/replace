@@ -16,6 +16,7 @@ const kakaoJavascriptKey = process.env.NEXT_PUBLIC_KAKAO_JAVASCRIPT_KEY;
 type KakaoShareButtonProps = {
   place: Pick<PlaceRow, "name" | "memory" | "image_url">;
   onError?: (message: string) => void;
+  size?: "default" | "compact";
 };
 
 function resolveAbsoluteWebUrl(source: string, fallbackPath = DEFAULT_SHARE_IMAGE_PATH) {
@@ -70,6 +71,7 @@ function createSharePayload(place: KakaoShareButtonProps["place"]) {
 export default function KakaoShareButton({
   place,
   onError,
+  size = "default",
 }: KakaoShareButtonProps) {
   const [isPreparing, setIsPreparing] = useState(false);
 
@@ -109,21 +111,26 @@ export default function KakaoShareButton({
     }
   }
 
+  const buttonClassName =
+    size === "compact"
+      ? "inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-default bg-subtle px-4 py-2.5 text-base font-medium text-link transition hover:bg-[color:var(--color-accent)]/45 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover disabled:cursor-not-allowed disabled:opacity-70"
+      : "inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-default bg-subtle px-5 py-3 text-lg font-semibold text-link transition hover:bg-[color:var(--color-accent)]/45 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover disabled:cursor-not-allowed disabled:opacity-70";
+
   return (
     <button
       type="button"
       onClick={handleShare}
       disabled={isPreparing}
-      className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[#E2D2A3] bg-[#FFF7D6] px-5 py-3 text-lg font-semibold text-[#4A4123] transition hover:border-[#D6BE6A] hover:bg-[#FBEA98] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#D6BE6A] disabled:cursor-not-allowed disabled:opacity-70"
+      className={buttonClassName}
       aria-label={`${place.name} 카카오톡 공유하기`}
     >
       <span
         aria-hidden="true"
-        className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#FEE500] text-sm font-bold text-[#3B1E1E]"
+        className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#FEE500] text-xs font-bold text-[#3B1E1E]"
       >
         톡
       </span>
-      {isPreparing ? "공유 준비 중..." : "카카오톡 공유하기"}
+      {isPreparing ? "공유 준비 중..." : "카카오톡 공유"}
     </button>
   );
 }

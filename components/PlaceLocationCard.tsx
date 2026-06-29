@@ -154,13 +154,21 @@ export default function PlaceLocationCard({
   }
 
   return (
-    <section className="space-y-5 py-2">
-      <h2 className="text-2xl font-semibold text-ink">위치</h2>
+    <section
+      aria-labelledby="place-location-heading"
+      className="space-y-4 border-t border-border-muted pt-8"
+    >
+      <h2
+        id="place-location-heading"
+        className="text-lg font-semibold text-ink"
+      >
+        위치
+      </h2>
 
       <PlaceMap latitude={mapLatitude} longitude={mapLongitude} />
 
-      <div className="flex flex-col gap-4 pt-1 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex min-w-0 items-start gap-3 text-lg font-normal leading-8 text-stone">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex min-w-0 items-start gap-3 text-base font-normal leading-7 text-stone">
           <LocationIcon />
           <p>{trimmedAddress || "주소 정보가 아직 없어요."}</p>
         </div>
@@ -169,7 +177,7 @@ export default function PlaceLocationCard({
           type="button"
           onClick={handleCopyAddress}
           disabled={!trimmedAddress}
-          className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 self-start rounded-full px-3 py-2 text-base font-medium text-link transition hover:bg-[color:var(--color-accent)]/60 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover disabled:cursor-not-allowed disabled:text-meta disabled:hover:bg-transparent"
+          className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 self-start rounded-full px-3 py-2 text-sm font-medium text-link transition hover:bg-[color:var(--color-accent)]/60 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover disabled:cursor-not-allowed disabled:text-meta disabled:hover:bg-transparent"
         >
           <CopyIcon />
           {isCopied ? "복사됨" : "복사"}
@@ -180,7 +188,7 @@ export default function PlaceLocationCard({
         type="button"
         onClick={() => setIsDirectionsOpen(true)}
         disabled={!hasDirectionsTarget}
-        className="inline-flex min-h-11 w-full items-center justify-center rounded-full border border-default bg-transparent px-5 py-2.5 text-base font-medium text-link transition hover:border-brand-muted hover:bg-subtle focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover disabled:cursor-not-allowed disabled:border-default disabled:text-meta disabled:hover:bg-transparent"
+        className="inline-flex min-h-11 w-full items-center justify-center rounded-full border border-default bg-transparent px-5 py-2.5 text-base font-medium text-link transition hover:border-brand-muted hover:bg-subtle focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover disabled:cursor-not-allowed disabled:border-default disabled:text-meta disabled:hover:bg-transparent sm:w-auto"
       >
         길찾기
       </button>

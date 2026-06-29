@@ -12,6 +12,7 @@ import {
 
 type SavePlaceButtonProps = {
   placeId: string;
+  size?: "default" | "compact";
 };
 
 type Notice = {
@@ -19,7 +20,10 @@ type Notice = {
   message: string;
 };
 
-export default function SavePlaceButton({ placeId }: SavePlaceButtonProps) {
+export default function SavePlaceButton({
+  placeId,
+  size = "default",
+}: SavePlaceButtonProps) {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isSaved, setIsSaved] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -166,6 +170,10 @@ export default function SavePlaceButton({ placeId }: SavePlaceButtonProps) {
   }
 
   const disabled = isLoading || isMutating;
+  const buttonClassName =
+    size === "compact"
+      ? "inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-default bg-surface px-4 py-2.5 text-base font-medium text-link transition hover:bg-[color:var(--color-accent)]/45 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover disabled:cursor-not-allowed disabled:opacity-70"
+      : "inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-default bg-surface px-5 py-3 text-lg font-semibold text-link transition hover:bg-[color:var(--color-accent)]/45 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover disabled:cursor-not-allowed disabled:opacity-70";
 
   return (
     <div className="flex flex-col items-start gap-2">
@@ -174,7 +182,7 @@ export default function SavePlaceButton({ placeId }: SavePlaceButtonProps) {
         aria-pressed={isSaved}
         disabled={disabled}
         onClick={handleToggle}
-        className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-default bg-surface px-5 py-3 text-lg font-semibold text-link transition hover:bg-[color:var(--color-accent)]/45 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover disabled:cursor-not-allowed disabled:opacity-70"
+        className={buttonClassName}
       >
         <span aria-hidden="true" className="text-xl leading-none">
           {isSaved ? "♥" : "♡"}
