@@ -375,8 +375,9 @@ Represent one place record in a grid or carousel.
 
 ### Responsibilities
 
-- Display image, category, region, name, memory, revisit footer
+- Display image, category, **region/location label** (not full address), name, memory, revisit footer
 - Link to `/places/[id]` unless `href` null (forbidden in production)
+- Derive card region label from stored address via `formatRegionLabel` — full address stays on detail, location card, and map surfaces
 
 ### Variants
 
@@ -402,7 +403,7 @@ Represent one place record in a grid or carousel.
 
 ### Token usage
 
-- Chip for category; Meta for region
+- Chip for category; Meta for **region label** (one line, truncated — approximate place context, not navigation)
 
 ### Interaction
 

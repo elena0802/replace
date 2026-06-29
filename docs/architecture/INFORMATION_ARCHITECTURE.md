@@ -133,6 +133,8 @@ Today’s root layout exposes seven peer links (홈, 기록하기, 둘러보기,
 
 ### Level 2 — Entity lists (within hub or discover)
 
+Place cards show a **short region/location label** (e.g. `서울 송파구`) for quick recognition — not the full stored address. Full address belongs on place detail, location card, and map/directions surfaces.
+
 | Screen | Purpose |
 |--------|---------|
 | `/my-places` | Grid of user’s owned records |
@@ -522,6 +524,7 @@ Aligns with [Visual Language Guide](../foundation/VISUAL_LANGUAGE_GUIDE.md) layo
 2. Collapsed sections must **indicate** what is inside (“공개 여부, 카테고리…”).
 3. Do not hide public/private on create indefinitely (trust risk).
 4. Detail page: memory before metadata sidebar.
+5. Card metadata supports recognition, not navigation — region label on PlaceCard; full address on detail/location/map only.
 
 ---
 

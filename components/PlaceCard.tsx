@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { formatRegionLabel } from "@/lib/format/location";
 import type { PlaceRow } from "@/types/database";
 
 type PlaceCardVariant = "grid" | "featured";
@@ -20,10 +21,10 @@ const variantStyles = {
     imageSizes:
       "(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw",
     body: "flex flex-1 flex-col gap-5 p-5 sm:p-6",
-    meta: "flex flex-wrap items-center gap-2 text-base font-medium",
+    meta: "flex min-h-8 items-center gap-2 text-base font-medium",
     categoryChip:
-      "rounded-full bg-[color:var(--color-accent)] px-3 py-1 text-link",
-    region: "text-stone",
+      "shrink-0 rounded-full bg-[color:var(--color-accent)] px-3 py-1 text-link",
+    region: "min-w-0 truncate text-stone",
     title: "text-2xl font-semibold tracking-normal text-ink",
     titleWrap: "space-y-2",
     memory: "text-lg leading-8 text-stone",
@@ -44,10 +45,10 @@ const variantStyles = {
     imageSizes:
       "(min-width: 1024px) 340px, (min-width: 768px) 50vw, 100vw",
     body: "flex min-h-[270px] flex-col px-6 pb-6 pt-5 sm:px-7 sm:pb-7 sm:pt-6",
-    meta: "flex flex-wrap items-center gap-2 text-sm font-medium text-stone",
+    meta: "flex min-h-7 items-center gap-2 text-sm font-medium text-stone",
     categoryChip:
-      "rounded-full bg-[color:var(--color-accent)]/80 px-3 py-1 text-link",
-    region: "",
+      "shrink-0 rounded-full bg-[color:var(--color-accent)]/80 px-3 py-1 text-link",
+    region: "min-w-0 truncate",
     title:
       "text-[1.45rem] font-semibold leading-snug tracking-normal text-ink",
     titleWrap: "mt-5 space-y-3",
@@ -104,6 +105,7 @@ export default function PlaceCard({
 }: PlaceCardProps) {
   const cardHref = href === undefined ? `/places/${place.id}` : href;
   const styles = variantStyles[variant];
+  const regionLabel = formatRegionLabel(place.road_address ?? place.region);
 
   const cardContent = (
     <>
@@ -111,7 +113,9 @@ export default function PlaceCard({
       <div className={styles.body}>
         <div className={styles.meta}>
           <span className={styles.categoryChip}>{place.category}</span>
-          <span className={styles.region}>{place.region}</span>
+          {regionLabel ? (
+            <span className={styles.region}>{regionLabel}</span>
+          ) : null}
         </div>
         <div className={styles.titleWrap}>
           <h3 className={styles.title}>{place.name}</h3>
