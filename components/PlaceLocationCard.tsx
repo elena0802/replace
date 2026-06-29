@@ -61,7 +61,7 @@ function LocationIcon() {
   return (
     <svg
       aria-hidden="true"
-      className="mt-1 h-5 w-5 shrink-0 text-[#8A857D]"
+      className="mt-1 h-5 w-5 shrink-0 text-meta"
       fill="none"
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"
@@ -155,12 +155,12 @@ export default function PlaceLocationCard({
 
   return (
     <section className="space-y-5 py-2">
-      <h2 className="text-2xl font-semibold text-[#3F3F3B]">위치</h2>
+      <h2 className="text-2xl font-semibold text-ink">위치</h2>
 
       <PlaceMap latitude={mapLatitude} longitude={mapLongitude} />
 
       <div className="flex flex-col gap-4 pt-1 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex min-w-0 items-start gap-3 text-lg font-normal leading-8 text-[#5D5D59]">
+        <div className="flex min-w-0 items-start gap-3 text-lg font-normal leading-8 text-stone">
           <LocationIcon />
           <p>{trimmedAddress || "주소 정보가 아직 없어요."}</p>
         </div>
@@ -169,7 +169,7 @@ export default function PlaceLocationCard({
           type="button"
           onClick={handleCopyAddress}
           disabled={!trimmedAddress}
-          className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 self-start rounded-full px-3 py-2 text-base font-medium text-[#4D5748] transition hover:bg-[#EAE3D8]/60 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748] disabled:cursor-not-allowed disabled:text-[#A7A19A] disabled:hover:bg-transparent"
+          className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 self-start rounded-full px-3 py-2 text-base font-medium text-link transition hover:bg-[color:var(--color-accent)]/60 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover disabled:cursor-not-allowed disabled:text-meta disabled:hover:bg-transparent"
         >
           <CopyIcon />
           {isCopied ? "복사됨" : "복사"}
@@ -180,7 +180,7 @@ export default function PlaceLocationCard({
         type="button"
         onClick={() => setIsDirectionsOpen(true)}
         disabled={!hasDirectionsTarget}
-        className="inline-flex min-h-11 w-full items-center justify-center rounded-full border border-[#D9D2C8] bg-transparent px-5 py-2.5 text-base font-medium text-[#4D5748] transition hover:border-[#A8B2A1] hover:bg-[#F8F6F2] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748] disabled:cursor-not-allowed disabled:border-[#E5E0D8] disabled:text-[#A7A19A] disabled:hover:bg-transparent"
+        className="inline-flex min-h-11 w-full items-center justify-center rounded-full border border-default bg-transparent px-5 py-2.5 text-base font-medium text-link transition hover:border-brand-muted hover:bg-subtle focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover disabled:cursor-not-allowed disabled:border-default disabled:text-meta disabled:hover:bg-transparent"
       >
         길찾기
       </button>

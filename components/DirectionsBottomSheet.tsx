@@ -173,7 +173,7 @@ function ArrowIcon() {
   return (
     <svg
       aria-hidden="true"
-      className="h-4 w-4 text-[#8A857D]"
+      className="h-4 w-4 text-meta"
       fill="none"
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"
@@ -192,14 +192,14 @@ function ArrowIcon() {
 function DirectionsOptionContent({ option }: { option: DirectionsOption }) {
   return (
     <>
-      <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#EAE3D8] text-base font-semibold text-[#4D5748]">
+      <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[color:var(--color-accent)] text-base font-semibold text-link">
         {option.iconLabel}
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block text-lg font-semibold text-[#3F3F3B]">
+        <span className="block text-lg font-semibold text-ink">
           {option.label}
         </span>
-        <span className="block text-sm leading-5 text-[#6B6B68]">
+        <span className="block text-sm leading-5 text-stone">
           {option.helperText}
         </span>
       </span>
@@ -273,36 +273,36 @@ export default function DirectionsBottomSheet({
   }
 
   const optionClassName =
-    "flex min-h-16 w-full items-center gap-4 rounded-2xl border border-[#EFEAE2] bg-[#F8F6F2] px-4 py-3 text-left transition hover:border-[#A8B2A1] hover:bg-[#F1EDE5] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-[#4D5748]";
+    "flex min-h-16 w-full items-center gap-4 rounded-2xl border border-border-muted bg-subtle px-4 py-3 text-left transition hover:border-brand-muted hover:bg-tint focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-brand-hover";
 
   return (
     <div className="fixed inset-0 z-[1000] flex items-end justify-center px-0 sm:items-end sm:px-5 sm:py-6">
       <button
         type="button"
-        className="absolute inset-0 cursor-default bg-[#2F362D]/40 backdrop-blur-[2px]"
+        className="absolute inset-0 cursor-default bg-scrim backdrop-blur-[2px]"
         onClick={onClose}
         tabIndex={-1}
         aria-label="배경 클릭으로 길찾기 닫기"
       />
       <div
-        className="relative z-10 w-full max-w-md rounded-t-2xl border border-[#E5E0D8] bg-[#FCFBF8] px-5 pb-5 pt-4 shadow-[0_24px_80px_rgba(47,54,45,0.24)] sm:rounded-2xl"
+        className="relative z-10 w-full max-w-md rounded-t-2xl border border-default bg-surface px-5 pb-5 pt-4 shadow-xl sm:rounded-2xl"
         role="dialog"
         aria-modal="true"
         aria-labelledby="directions-sheet-title"
       >
-        <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-[#D9D2C8] sm:hidden" />
+        <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-[color:var(--color-border-strong)] sm:hidden" />
 
         <div className="flex items-center justify-between gap-4">
           <h2
             id="directions-sheet-title"
-            className="text-2xl font-semibold tracking-normal text-[#3F3F3B]"
+            className="text-2xl font-semibold tracking-normal text-ink"
           >
             길찾기
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full text-[#6B6B68] transition hover:bg-[#EAE3D8]/70 hover:text-[#3F3F3B] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-[#4D5748]"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full text-stone transition hover:bg-[color:var(--color-accent)]/70 hover:text-ink focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-brand-hover"
             aria-label="길찾기 닫기"
           >
             <CloseIcon />
@@ -323,7 +323,7 @@ export default function DirectionsBottomSheet({
                 )
               }
               disabled={!option.url}
-              className={`${optionClassName} disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:border-[#EFEAE2] disabled:hover:bg-[#F8F6F2]`}
+              className={`${optionClassName} disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:border-border-muted disabled:hover:bg-subtle`}
             >
               <DirectionsOptionContent option={option} />
             </button>
@@ -333,7 +333,7 @@ export default function DirectionsBottomSheet({
         <button
           type="button"
           onClick={onClose}
-          className="mt-5 min-h-12 w-full rounded-full border border-[#D9D2C8] px-5 py-2.5 text-base font-semibold text-[#4D5748] transition hover:border-[#A8B2A1] hover:bg-[#F8F6F2] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748]"
+          className="mt-5 min-h-12 w-full rounded-full border border-default px-5 py-2.5 text-base font-semibold text-link transition hover:border-brand-muted hover:bg-subtle focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover"
         >
           닫기
         </button>

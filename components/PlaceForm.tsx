@@ -97,8 +97,8 @@ const formMessages = {
 };
 
 const fieldClass =
-  "min-h-14 w-full rounded-2xl border border-[#E5E0D8] bg-white px-4 text-xl font-medium text-[#3F3F3B] outline-none transition placeholder:text-[#6B6B68]/60 focus:border-[#A8B2A1] focus:ring-3 focus:ring-[#A8B2A1]/20";
-const labelClass = "space-y-2 text-lg font-semibold text-[#3F3F3B]";
+  "min-h-14 w-full rounded-2xl border border-default bg-surface px-4 text-xl font-medium text-ink outline-none transition placeholder:text-stone/60 focus:border-brand-muted focus:ring-3 focus:ring-[color:var(--focus-ring-input)]";
+const labelClass = "space-y-2 text-lg font-semibold text-ink";
 
 type RequiredField = "name" | "memory";
 type FieldErrors = Partial<Record<RequiredField, string>>;
@@ -484,14 +484,14 @@ export default function PlaceForm({
     <form
       onSubmit={handleSubmit}
       noValidate
-      className="space-y-5 rounded-3xl border border-[#E5E0D8] bg-[#FCFBF8] p-4 shadow-[0_18px_44px_rgba(77,87,72,0.07)] sm:p-7"
+      className="space-y-5 rounded-xl border border-default bg-surface p-4 shadow-card sm:p-7"
     >
       {(hasErrors || successMessage || submitError) && (
         <div
           className={`rounded-2xl border px-5 py-4 text-lg leading-8 ${
             successMessage
-              ? "border-[#A8B2A1] bg-[#A8B2A1]/20 text-[#4D5748]"
-              : "border-[#E5C8BA] bg-[#FFF8F4] text-[#7A4B3A]"
+              ? "border-brand-muted bg-[color:var(--color-success-surface)] text-link"
+              : "border-danger-border bg-danger-surface text-danger"
           }`}
           role={successMessage ? "status" : "alert"}
         >
@@ -507,10 +507,10 @@ export default function PlaceForm({
 
       <section className="space-y-4">
         <div className="space-y-2">
-          <h2 className="text-2xl font-semibold tracking-normal text-[#3F3F3B]">
+          <h2 className="text-2xl font-semibold tracking-normal text-ink">
             사진 업로드
           </h2>
-          <p className="text-lg leading-8 text-[#6B6B68]">
+          <p className="text-lg leading-8 text-stone">
             좋은 시간이 담긴 장면을 먼저 남겨보세요.
           </p>
         </div>
@@ -525,7 +525,7 @@ export default function PlaceForm({
         <button
           type="button"
           onClick={() => imageInputRef.current?.click()}
-          className="flex min-h-44 w-full flex-col items-center justify-center overflow-hidden rounded-3xl border border-dashed border-[#A8B2A1] bg-[#F8F6F2] text-center transition hover:border-[#4D5748] hover:bg-[#EAE3D8] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748] sm:min-h-52"
+          className="flex min-h-44 w-full flex-col items-center justify-center overflow-hidden rounded-xl border border-dashed border-brand-muted bg-subtle text-center transition hover:border-brand-hover hover:bg-[color:var(--color-accent)] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover sm:min-h-52"
         >
           {visibleImageUrl ? (
             <span
@@ -534,23 +534,23 @@ export default function PlaceForm({
               aria-label="선택한 장소 사진 미리보기"
               style={{ backgroundImage: `url("${visibleImageUrl}")` }}
             >
-              <span className="rounded-full bg-[#FCFBF8]/95 px-4 py-2 text-lg font-semibold text-[#4D5748] shadow-[0_8px_18px_rgba(77,87,72,0.12)]">
+              <span className="rounded-full bg-overlay px-4 py-2 text-lg font-semibold text-link shadow-sm">
                 사진 바꾸기
               </span>
             </span>
           ) : (
             <span className="px-5 py-10">
-              <span className="block text-2xl font-semibold text-[#3F3F3B]">
+              <span className="block text-2xl font-semibold text-ink">
                 사진을 추가해보세요
               </span>
-              <span className="mt-3 block text-lg leading-8 text-[#6B6B68]">
+              <span className="mt-3 block text-lg leading-8 text-stone">
                 한 장만 선택해도 충분합니다.
               </span>
             </span>
           )}
         </button>
         {(imageFileName || initialImageUrl) && (
-          <p className="text-lg leading-8 text-[#6B6B68]">
+          <p className="text-lg leading-8 text-stone">
             {imageFileName
               ? `선택한 사진: ${imageFileName}`
               : "기존 대표 사진을 유지합니다."}
@@ -558,10 +558,10 @@ export default function PlaceForm({
         )}
       </section>
 
-      <section className="space-y-4 border-t border-[#EFEAE2] pt-5">
+      <section className="space-y-4 border-t border-border-muted pt-5">
         <div className={`${labelClass} relative`}>
           <label htmlFor="place-name-input">
-            장소 검색 <span className="text-base text-[#4D5748]">(필수)</span>
+            장소 검색 <span className="text-base text-link">(필수)</span>
           </label>
           <input
             id="place-name-input"
@@ -592,7 +592,7 @@ export default function PlaceForm({
             />
           )}
           {errors.name && (
-            <span id="name-error" className="block text-base text-[#7A4B3A]">
+            <span id="name-error" className="block text-base text-danger">
               {errors.name}
             </span>
           )}
@@ -606,22 +606,22 @@ export default function PlaceForm({
         </div>
       </section>
 
-      <section className="space-y-4 border-t border-[#EFEAE2] pt-5">
+      <section className="space-y-4 border-t border-border-muted pt-5">
         <label className={labelClass}>
-          한 줄 기록 <span className="text-base text-[#4D5748]">(필수)</span>
+          한 줄 기록 <span className="text-base text-link">(필수)</span>
           <textarea
             ref={memoryRef}
             value={values.memory}
             onChange={(event) => updateValue("memory", event.target.value)}
             placeholder="예: 창가에 앉아 천천히 쉬었던 오후"
             rows={3}
-            className="w-full rounded-2xl border border-[#E5E0D8] bg-white px-4 py-3 text-xl font-medium leading-8 text-[#3F3F3B] outline-none transition placeholder:text-[#6B6B68]/60 focus:border-[#A8B2A1] focus:ring-3 focus:ring-[#A8B2A1]/20"
+            className="w-full rounded-2xl border border-default bg-surface px-4 py-3 text-xl font-medium leading-8 text-ink outline-none transition placeholder:text-stone/60 focus:border-brand-muted focus:ring-3 focus:ring-[color:var(--focus-ring-input)]"
             aria-invalid={Boolean(errors.memory)}
             aria-describedby={errors.memory ? "memory-error" : undefined}
             aria-required="true"
           />
           {errors.memory && (
-            <span id="memory-error" className="block text-base text-[#7A4B3A]">
+            <span id="memory-error" className="block text-base text-danger">
               {errors.memory}
             </span>
           )}
@@ -640,18 +640,18 @@ export default function PlaceForm({
       <details
         open={isAdditionalInfoOpen}
         onToggle={(event) => setIsAdditionalInfoOpen(event.currentTarget.open)}
-        className="overflow-hidden rounded-3xl border border-[#E5E0D8] bg-[#FFFDF8]"
+        className="overflow-hidden rounded-xl border border-default bg-surface"
       >
-        <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-xl font-semibold text-[#3F3F3B] outline-none transition hover:bg-[#F8F6F2] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-0 focus-visible:outline-[#4D5748] [&::-webkit-details-marker]:hidden">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-xl font-semibold text-ink outline-none transition hover:bg-subtle focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-0 focus-visible:outline-brand-hover [&::-webkit-details-marker]:hidden">
           <span className="flex flex-col gap-1">
             <span>추가 정보</span>
-            <span className="text-base font-medium text-[#6B6B68]">
+            <span className="text-base font-medium text-stone">
               선택 입력: 공개 여부, 카테고리, 태그, 기타 옵션
             </span>
           </span>
           <span
             aria-hidden="true"
-            className={`text-2xl leading-none text-[#4D5748] transition ${
+            className={`text-2xl leading-none text-link transition ${
               isAdditionalInfoOpen ? "rotate-180" : ""
             }`}
           >
@@ -659,23 +659,23 @@ export default function PlaceForm({
           </span>
         </summary>
 
-        <div className="space-y-7 border-t border-[#EFEAE2] px-5 py-5">
+        <div className="space-y-7 border-t border-border-muted px-5 py-5">
           <fieldset className="space-y-3">
-            <legend className="text-lg font-semibold text-[#3F3F3B]">
+            <legend className="text-lg font-semibold text-ink">
               공개 여부
             </legend>
             <div className="grid gap-3 sm:grid-cols-2">
               {visibilityOptions.map((option) => (
                 <label
                   key={option.label}
-                  className="flex min-h-14 items-center gap-3 rounded-2xl border border-[#E5E0D8] bg-white px-4 text-lg font-medium text-[#3F3F3B]"
+                  className="flex min-h-14 items-center gap-3 rounded-2xl border border-default bg-surface px-4 text-lg font-medium text-ink"
                 >
                   <input
                     type="radio"
                     name="isPublic"
                     checked={values.isPublic === option.value}
                     onChange={() => updateValue("isPublic", option.value)}
-                    className="size-5 accent-[#4D5748]"
+                    className="size-5 accent-link"
                   />
                   {option.label}
                 </label>
@@ -705,20 +705,20 @@ export default function PlaceForm({
           </label>
 
           <fieldset className="space-y-3">
-            <legend className="text-lg font-semibold text-[#3F3F3B]">
+            <legend className="text-lg font-semibold text-ink">
               태그
             </legend>
             <div className="grid gap-3 sm:grid-cols-2">
               {spaceTagOptions.map((option) => (
                 <label
                   key={option}
-                  className="flex min-h-14 items-center gap-3 rounded-2xl border border-[#E5E0D8] bg-white px-4 text-lg font-medium text-[#3F3F3B] transition has-checked:border-[#A8B2A1] has-checked:bg-[#A8B2A1]/15"
+                  className="flex min-h-14 items-center gap-3 rounded-2xl border border-default bg-surface px-4 text-lg font-medium text-ink transition has-checked:border-brand-muted has-checked:bg-[color:var(--color-success-surface)]"
                 >
                   <input
                     type="checkbox"
                     checked={values.spaceTags.includes(option)}
                     onChange={() => toggleSpaceTag(option)}
-                    className="size-5 accent-[#4D5748]"
+                    className="size-5 accent-link"
                   />
                   {option}
                 </label>
@@ -727,7 +727,7 @@ export default function PlaceForm({
           </fieldset>
 
           <div className="space-y-5">
-            <h3 className="text-lg font-semibold text-[#3F3F3B]">기타 옵션</h3>
+            <h3 className="text-lg font-semibold text-ink">기타 옵션</h3>
             <div className="grid gap-6 sm:grid-cols-2">
               <label className={labelClass}>
                 지역
@@ -774,14 +774,14 @@ export default function PlaceForm({
               </label>
 
               <fieldset className="space-y-3">
-                <legend className="text-lg font-semibold text-[#3F3F3B]">
+                <legend className="text-lg font-semibold text-ink">
                   다시 가고 싶은 마음
                 </legend>
                 <div className="grid gap-3">
                   {revisitLevels.map((level) => (
                     <label
                       key={level}
-                      className="flex min-h-14 items-center gap-3 rounded-2xl border border-[#E5E0D8] bg-white px-4 text-lg font-medium text-[#3F3F3B]"
+                      className="flex min-h-14 items-center gap-3 rounded-2xl border border-default bg-surface px-4 text-lg font-medium text-ink"
                     >
                       <input
                         type="radio"
@@ -794,7 +794,7 @@ export default function PlaceForm({
                             event.target.value as RevisitLevel,
                           )
                         }
-                        className="size-5 accent-[#4D5748]"
+                        className="size-5 accent-link"
                       />
                       {level}
                     </label>
@@ -815,11 +815,11 @@ export default function PlaceForm({
         />
       )}
 
-      <div className="flex border-t border-[#EFEAE2] pt-6 sm:justify-end">
+      <div className="flex border-t border-border-muted pt-6 sm:justify-end">
         <button
           type="submit"
           disabled={isSubmitDisabled}
-          className="min-h-14 w-full rounded-full bg-[#A8B2A1] px-8 py-4 text-xl font-semibold text-[#2F362D] shadow-[0_10px_24px_rgba(77,87,72,0.14)] transition hover:bg-[#4D5748] hover:text-white focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748] disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:bg-[#A8B2A1] disabled:hover:text-[#2F362D] sm:w-auto"
+          className="min-h-14 w-full rounded-full bg-brand-muted px-8 py-4 text-xl font-semibold text-action-secondary-foreground shadow-sm transition hover:bg-brand-hover hover:text-inverse focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:bg-brand-muted disabled:hover:text-action-secondary-foreground sm:w-auto"
         >
           {isSubmitting
             ? submitProgressMessage || messages.submitting

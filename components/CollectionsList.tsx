@@ -45,7 +45,7 @@ function CollectionCard({
   return (
     <Link
       href={`/collections/${collection.id}`}
-      className="group flex h-full flex-col rounded-3xl border border-[#E5E0D8] bg-[#FCFBF8] p-4 shadow-[0_14px_34px_rgba(77,87,72,0.06)] transition hover:-translate-y-0.5 hover:border-[#A8B2A1] hover:shadow-[0_18px_44px_rgba(77,87,72,0.1)] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748]"
+      className="group flex h-full flex-col rounded-xl border border-default bg-surface p-4 shadow-card transition hover:-translate-y-0.5 hover:border-brand-muted hover:shadow-floating focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover"
     >
       <CollectionCoverImage
         imageUrl={collection.coverImageUrl}
@@ -64,10 +64,10 @@ function CollectionCard({
 
       <div className="mt-5 flex items-start justify-between gap-4">
         <div className="flex flex-wrap gap-2">
-          <span className="rounded-full bg-[#EAE3D8] px-3 py-1 text-base font-medium text-[#4D5748]">
+          <span className="rounded-full bg-[color:var(--color-accent)] px-3 py-1 text-base font-medium text-link">
             {collection.placeCount}곳
           </span>
-          <span className="rounded-full border border-[#E5E0D8] bg-[#FCFBF8] px-3 py-1 text-base font-medium text-[#6B6B68]">
+          <span className="rounded-full border border-default bg-surface px-3 py-1 text-base font-medium text-stone">
             {visibilityMode === "public"
               ? "공개"
               : collection.is_public
@@ -75,19 +75,19 @@ function CollectionCard({
                 : "나만 보기"}
           </span>
         </div>
-        <span className="text-base font-medium text-[#8A857D]">
+        <span className="text-base font-medium text-meta">
           {formatDate(collection.created_at)}
         </span>
       </div>
       <div className="mt-5 space-y-3">
-        <h3 className="text-3xl font-semibold leading-tight tracking-normal text-[#3F3F3B]">
+        <h3 className="text-3xl font-semibold leading-tight tracking-normal text-ink">
           {collection.name}
         </h3>
-        <p className="text-lg leading-8 text-[#6B6B68]">
+        <p className="text-lg leading-8 text-stone">
           {collection.description || "설명 없이 조용히 모아둔 컬렉션"}
         </p>
       </div>
-      <span className="mt-auto pt-6 text-lg font-semibold text-[#4D5748]">
+      <span className="mt-auto pt-6 text-lg font-semibold text-link">
         열어보기
       </span>
     </Link>
@@ -233,52 +233,52 @@ export default function CollectionsList() {
       {userId ? (
         <form
           onSubmit={handleCreateCollection}
-          className="rounded-3xl border border-[#E5E0D8] bg-[#FCFBF8] p-5 shadow-[0_14px_34px_rgba(77,87,72,0.06)] sm:p-6"
+          className="rounded-xl border border-default bg-surface p-5 shadow-card sm:p-6"
         >
           <div className="space-y-2">
-            <h2 className="text-2xl font-semibold tracking-normal text-[#3F3F3B]">
+            <h2 className="text-2xl font-semibold tracking-normal text-ink">
               새 컬렉션
             </h2>
-            <p className="text-lg leading-8 text-[#6B6B68]">
+            <p className="text-lg leading-8 text-stone">
               기억의 기준이 되는 이름으로 장소를 묶어보세요.
             </p>
           </div>
 
           <label className="mt-6 block">
-            <span className="text-base font-semibold text-[#4D5748]">이름</span>
+            <span className="text-base font-semibold text-link">이름</span>
             <input
               value={name}
               onChange={(event) => setName(event.target.value)}
               maxLength={60}
-              className="mt-2 min-h-13 w-full rounded-2xl border border-[#E5E0D8] bg-[#F8F6F2] px-4 py-3 text-lg text-[#3F3F3B] outline-none transition focus:border-[#A8B2A1] focus:bg-[#FCFBF8]"
+              className="mt-2 min-h-13 w-full rounded-2xl border border-default bg-subtle px-4 py-3 text-lg text-ink outline-none transition focus:border-brand-muted focus:bg-surface"
               placeholder="예: 조용한 주말의 장소"
             />
           </label>
 
           <label className="mt-4 block">
-            <span className="text-base font-semibold text-[#4D5748]">설명</span>
+            <span className="text-base font-semibold text-link">설명</span>
             <textarea
               value={description}
               onChange={(event) => setDescription(event.target.value)}
               maxLength={180}
               rows={4}
-              className="mt-2 w-full resize-none rounded-2xl border border-[#E5E0D8] bg-[#F8F6F2] px-4 py-3 text-lg leading-8 text-[#3F3F3B] outline-none transition focus:border-[#A8B2A1] focus:bg-[#FCFBF8]"
+              className="mt-2 w-full resize-none rounded-2xl border border-default bg-subtle px-4 py-3 text-lg leading-8 text-ink outline-none transition focus:border-brand-muted focus:bg-surface"
               placeholder="이 컬렉션에 담고 싶은 분위기"
             />
           </label>
 
-          <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-2xl border border-[#E5E0D8] bg-[#F8F6F2] p-4 transition has-[:checked]:border-[#A8B2A1] has-[:checked]:bg-[#EAE3D8]/55">
+          <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-2xl border border-default bg-subtle p-4 transition has-[:checked]:border-brand-muted has-[:checked]:bg-[color:var(--color-accent-subtle)]">
             <input
               type="checkbox"
               checked={isPublic}
               onChange={(event) => setIsPublic(event.target.checked)}
-              className="mt-1 size-5 accent-[#4D5748]"
+              className="mt-1 size-5 accent-link"
             />
             <span>
-              <span className="block text-base font-semibold text-[#4D5748]">
+              <span className="block text-base font-semibold text-link">
                 공개 컬렉션으로 설정
               </span>
-              <span className="mt-1 block text-base leading-7 text-[#6B6B68]">
+              <span className="mt-1 block text-base leading-7 text-stone">
                 공개하면 다른 사람도 이 컬렉션을 볼 수 있어요.
               </span>
             </span>
@@ -287,33 +287,33 @@ export default function CollectionsList() {
           <button
             type="submit"
             disabled={isCreating}
-            className="mt-5 inline-flex min-h-13 w-full items-center justify-center rounded-full bg-[#A8B2A1] px-6 py-3 text-lg font-semibold text-[#2F362D] shadow-[0_10px_24px_rgba(77,87,72,0.14)] transition hover:bg-[#4D5748] hover:text-white focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748] disabled:cursor-not-allowed disabled:opacity-70"
+            className="mt-5 inline-flex min-h-13 w-full items-center justify-center rounded-full bg-brand-muted px-6 py-3 text-lg font-semibold text-action-secondary-foreground shadow-sm transition hover:bg-brand-hover hover:text-inverse focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover disabled:cursor-not-allowed disabled:opacity-70"
           >
             {isCreating ? "만드는 중..." : "컬렉션 만들기"}
           </button>
 
           {errorMessage && (
-            <p className="mt-4 text-base font-medium leading-7 text-[#7A4B3A]">
+            <p className="mt-4 text-base font-medium leading-7 text-danger">
               {errorMessage}
             </p>
           )}
           {successMessage && (
-            <p className="mt-4 text-base font-medium leading-7 text-[#4D5748]">
+            <p className="mt-4 text-base font-medium leading-7 text-link">
               {successMessage}
             </p>
           )}
         </form>
       ) : (
-        <div className="rounded-3xl border border-[#E5E0D8] bg-[#FCFBF8] p-5 shadow-[0_14px_34px_rgba(77,87,72,0.06)] sm:p-6">
-          <h2 className="text-2xl font-semibold tracking-normal text-[#3F3F3B]">
+        <div className="rounded-xl border border-default bg-surface p-5 shadow-card sm:p-6">
+          <h2 className="text-2xl font-semibold tracking-normal text-ink">
             컬렉션을 만들려면 로그인해주세요
           </h2>
-          <p className="mt-3 text-lg leading-8 text-[#6B6B68]">
+          <p className="mt-3 text-lg leading-8 text-stone">
             로그인하면 나만의 컬렉션을 만들고 공개 여부를 설정할 수 있어요.
           </p>
           <Link
             href="/login"
-            className="mt-6 inline-flex min-h-12 items-center justify-center rounded-full bg-[#A8B2A1] px-6 py-3 text-lg font-semibold text-[#2F362D] shadow-[0_10px_24px_rgba(77,87,72,0.14)] transition hover:bg-[#4D5748] hover:text-white focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748]"
+            className="mt-6 inline-flex min-h-12 items-center justify-center rounded-full bg-brand-muted px-6 py-3 text-lg font-semibold text-action-secondary-foreground shadow-sm transition hover:bg-brand-hover hover:text-inverse focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover"
           >
             로그인하기
           </Link>
@@ -324,10 +324,10 @@ export default function CollectionsList() {
         {userId && (
           <section className="space-y-4">
             <div className="space-y-2">
-              <h2 className="text-3xl font-semibold tracking-normal text-[#3F3F3B]">
+              <h2 className="text-3xl font-semibold tracking-normal text-ink">
                 내 컬렉션
               </h2>
-              <p className="text-lg leading-8 text-[#6B6B68]">
+              <p className="text-lg leading-8 text-stone">
                 내가 만든 공개/비공개 컬렉션을 모아봅니다.
               </p>
             </div>
@@ -349,10 +349,10 @@ export default function CollectionsList() {
 
         <section className="space-y-4">
           <div className="space-y-2">
-            <h2 className="text-3xl font-semibold tracking-normal text-[#3F3F3B]">
+            <h2 className="text-3xl font-semibold tracking-normal text-ink">
               공개 컬렉션
             </h2>
-            <p className="text-lg leading-8 text-[#6B6B68]">
+            <p className="text-lg leading-8 text-stone">
               다른 사람이 공개한 장소 아카이브를 조용히 둘러보세요.
             </p>
           </div>

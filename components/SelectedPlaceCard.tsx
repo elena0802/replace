@@ -17,35 +17,35 @@ export default function SelectedPlaceCard({
   const address = getPlaceAddress(place);
 
   return (
-    <div className="rounded-2xl border border-[#E5E0D8] bg-[#FFFDF8] p-4 shadow-[0_10px_24px_rgba(77,87,72,0.08)]">
+    <div className="rounded-2xl border border-default bg-surface p-4 shadow-sm">
       <div className="flex items-start justify-between gap-3">
-        <p className="text-sm font-semibold text-[#4D5748]">선택한 장소</p>
+        <p className="text-sm font-semibold text-link">선택한 장소</p>
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={onChangePlace}
-            className="rounded-full border border-[#DCD5C8] px-3 py-1 text-sm font-semibold text-[#4D5748] transition hover:border-[#4D5748] hover:bg-[#F8F6F2]"
+            className="rounded-full border border-default px-3 py-1 text-sm font-semibold text-link transition hover:border-brand-hover hover:bg-subtle"
           >
             변경
           </button>
           <button
             type="button"
             onClick={onClearPlace}
-            className="flex size-8 items-center justify-center rounded-full border border-[#DCD5C8] text-lg font-semibold leading-none text-[#6B6B68] transition hover:border-[#4D5748] hover:bg-[#F8F6F2] hover:text-[#3F3F3B]"
+            className="flex size-8 items-center justify-center rounded-full border border-default text-lg font-semibold leading-none text-stone transition hover:border-brand-hover hover:bg-subtle hover:text-ink"
             aria-label="선택한 장소 지우기"
           >
             ×
           </button>
         </div>
       </div>
-      <p className="mt-2 text-lg font-semibold text-[#3F3F3B]">{place.name}</p>
+      <p className="mt-2 text-lg font-semibold text-ink">{place.name}</p>
       {place.category && (
-        <p className="mt-1 text-sm font-medium text-[#4D5748]">
+        <p className="mt-1 text-sm font-medium text-link">
           {place.category}
         </p>
       )}
       {address && (
-        <p className="mt-1 text-sm font-medium leading-6 text-[#6B6B68]">
+        <p className="mt-1 text-sm font-medium leading-6 text-stone">
           {address}
         </p>
       )}
@@ -54,7 +54,7 @@ export default function SelectedPlaceCard({
           href={place.mapUrl}
           target="_blank"
           rel="noreferrer noopener"
-          className="mt-3 inline-flex text-sm font-semibold text-[#4D5748] underline decoration-[#A8B2A1] underline-offset-4"
+          className="mt-3 inline-flex text-sm font-semibold text-link underline decoration-[#A8B2A1] underline-offset-4"
         >
           네이버 지도에서 보기
         </a>

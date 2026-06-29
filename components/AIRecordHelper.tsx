@@ -122,42 +122,42 @@ export default function AIRecordHelper({
   }
 
   return (
-    <div className="rounded-2xl border border-[#E5E0D8] bg-[#FFFDF8] p-4">
+    <div className="rounded-2xl border border-default bg-surface p-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-base leading-7 text-[#6B6B68]">
+        <p className="text-base leading-7 text-stone">
           짧게 적은 내용을 따뜻한 기록 문장으로 조용히 다듬어드려요.
         </p>
         <button
           type="button"
           onClick={handleGenerateSuggestion}
           disabled={isGenerateDisabled}
-          className="min-h-12 rounded-full border border-[#DCD5C8] bg-[#F8F6F2] px-5 py-3 text-base font-semibold text-[#4D5748] transition hover:border-[#4D5748] hover:bg-[#EAE3D8] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748] disabled:cursor-not-allowed disabled:opacity-70"
+          className="min-h-12 rounded-full border border-default bg-subtle px-5 py-3 text-base font-semibold text-link transition hover:border-brand-hover hover:bg-[color:var(--color-accent)] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover disabled:cursor-not-allowed disabled:opacity-70"
         >
           {isLoading ? "기록을 다듬는 중..." : "AI가 기록 다듬기"}
         </button>
       </div>
 
       {shouldShowShortMemoGuide && (
-        <p className="mt-3 text-base leading-7 text-[#7A5B3A]">
+        <p className="mt-3 text-base leading-7 text-danger">
           {recordHelperShortMemoMessage}
         </p>
       )}
 
       {shouldShowMemoLimitGuide && (
-        <p className="mt-3 text-base leading-7 text-[#6B6B68]">
+        <p className="mt-3 text-base leading-7 text-stone">
           긴 기록은 앞 500자까지만 다듬기에 사용돼요.
         </p>
       )}
 
       {isLoading && (
-        <p className="mt-3 text-base leading-7 text-[#6B6B68]" role="status">
+        <p className="mt-3 text-base leading-7 text-stone" role="status">
           문장을 차분히 정리하는 중입니다.
         </p>
       )}
 
       {errorMessage && (
         <p
-          className="mt-3 rounded-2xl border border-[#E5C8BA] bg-[#FFF8F4] px-4 py-3 text-base font-semibold leading-7 text-[#7A4B3A]"
+          className="mt-3 rounded-2xl border border-danger-border bg-danger-surface px-4 py-3 text-base font-semibold leading-7 text-danger"
           role="alert"
         >
           {errorMessage}
@@ -165,12 +165,12 @@ export default function AIRecordHelper({
       )}
 
       {suggestion && (
-        <div className="mt-4 rounded-2xl border border-[#E5E0D8] bg-white p-4">
-          <p className="text-lg font-semibold text-[#3F3F3B]">다듬은 기록</p>
-          <p className="mt-1 text-base leading-7 text-[#6B6B68]">
+        <div className="mt-4 rounded-2xl border border-default bg-surface p-4">
+          <p className="text-lg font-semibold text-ink">다듬은 기록</p>
+          <p className="mt-1 text-base leading-7 text-stone">
             마음에 들면 적용해보세요.
           </p>
-          <p className="mt-3 whitespace-pre-line text-lg leading-8 text-[#4D5748]">
+          <p className="mt-3 whitespace-pre-line text-lg leading-8 text-link">
             {suggestion}
           </p>
           <div className="mt-4 flex flex-col gap-3 sm:flex-row">
@@ -178,7 +178,7 @@ export default function AIRecordHelper({
               type="button"
               onClick={handleApplySuggestion}
               disabled={isResultActionDisabled}
-              className="min-h-12 rounded-full bg-[#A8B2A1] px-5 py-3 text-base font-semibold text-[#2F362D] transition hover:bg-[#4D5748] hover:text-white focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748] disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:bg-[#A8B2A1] disabled:hover:text-[#2F362D]"
+              className="min-h-12 rounded-full bg-brand-muted px-5 py-3 text-base font-semibold text-action-secondary-foreground transition hover:bg-brand-hover hover:text-inverse focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:bg-brand-muted disabled:hover:text-action-secondary-foreground"
             >
               적용하기
             </button>
@@ -186,13 +186,13 @@ export default function AIRecordHelper({
               type="button"
               onClick={handleGenerateSuggestion}
               disabled={isGenerateDisabled}
-              className="min-h-12 rounded-full border border-[#DCD5C8] bg-[#FFFDF8] px-5 py-3 text-base font-semibold text-[#4D5748] transition hover:border-[#4D5748] hover:bg-[#F8F6F2] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748] disabled:cursor-not-allowed disabled:opacity-70"
+              className="min-h-12 rounded-full border border-default bg-surface px-5 py-3 text-base font-semibold text-link transition hover:border-brand-hover hover:bg-subtle focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover disabled:cursor-not-allowed disabled:opacity-70"
             >
               다시 다듬기
             </button>
           </div>
           {appliedMessage && (
-            <p className="mt-3 text-base font-semibold leading-7 text-[#4D5748]">
+            <p className="mt-3 text-base font-semibold leading-7 text-link">
               {appliedMessage}
             </p>
           )}

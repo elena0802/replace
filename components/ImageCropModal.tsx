@@ -83,25 +83,25 @@ export default function ImageCropModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-[#2F362D]/45 px-4 py-5 backdrop-blur-sm sm:items-center"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-scrim px-4 py-5 backdrop-blur-sm sm:items-center"
       role="dialog"
       aria-modal="true"
       aria-labelledby="image-scene-title"
     >
-      <div className="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-3xl border border-[#E5E0D8] bg-[#FCFBF8] p-5 shadow-[0_24px_80px_rgba(47,54,45,0.28)] sm:p-6">
+      <div className="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-xl border border-default bg-surface p-5 shadow-xl sm:p-6">
         <div className="space-y-2">
           <h2
             id="image-scene-title"
-            className="text-2xl font-semibold tracking-normal text-[#3F3F3B]"
+            className="text-2xl font-semibold tracking-normal text-ink"
           >
             기억하고 싶은 장면을 선택하세요
           </h2>
-          <p className="text-lg leading-8 text-[#6B6B68]">
+          <p className="text-lg leading-8 text-stone">
             사진을 움직이거나 확대해서 좋은 순간이 잘 보이도록 맞춰보세요.
           </p>
         </div>
 
-        <div className="mt-5 overflow-hidden rounded-3xl border border-[#E5E0D8] bg-[#2F362D]">
+        <div className="mt-5 overflow-hidden rounded-xl border border-default bg-brand-hover">
           <div className="relative h-[52vh] min-h-72 max-h-[520px]">
             <Cropper
               image={imageSrc}
@@ -124,7 +124,7 @@ export default function ImageCropModal({
           </div>
         </div>
 
-        <label className="mt-5 block space-y-3 text-lg font-semibold text-[#3F3F3B]">
+        <label className="mt-5 block space-y-3 text-lg font-semibold text-ink">
           확대 정도
           <input
             type="range"
@@ -133,13 +133,13 @@ export default function ImageCropModal({
             step={0.01}
             value={zoom}
             onChange={(event) => setZoom(Number(event.target.value))}
-            className="w-full accent-[#4D5748]"
+            className="w-full accent-link"
           />
         </label>
 
         {errorMessage && (
           <p
-            className="mt-4 rounded-2xl border border-[#E5C8BA] bg-[#FFF8F4] px-4 py-3 text-lg font-semibold leading-8 text-[#7A4B3A]"
+            className="mt-4 rounded-2xl border border-danger-border bg-danger-surface px-4 py-3 text-lg font-semibold leading-8 text-danger"
             role="alert"
           >
             {errorMessage}
@@ -151,7 +151,7 @@ export default function ImageCropModal({
             type="button"
             onClick={onCancel}
             disabled={isProcessing}
-            className="min-h-14 rounded-full border border-[#E5E0D8] bg-[#FCFBF8] px-6 py-3 text-lg font-semibold text-[#4D5748] transition hover:bg-[#EAE3D8] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748] disabled:cursor-not-allowed disabled:opacity-60"
+            className="min-h-14 rounded-full border border-default bg-surface px-6 py-3 text-lg font-semibold text-link transition hover:bg-[color:var(--color-accent)] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover disabled:cursor-not-allowed disabled:opacity-60"
           >
             취소
           </button>
@@ -159,7 +159,7 @@ export default function ImageCropModal({
             type="button"
             onClick={handleComplete}
             disabled={isProcessing}
-            className="min-h-14 rounded-full bg-[#A8B2A1] px-6 py-3 text-lg font-semibold text-[#2F362D] shadow-[0_10px_24px_rgba(77,87,72,0.14)] transition hover:bg-[#4D5748] hover:text-white focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748] disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:bg-[#A8B2A1] disabled:hover:text-[#2F362D]"
+            className="min-h-14 rounded-full bg-brand-muted px-6 py-3 text-lg font-semibold text-action-secondary-foreground shadow-sm transition hover:bg-brand-hover hover:text-inverse focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:bg-brand-muted disabled:hover:text-action-secondary-foreground"
           >
             {isProcessing ? "장면을 준비하는 중..." : "이 장면으로 기록하기"}
           </button>

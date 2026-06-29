@@ -15,7 +15,7 @@ export default function CollectionCoverImage({
 }: CollectionCoverImageProps) {
   return (
     <div
-      className={`relative aspect-[3/2] w-full overflow-hidden rounded-xl border border-[#E5E0D8] bg-[#EAE3D8] ${className}`}
+      className={`relative aspect-[3/2] w-full overflow-hidden rounded-xl border border-default bg-[color:var(--color-accent)] ${className}`}
     >
       {imageUrl ? (
         <div
@@ -26,10 +26,10 @@ export default function CollectionCoverImage({
         />
       ) : (
         <div className="flex h-full w-full flex-col items-center justify-center gap-2 px-6 text-center">
-          <span className="text-xl font-semibold text-[#4D5748]">
+          <span className="text-xl font-semibold text-link">
             {placeholderTitle}
           </span>
-          <span className="text-base font-medium leading-7 text-[#6B6B68]">
+          <span className="text-base font-medium leading-7 text-stone">
             {placeholderDescription}
           </span>
         </div>

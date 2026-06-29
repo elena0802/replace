@@ -174,7 +174,7 @@ export default function SavePlaceButton({ placeId }: SavePlaceButtonProps) {
         aria-pressed={isSaved}
         disabled={disabled}
         onClick={handleToggle}
-        className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[#D7DED0] bg-[#FCFBF8] px-5 py-3 text-lg font-semibold text-[#4D5748] transition hover:bg-[#EAE3D8]/45 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748] disabled:cursor-not-allowed disabled:opacity-70"
+        className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-default bg-surface px-5 py-3 text-lg font-semibold text-link transition hover:bg-[color:var(--color-accent)]/45 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover disabled:cursor-not-allowed disabled:opacity-70"
       >
         <span aria-hidden="true" className="text-xl leading-none">
           {isSaved ? "♥" : "♡"}
@@ -187,8 +187,8 @@ export default function SavePlaceButton({ placeId }: SavePlaceButtonProps) {
           aria-live="polite"
           className={
             notice.tone === "error"
-              ? "max-w-64 text-sm font-medium leading-6 text-[#7A4B3A]"
-              : "max-w-64 text-sm font-medium leading-6 text-[#4D5748]"
+              ? "max-w-64 text-sm font-medium leading-6 text-danger"
+              : "max-w-64 text-sm font-medium leading-6 text-link"
           }
         >
           {notice.message}

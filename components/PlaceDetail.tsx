@@ -74,9 +74,9 @@ function formatDate(value: string | null | undefined) {
 
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="border-b border-[#EFEAE2] pb-4 last:border-b-0 last:pb-0">
-      <p className="text-base font-medium text-[#6B6B68]">{label}</p>
-      <p className="mt-1 text-xl font-semibold leading-8 text-[#3F3F3B]">
+    <div className="border-b border-border-muted pb-4 last:border-b-0 last:pb-0">
+      <p className="text-base font-medium text-stone">{label}</p>
+      <p className="mt-1 text-xl font-semibold leading-8 text-ink">
         {value || "기록 없음"}
       </p>
     </div>
@@ -209,13 +209,13 @@ export default function PlaceDetail({ id }: PlaceDetailProps) {
         <div className="flex flex-wrap gap-4">
           <Link
             href="/explore"
-            className="inline-flex text-lg font-semibold text-[#4D5748] hover:text-[#3F3F3B]"
+            className="inline-flex text-lg font-semibold text-link hover:text-ink"
           >
             둘러보기로 돌아가기
           </Link>
           <Link
             href="/my-places"
-            className="inline-flex text-lg font-semibold text-[#6B6B68] hover:text-[#3F3F3B]"
+            className="inline-flex text-lg font-semibold text-stone hover:text-ink"
           >
             내 장소로 돌아가기
           </Link>
@@ -230,7 +230,7 @@ export default function PlaceDetail({ id }: PlaceDetailProps) {
               <>
                 <Link
                   href={`/places/${place.id}/edit`}
-                  className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#A8B2A1] px-5 py-3 text-lg font-semibold text-[#2F362D] shadow-[0_8px_18px_rgba(77,87,72,0.12)] transition hover:bg-[#4D5748] hover:text-white focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748]"
+                  className="inline-flex min-h-12 items-center justify-center rounded-full bg-brand-muted px-5 py-3 text-lg font-semibold text-action-secondary-foreground shadow-sm transition hover:bg-brand-hover hover:text-inverse focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover"
                 >
                   수정하기
                 </Link>
@@ -238,7 +238,7 @@ export default function PlaceDetail({ id }: PlaceDetailProps) {
                   type="button"
                   onClick={handleDelete}
                   disabled={isDeleting}
-                  className="inline-flex min-h-12 items-center justify-center rounded-full border border-[#D9C3B6] bg-[#FFF8F4] px-5 py-3 text-lg font-semibold text-[#7A4B3A] transition hover:border-[#B89282] hover:bg-[#F6EAE3] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#7A4B3A] disabled:cursor-not-allowed disabled:opacity-70"
+                  className="inline-flex min-h-12 items-center justify-center rounded-full border border-danger-border bg-danger-surface px-5 py-3 text-lg font-semibold text-danger transition hover:border-danger-border-hover hover:bg-danger-surface focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-danger disabled:cursor-not-allowed disabled:opacity-70"
                 >
                   {isDeleting ? "삭제하는 중..." : "삭제하기"}
                 </button>
@@ -254,8 +254,8 @@ export default function PlaceDetail({ id }: PlaceDetailProps) {
         </StatusMessage>
       )}
 
-      <article className="overflow-hidden rounded-3xl border border-[#E5E0D8] bg-[#FCFBF8] shadow-[0_18px_44px_rgba(77,87,72,0.07)]">
-        <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#EAE3D8] md:aspect-[16/7]">
+      <article className="overflow-hidden rounded-xl border border-default bg-surface shadow-card">
+        <div className="relative aspect-[16/10] w-full overflow-hidden bg-[color:var(--color-accent)] md:aspect-[16/7]">
           {place.image_url ? (
             <div
               className="h-full w-full bg-cover bg-center"
@@ -265,10 +265,10 @@ export default function PlaceDetail({ id }: PlaceDetailProps) {
             />
           ) : (
             <div className="flex h-full w-full flex-col items-center justify-center gap-3 px-6 text-center">
-              <span className="text-3xl font-semibold text-[#4D5748]">
+              <span className="text-3xl font-semibold text-link">
                 사진이 아직 없어요
               </span>
-              <span className="text-lg font-medium text-[#6B6B68]">
+              <span className="text-lg font-medium text-stone">
                 좋은 순간을 사진으로 남겨보세요
               </span>
             </div>
@@ -278,28 +278,28 @@ export default function PlaceDetail({ id }: PlaceDetailProps) {
         <div className="grid gap-8 p-5 sm:p-8 lg:grid-cols-[1fr_340px]">
           <div className="space-y-8">
             <div className="flex flex-wrap items-center gap-3">
-              <span className="rounded-full bg-[#EAE3D8] px-4 py-2 text-lg font-medium text-[#4D5748]">
+              <span className="rounded-full bg-[color:var(--color-accent)] px-4 py-2 text-lg font-medium text-link">
                 {place.category}
               </span>
-              <span className="text-xl font-medium text-[#6B6B68]">
+              <span className="text-xl font-medium text-stone">
                 {place.region}
               </span>
-              <span className="rounded-full border border-[#E5E0D8] px-4 py-2 text-lg font-medium text-[#6B6B68]">
+              <span className="rounded-full border border-default px-4 py-2 text-lg font-medium text-stone">
                 {place.is_public ? "공개" : "비공개"}
               </span>
             </div>
 
             <div className="space-y-4">
-              <h1 className="text-4xl font-semibold leading-tight tracking-normal text-[#3F3F3B] sm:text-5xl">
+              <h1 className="text-4xl font-semibold leading-tight tracking-normal text-ink sm:text-5xl">
                 {place.name}
               </h1>
-              <p className="text-2xl leading-10 text-[#6B6B68]">
+              <p className="text-2xl leading-10 text-stone">
                 {place.memory}
               </p>
             </div>
 
             <section className="space-y-3">
-              <h2 className="text-2xl font-semibold text-[#3F3F3B]">
+              <h2 className="text-2xl font-semibold text-ink">
                 공간 정보
               </h2>
               {place.space_tags.length > 0 ? (
@@ -307,14 +307,14 @@ export default function PlaceDetail({ id }: PlaceDetailProps) {
                   {place.space_tags.map((tag) => (
                     <span
                       key={tag}
-                      className="rounded-full bg-[#EAE3D8] px-4 py-2 text-base font-medium text-[#4D5748]"
+                      className="rounded-full bg-[color:var(--color-accent)] px-4 py-2 text-base font-medium text-link"
                     >
                       {tag}
                     </span>
                   ))}
                 </div>
               ) : (
-                <p className="text-lg leading-8 text-[#6B6B68]">
+                <p className="text-lg leading-8 text-stone">
                   남겨진 공간 정보가 없어요.
                 </p>
               )}
@@ -328,8 +328,8 @@ export default function PlaceDetail({ id }: PlaceDetailProps) {
             />
           </div>
 
-          <aside className="space-y-5 rounded-2xl bg-[#F8F6F2] p-5">
-            <h2 className="text-2xl font-semibold text-[#3F3F3B]">
+          <aside className="space-y-5 rounded-2xl bg-subtle p-5">
+            <h2 className="text-2xl font-semibold text-ink">
               머물렀던 순간
             </h2>
             <div className="space-y-4">

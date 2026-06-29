@@ -34,29 +34,29 @@ export default async function PaymentFailPage({
 
   return (
     <div className="mx-auto w-full max-w-6xl px-5 py-12 lg:px-8 lg:py-16">
-      <section className="mx-auto max-w-2xl rounded-[28px] border border-[#E5C8BA] bg-[#FCFBF8] p-7 text-center shadow-[0_18px_44px_rgba(77,87,72,0.08)] sm:p-9">
-        <p className="text-lg font-semibold text-[#7A4B3A]">결제 실패</p>
-        <h1 className="mt-3 text-3xl font-semibold tracking-normal text-[#3F3F3B]">
+      <section className="mx-auto max-w-2xl rounded-xl border border-danger-border bg-surface p-7 text-center shadow-card sm:p-9">
+        <p className="text-lg font-semibold text-danger">결제 실패</p>
+        <h1 className="mt-3 text-3xl font-semibold tracking-normal text-ink">
           Premium 결제를 완료하지 못했어요
         </h1>
-        <p className="mx-auto mt-4 max-w-xl text-lg leading-8 text-[#6B6B68]">
+        <p className="mx-auto mt-4 max-w-xl text-lg leading-8 text-stone">
           {displayMessage}
         </p>
         {orderId && (
-          <div className="mt-6 rounded-2xl bg-[#F7F5EF] px-5 py-4 text-sm font-semibold leading-7 text-[#7D786F]">
+          <div className="mt-6 rounded-2xl bg-page px-5 py-4 text-sm font-semibold leading-7 text-meta">
             <p>주문번호 {orderId}</p>
           </div>
         )}
         <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center">
           <Link
             href="/pricing"
-            className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#87977F] px-7 py-3 text-base font-semibold text-[#FCFBF8] transition hover:bg-[#4D5748] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748]"
+            className="inline-flex min-h-12 items-center justify-center rounded-full bg-brand px-7 py-3 text-base font-semibold text-brand-foreground transition hover:bg-brand-hover focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover"
           >
             다시 시도하기
           </Link>
           <Link
             href="/"
-            className="inline-flex min-h-12 items-center justify-center rounded-full border border-[#D8D1C6] bg-[#FCFBF8] px-7 py-3 text-base font-semibold text-[#4D5748] transition hover:border-[#A8B2A1] hover:bg-[#F3EFE8] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748]"
+            className="inline-flex min-h-12 items-center justify-center rounded-full border border-default bg-surface px-7 py-3 text-base font-semibold text-link transition hover:border-brand-muted hover:bg-subtle focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover"
           >
             홈으로 이동
           </Link>

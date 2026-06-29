@@ -178,8 +178,8 @@ export default function SaveToCollectionButton({
       : "컬렉션에 저장";
 
   const buttonClassName = isSaved
-    ? "inline-flex min-h-12 min-w-44 items-center justify-center rounded-full border border-[#A8B2A1] bg-[#EAE3D8] px-5 py-3 text-lg font-semibold text-[#3F4A3D] transition hover:bg-[#DDE6D8] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748]"
-    : "inline-flex min-h-12 min-w-44 items-center justify-center rounded-full border border-[#D7DED0] bg-[#FCFBF8] px-5 py-3 text-lg font-semibold text-[#4D5748] transition hover:bg-[#EAE3D8]/45 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748]";
+    ? "inline-flex min-h-12 min-w-44 items-center justify-center rounded-full border border-brand-muted bg-[color:var(--color-accent)] px-5 py-3 text-lg font-semibold text-action-secondary-foreground transition hover:bg-[color:var(--color-accent-subtle)] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover"
+    : "inline-flex min-h-12 min-w-44 items-center justify-center rounded-full border border-default bg-surface px-5 py-3 text-lg font-semibold text-link transition hover:bg-[color:var(--color-accent)]/45 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover";
 
   return (
     <>
@@ -193,25 +193,25 @@ export default function SaveToCollectionButton({
 
       {isOpen && (
         <div
-          className="fixed inset-0 z-30 flex items-end bg-[#3F3F3B]/35 px-4 py-4 sm:items-center sm:justify-center"
+          className="fixed inset-0 z-30 flex items-end bg-scrim px-4 py-4 sm:items-center sm:justify-center"
           role="dialog"
           aria-modal="true"
           aria-label="컬렉션에 저장"
         >
-          <div className="w-full max-w-md rounded-3xl border border-[#E5E0D8] bg-[#FCFBF8] p-5 shadow-[0_24px_70px_rgba(63,63,59,0.24)]">
+          <div className="w-full max-w-md rounded-xl border border-default bg-surface p-5 shadow-xl">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h2 className="text-2xl font-semibold text-[#3F3F3B]">
+                <h2 className="text-2xl font-semibold text-ink">
                   컬렉션에 저장
                 </h2>
-                <p className="mt-2 text-lg leading-8 text-[#6B6B68]">
+                <p className="mt-2 text-lg leading-8 text-stone">
                   이 장소를 담을 컬렉션을 선택해주세요.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-[#E5E0D8] text-xl font-semibold text-[#6B6B68] transition hover:bg-[#F8F6F2] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-[#4D5748]"
+                className="inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-default text-xl font-semibold text-stone transition hover:bg-subtle focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-brand-hover"
                 aria-label="닫기"
               >
                 ×
@@ -219,20 +219,20 @@ export default function SaveToCollectionButton({
             </div>
 
             {isLoading ? (
-              <p className="mt-6 rounded-2xl bg-[#F8F6F2] px-4 py-5 text-center text-lg font-semibold text-[#4D5748]">
+              <p className="mt-6 rounded-2xl bg-subtle px-4 py-5 text-center text-lg font-semibold text-link">
                 컬렉션을 불러오는 중...
               </p>
             ) : collections.length === 0 ? (
-              <div className="mt-6 rounded-2xl bg-[#F8F6F2] px-4 py-5">
-                <p className="text-lg font-semibold text-[#3F3F3B]">
+              <div className="mt-6 rounded-2xl bg-subtle px-4 py-5">
+                <p className="text-lg font-semibold text-ink">
                   아직 컬렉션이 없어요.
                 </p>
-                <p className="mt-2 text-base leading-7 text-[#6B6B68]">
+                <p className="mt-2 text-base leading-7 text-stone">
                   컬렉션을 먼저 만들고 다시 저장해보세요.
                 </p>
                 <Link
                   href="/collections"
-                  className="mt-4 inline-flex min-h-11 items-center justify-center rounded-full bg-[#A8B2A1] px-5 py-2.5 text-base font-semibold text-[#2F362D]"
+                  className="mt-4 inline-flex min-h-11 items-center justify-center rounded-full bg-brand-muted px-5 py-2.5 text-base font-semibold text-action-secondary-foreground"
                 >
                   컬렉션 만들기
                 </Link>
@@ -242,7 +242,7 @@ export default function SaveToCollectionButton({
                 {collections.map((collection) => (
                   <label
                     key={collection.id}
-                    className="flex cursor-pointer items-start gap-3 rounded-2xl border border-[#E5E0D8] bg-[#F8F6F2] p-4 transition has-[:checked]:border-[#A8B2A1] has-[:checked]:bg-[#EAE3D8]/55"
+                    className="flex cursor-pointer items-start gap-3 rounded-2xl border border-default bg-subtle p-4 transition has-[:checked]:border-brand-muted has-[:checked]:bg-[color:var(--color-accent-subtle)]"
                   >
                     <input
                       type="radio"
@@ -250,13 +250,13 @@ export default function SaveToCollectionButton({
                       value={collection.id}
                       checked={selectedCollectionId === collection.id}
                       onChange={() => setSelectedCollectionId(collection.id)}
-                      className="mt-1 size-5 accent-[#4D5748]"
+                      className="mt-1 size-5 accent-link"
                     />
                     <span className="min-w-0">
-                      <span className="block text-lg font-semibold leading-7 text-[#3F3F3B]">
+                      <span className="block text-lg font-semibold leading-7 text-ink">
                         {collection.name}
                       </span>
-                      <span className="mt-1 block text-base leading-7 text-[#6B6B68]">
+                      <span className="mt-1 block text-base leading-7 text-stone">
                         {collection.placeCount}곳
                       </span>
                     </span>
@@ -269,7 +269,7 @@ export default function SaveToCollectionButton({
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="inline-flex min-h-12 items-center justify-center rounded-full border border-[#D7DED0] px-5 py-3 text-lg font-semibold text-[#4D5748] transition hover:bg-[#EAE3D8]/45"
+                className="inline-flex min-h-12 items-center justify-center rounded-full border border-default px-5 py-3 text-lg font-semibold text-link transition hover:bg-[color:var(--color-accent)]/45"
               >
                 취소
               </button>
@@ -279,7 +279,7 @@ export default function SaveToCollectionButton({
                 disabled={
                   collections.length === 0 || !selectedCollectionId || isSaving
                 }
-                className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#A8B2A1] px-5 py-3 text-lg font-semibold text-[#2F362D] shadow-[0_10px_24px_rgba(77,87,72,0.14)] transition hover:bg-[#4D5748] hover:text-white disabled:cursor-not-allowed disabled:opacity-70"
+                className="inline-flex min-h-12 items-center justify-center rounded-full bg-brand-muted px-5 py-3 text-lg font-semibold text-action-secondary-foreground shadow-sm transition hover:bg-brand-hover hover:text-inverse disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {isSaving ? "저장 중..." : "저장"}
               </button>

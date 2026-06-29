@@ -134,11 +134,11 @@ export default function EditPlaceForm({ id }: EditPlaceFormProps) {
   return (
     <div className="mx-auto w-full max-w-4xl px-5 py-12 lg:px-8 lg:py-16">
       <div className="mb-8 space-y-3">
-        <p className="text-lg font-medium text-[#4D5748]">기록 수정</p>
-        <h1 className="text-4xl font-semibold leading-tight tracking-normal text-[#3F3F3B]">
+        <p className="text-lg font-medium text-link">기록 수정</p>
+        <h1 className="text-4xl font-semibold leading-tight tracking-normal text-ink">
           {placeName || "장소 기록"}을 다시 정리하세요
         </h1>
-        <p className="text-xl leading-9 text-[#6B6B68]">
+        <p className="text-xl leading-9 text-stone">
           남겨둔 좋은 시간의 세부 내용을 차분히 다듬어보세요.
         </p>
       </div>

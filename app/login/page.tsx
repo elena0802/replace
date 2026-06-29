@@ -38,7 +38,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           }
         `}
       </style>
-      <div data-replace-auth-page className="min-h-screen overflow-x-hidden bg-[#F7F3EC]">
+      <div data-replace-auth-page className="min-h-screen overflow-x-hidden bg-page">
         <div
           className="relative flex min-h-screen items-center justify-center overflow-x-hidden px-5 py-5 sm:px-6 sm:py-6 lg:px-8"
           style={{
@@ -52,11 +52,11 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             <header className="w-full text-center">
               <Link
                 href="/"
-                className="text-[2.25rem] font-semibold leading-none tracking-normal text-[#2F3B31] transition hover:opacity-80 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748] sm:text-[2.5rem]"
+                className="text-[2.25rem] font-semibold leading-none tracking-normal text-[#2F3B31] transition hover:opacity-80 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover sm:text-[2.5rem]"
               >
                 Re:Place
               </Link>
-              <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-[#6F6A62] sm:mt-5">
+              <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-stone sm:mt-5">
                 <span className="block sm:inline">기록은 쌓이고,</span>{" "}
                 <span className="block sm:inline">좋아했던 순간은 오래 남습니다.</span>
               </p>
@@ -66,18 +66,18 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               <LoginForm initialErrorMessage={initialErrorMessage} />
             </div>
 
-            <footer className="w-full pt-5 text-center text-xs leading-6 text-[#7D786F] sm:text-sm">
+            <footer className="w-full pt-5 text-center text-xs leading-6 text-meta sm:text-sm">
               <p>Re:Place - 좋은 장소와 시간을 기록하는 라이프스타일 아카이브</p>
               <div className="mt-2 flex items-center justify-center gap-4">
                 <Link
                   href="/login#terms"
-                  className="transition hover:text-[#4D5748] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-[#4D5748]"
+                  className="transition hover:text-link focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-brand-hover"
                 >
                   이용약관
                 </Link>
                 <Link
                   href="/login#privacy"
-                  className="transition hover:text-[#4D5748] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-[#4D5748]"
+                  className="transition hover:text-link focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-brand-hover"
                 >
                   개인정보처리방침
                 </Link>

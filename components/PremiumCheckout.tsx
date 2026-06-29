@@ -233,7 +233,7 @@ export default function PremiumCheckout() {
         type="button"
         onClick={handleStartPremium}
         disabled={isPreparing || status === "requesting"}
-        className="inline-flex min-h-14 w-full items-center justify-center rounded-full bg-[#87977F] px-7 py-4 text-lg font-semibold text-[#FCFBF8] shadow-[0_10px_24px_rgba(77,87,72,0.14)] transition hover:bg-[#4D5748] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748] disabled:cursor-not-allowed disabled:opacity-70"
+        className="inline-flex min-h-14 w-full items-center justify-center rounded-full bg-brand px-7 py-4 text-lg font-semibold text-brand-foreground shadow-sm transition hover:bg-brand-hover focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover disabled:cursor-not-allowed disabled:opacity-70"
       >
         {isPreparing ? "결제 준비 중..." : "Premium 시작하기"}
       </button>
@@ -241,33 +241,33 @@ export default function PremiumCheckout() {
       {message && (
         <div
           role="alert"
-          className="rounded-2xl border border-[#E5C8BA] bg-[#FFF8F4] px-4 py-3 text-base font-semibold leading-7 text-[#7A4B3A]"
+          className="rounded-2xl border border-danger-border bg-danger-surface px-4 py-3 text-base font-semibold leading-7 text-danger"
         >
           {message}
         </div>
       )}
 
       {checkout && (
-        <div className="space-y-5 border-t border-[#EFEAE2] pt-6">
-          <div className="flex flex-col gap-1 text-[#4D5748] sm:flex-row sm:items-end sm:justify-between">
+        <div className="space-y-5 border-t border-border-muted pt-6">
+          <div className="flex flex-col gap-1 text-link sm:flex-row sm:items-end sm:justify-between">
             <p className="text-xl font-semibold">Re:Place Premium</p>
             <p className="text-lg font-semibold">{PREMIUM_PRICE_LABEL}</p>
           </div>
 
           <div
             id="replace-payment-methods"
-            className="min-h-[190px] rounded-[24px] bg-white/70"
+            className="min-h-[190px] rounded-xl bg-surface/70"
           />
           <div
             id="replace-payment-agreement"
-            className="min-h-[64px] rounded-[24px] bg-white/70"
+            className="min-h-[64px] rounded-xl bg-surface/70"
           />
 
           <button
             type="button"
             onClick={handleRequestPayment}
             disabled={isPaymentButtonDisabled}
-            className="inline-flex min-h-14 w-full items-center justify-center rounded-full bg-[#4D5748] px-7 py-4 text-lg font-semibold text-white shadow-[0_10px_24px_rgba(77,87,72,0.16)] transition hover:bg-[#354033] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[#4D5748] disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex min-h-14 w-full items-center justify-center rounded-full bg-[#4D5748] px-7 py-4 text-lg font-semibold text-inverse shadow-sm transition hover:bg-brand-hover focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover disabled:cursor-not-allowed disabled:opacity-60"
           >
             {status === "requesting" ? "결제창 여는 중..." : "4,900원 결제하기"}
           </button>
