@@ -98,7 +98,7 @@ export default function FeaturedPlacesList() {
       ) : (
         <div className="grid gap-7 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
           {places.map((place) => (
-            <PlaceCard key={place.id} place={place} />
+            <PlaceCard key={place.id} place={place} variant="featured" />
           ))}
         </div>
       )}

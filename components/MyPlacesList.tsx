@@ -92,7 +92,7 @@ export default function MyPlacesList() {
     <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {places.map((place) => (
         <div key={place.id} className="relative">
-          <PlaceCard place={place} />
+          <PlaceCard place={place} variant="grid" />
           <span className="absolute right-4 top-4 rounded-full bg-[#FCFBF8]/95 px-3 py-1 text-base font-medium text-[#4D5748] shadow-[0_8px_18px_rgba(77,87,72,0.08)]">
             {place.is_public ? "공개" : "비공개"}
           </span>

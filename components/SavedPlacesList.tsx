@@ -108,7 +108,7 @@ export default function SavedPlacesList() {
     <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {savedPlaces.map((savedPlace) => (
         <div key={savedPlace.savedPlaceId} className="relative h-full">
-          <PlaceCard place={savedPlace.place} />
+          <PlaceCard place={savedPlace.place} variant="grid" />
           <span className="absolute right-4 top-4 rounded-full bg-[#FCFBF8]/95 px-3 py-1 text-base font-medium text-[#4D5748] shadow-[0_8px_18px_rgba(77,87,72,0.08)]">
             저장일 {formatSavedDate(savedPlace.savedAt)}
           </span>
