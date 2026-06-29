@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import CollectionCoverImage from "@/components/CollectionCoverImage";
+import CollectionGridSkeleton from "@/components/skeleton/CollectionGridSkeleton";
 import EmptyState from "@/components/EmptyState";
 import StatusMessage from "@/components/StatusMessage";
 import { mapSupabaseError } from "@/lib/errors/userMessages";
@@ -112,7 +113,7 @@ export default function CollectionsSection() {
       </div>
 
       {isLoading ? (
-        <StatusMessage>공개 컬렉션을 불러오는 중...</StatusMessage>
+        <CollectionGridSkeleton count={4} variant="carousel" />
       ) : errorMessage ? (
         <StatusMessage tone="error">{errorMessage}</StatusMessage>
       ) : collections.length === 0 ? (

@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 import CollectionCoverImage from "@/components/CollectionCoverImage";
+import CollectionsListSkeleton from "@/components/skeleton/CollectionsListSkeleton";
 import EmptyState from "@/components/EmptyState";
-import StatusMessage from "@/components/StatusMessage";
 import { withTimeout } from "@/lib/async/withTimeout";
 import { getSessionUser } from "@/lib/auth/getSessionUser";
 import {
@@ -225,7 +225,7 @@ export default function CollectionsList() {
   }
 
   if (isLoading) {
-    return <StatusMessage>컬렉션을 불러오는 중...</StatusMessage>;
+    return <CollectionsListSkeleton />;
   }
 
   return (

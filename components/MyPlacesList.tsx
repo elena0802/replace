@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import EmptyState from "@/components/EmptyState";
 import PlaceCard from "@/components/PlaceCard";
+import PlaceGridSkeleton from "@/components/skeleton/PlaceGridSkeleton";
 import StatusMessage from "@/components/StatusMessage";
 import { getCurrentUser } from "@/lib/auth/getCurrentUser";
 import { mapSupabaseError } from "@/lib/errors/userMessages";
@@ -59,7 +60,7 @@ export default function MyPlacesList() {
   }, []);
 
   if (isLoading) {
-    return <StatusMessage>기록을 불러오는 중...</StatusMessage>;
+    return <PlaceGridSkeleton />;
   }
 
   if (errorMessage) {

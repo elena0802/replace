@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import EmptyState from "@/components/EmptyState";
 import PlaceCard from "@/components/PlaceCard";
+import PlaceGridSkeleton from "@/components/skeleton/PlaceGridSkeleton";
 import StatusMessage from "@/components/StatusMessage";
 import { mapSupabaseError } from "@/lib/errors/userMessages";
 import { getSessionUser } from "@/lib/auth/getSessionUser";
@@ -85,7 +86,11 @@ export default function FeaturedPlacesList() {
       </div>
 
       {isLoading ? (
-        <StatusMessage>공개된 장소를 불러오는 중...</StatusMessage>
+        <PlaceGridSkeleton
+          count={3}
+          variant="featured"
+          className="grid gap-7 md:grid-cols-2 lg:grid-cols-3 lg:gap-8"
+        />
       ) : errorMessage ? (
         <StatusMessage tone="error">{errorMessage}</StatusMessage>
       ) : places.length === 0 ? (

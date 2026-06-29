@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
 import CollectionCoverImage from "@/components/CollectionCoverImage";
+import CollectionDetailSkeleton from "@/components/skeleton/CollectionDetailSkeleton";
 import EmptyState from "@/components/EmptyState";
 import PlaceCard from "@/components/PlaceCard";
 import StatusMessage from "@/components/StatusMessage";
@@ -261,7 +262,7 @@ export default function CollectionDetailView({ id }: CollectionDetailViewProps) 
   }
 
   if (isLoading) {
-    return <StatusMessage>컬렉션을 불러오는 중...</StatusMessage>;
+    return <CollectionDetailSkeleton />;
   }
 
   if (errorMessage) {
