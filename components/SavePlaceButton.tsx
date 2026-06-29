@@ -172,8 +172,8 @@ export default function SavePlaceButton({
   const disabled = isLoading || isMutating;
   const buttonClassName =
     size === "compact"
-      ? "inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-default bg-surface px-4 py-2.5 text-base font-medium text-link transition hover:bg-[color:var(--color-accent)]/45 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover disabled:cursor-not-allowed disabled:opacity-70"
-      : "inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-default bg-surface px-5 py-3 text-lg font-semibold text-link transition hover:bg-[color:var(--color-accent)]/45 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover disabled:cursor-not-allowed disabled:opacity-70";
+      ? "inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full border border-default bg-surface px-3.5 py-2.5 text-sm font-medium text-link transition-colors duration-200 hover:bg-[color:var(--color-accent)]/45 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover disabled:cursor-not-allowed disabled:opacity-70"
+      : "inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-default bg-surface px-5 py-3 text-lg font-semibold text-link transition-colors duration-200 hover:bg-[color:var(--color-accent)]/45 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover disabled:cursor-not-allowed disabled:opacity-70";
 
   return (
     <div className="flex flex-col items-start gap-2">
@@ -184,7 +184,7 @@ export default function SavePlaceButton({
         onClick={handleToggle}
         className={buttonClassName}
       >
-        <span aria-hidden="true" className="text-xl leading-none">
+        <span aria-hidden="true" className={size === "compact" ? "text-base leading-none" : "text-xl leading-none"}>
           {isSaved ? "♥" : "♡"}
         </span>
         {isSaved ? "저장됨" : "저장하기"}

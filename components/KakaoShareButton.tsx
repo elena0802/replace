@@ -113,8 +113,8 @@ export default function KakaoShareButton({
 
   const buttonClassName =
     size === "compact"
-      ? "inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-default bg-subtle px-4 py-2.5 text-base font-medium text-link transition hover:bg-[color:var(--color-accent)]/45 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover disabled:cursor-not-allowed disabled:opacity-70"
-      : "inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-default bg-subtle px-5 py-3 text-lg font-semibold text-link transition hover:bg-[color:var(--color-accent)]/45 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover disabled:cursor-not-allowed disabled:opacity-70";
+      ? "inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full border border-default bg-subtle px-3.5 py-2.5 text-sm font-medium text-link transition-colors duration-200 hover:bg-[color:var(--color-accent)]/45 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover disabled:cursor-not-allowed disabled:opacity-70"
+      : "inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-default bg-subtle px-5 py-3 text-lg font-semibold text-link transition-colors duration-200 hover:bg-[color:var(--color-accent)]/45 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover disabled:cursor-not-allowed disabled:opacity-70";
 
   return (
     <button
