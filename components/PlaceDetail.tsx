@@ -12,6 +12,11 @@ import SaveToCollectionButton from "@/components/SaveToCollectionButton";
 import StatusMessage from "@/components/StatusMessage";
 import { placeEssayRelations } from "@/data/placeEssayRelations";
 import { getCurrentUser } from "@/lib/auth/getCurrentUser";
+import {
+  mapGenericError,
+  mapSupabaseError,
+  userMessages,
+} from "@/lib/errors/userMessages";
 import { deletePlace } from "@/lib/places/deletePlace";
 import { getPlaceById } from "@/lib/places/getPlaceById";
 import type { PlaceRow } from "@/types/database";
@@ -125,7 +130,7 @@ export default function PlaceDetail({ id }: PlaceDetailProps) {
         console.error(error);
 
         if (isMounted) {
-          setErrorMessage("장소 정보를 불러오지 못했습니다.");
+          setErrorMessage(mapSupabaseError(error, "placeDetail"));
         }
       } finally {
         if (isMounted) {
@@ -160,7 +165,7 @@ export default function PlaceDetail({ id }: PlaceDetailProps) {
       router.push("/my-places");
     } catch (error) {
       console.error(error);
-      setActionError("장소 기록을 삭제하지 못했습니다. Supabase 설정을 확인해주세요.");
+      setActionError(mapGenericError(error, userMessages.deletePlaceFailed));
     } finally {
       setIsDeleting(false);
     }

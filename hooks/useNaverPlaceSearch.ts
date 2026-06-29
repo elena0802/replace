@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { mapNaverError, userMessages } from "@/lib/errors/userMessages";
 import type { NaverPlaceSearchResult } from "@/types/place";
 
 const placeSearchMinLength = 2;
@@ -68,11 +69,15 @@ export function useNaverPlaceSearch({
           { signal: controller.signal },
         );
 
+        const data = (await response.json()) as NaverPlaceSearchResponse;
+
         if (!response.ok) {
-          throw new Error(`Place search failed with status ${response.status}`);
+          setResults([]);
+          setErrorMessage(mapNaverError(data.error));
+          setIsOpen(true);
+          return;
         }
 
-        const data = (await response.json()) as NaverPlaceSearchResponse;
         setResults((data.results ?? []).slice(0, 5));
         setErrorMessage("");
         setIsOpen(true);
@@ -83,7 +88,7 @@ export function useNaverPlaceSearch({
 
         console.error("Place autocomplete failed:", error);
         setResults([]);
-        setErrorMessage("검색 결과를 불러오지 못했어요");
+        setErrorMessage(userMessages.naverSearchFailed);
         setIsOpen(true);
       } finally {
         if (!controller.signal.aborted) {

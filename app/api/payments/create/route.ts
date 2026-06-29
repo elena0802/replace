@@ -4,6 +4,7 @@ import {
   PREMIUM_PAYMENT_AMOUNT,
   PREMIUM_PLAN,
 } from "@/lib/payments/constants";
+import { userMessages } from "@/lib/errors/userMessages";
 import { getSupabaseAdminClient } from "@/lib/supabase/admin";
 import {
   createSupabaseRouteClient,
@@ -40,7 +41,7 @@ export async function POST(request: NextRequest) {
   if (!clientKey) {
     return jsonWithAuthCookies(
       routeClient,
-      { message: "Toss Payments 클라이언트 키가 설정되지 않았습니다." },
+      { message: userMessages.paymentPrepareFailed },
       { status: 500 },
     );
   }
@@ -82,7 +83,7 @@ export async function POST(request: NextRequest) {
 
     return jsonWithAuthCookies(
       routeClient,
-      { message: "결제 시작 중 오류가 발생했습니다." },
+      { message: userMessages.paymentPrepareFailed },
       { status: 500 },
     );
   }

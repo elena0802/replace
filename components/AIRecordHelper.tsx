@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { isHumanKoreanMessage, mapGenericError } from "@/lib/errors/userMessages";
 
 const recordHelperFallbackMessage =
   "지금은 기록을 다듬지 못했어요. 잠시 후 다시 시도해주세요.";
@@ -87,12 +88,12 @@ export default function AIRecordHelper({
       const data = (await response.json()) as RecordHelperResponse;
 
       if (!response.ok || typeof data.suggestion !== "string") {
-        const nextErrorMessage =
-          typeof data.error === "string"
+        const apiError =
+          typeof data.error === "string" && isHumanKoreanMessage(data.error)
             ? data.error
             : recordHelperFallbackMessage;
 
-        throw new Error(nextErrorMessage);
+        throw new Error(apiError);
       }
 
       const nextSuggestion = data.suggestion.trim();
@@ -103,12 +104,7 @@ export default function AIRecordHelper({
 
       setSuggestion(nextSuggestion);
     } catch (error) {
-      const nextErrorMessage =
-        error instanceof Error && error.message
-          ? error.message
-          : recordHelperFallbackMessage;
-
-      setErrorMessage(nextErrorMessage);
+      setErrorMessage(mapGenericError(error, recordHelperFallbackMessage));
     } finally {
       setIsLoading(false);
       requestInFlightRef.current = false;

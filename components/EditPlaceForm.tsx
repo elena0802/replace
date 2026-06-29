@@ -5,6 +5,7 @@ import EmptyState from "@/components/EmptyState";
 import PlaceForm from "@/components/PlaceForm";
 import StatusMessage from "@/components/StatusMessage";
 import { getCurrentUser } from "@/lib/auth/getCurrentUser";
+import { mapSupabaseError } from "@/lib/errors/userMessages";
 import { getPlaceById } from "@/lib/places/getPlaceById";
 import { mapPlaceFormToUpdate } from "@/lib/places/mapPlaceFormToUpdate";
 import { mapPlaceRowToForm } from "@/lib/places/mapPlaceRowToForm";
@@ -68,7 +69,7 @@ export default function EditPlaceForm({ id }: EditPlaceFormProps) {
         console.error(error);
 
         if (isMounted) {
-          setErrorMessage("장소 기록을 불러오지 못했습니다.");
+          setErrorMessage(mapSupabaseError(error, "placeDetail"));
         }
       } finally {
         if (isMounted) {

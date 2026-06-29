@@ -4,6 +4,10 @@ import Script from "next/script";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { PREMIUM_PRICE_LABEL } from "@/lib/payments/constants";
+import {
+  mapPaymentPrepareError,
+  userMessages,
+} from "@/lib/errors/userMessages";
 
 type CheckoutSession = {
   clientKey: string;
@@ -56,11 +60,11 @@ type CheckoutStatus =
   | "error";
 
 function getErrorMessage(error: unknown) {
-  if (error instanceof Error && error.message) {
-    return error.message;
+  if (error instanceof Error) {
+    return mapPaymentPrepareError(error.message);
   }
 
-  return "결제를 준비하지 못했습니다. 잠시 후 다시 시도해주세요.";
+  return userMessages.paymentPrepareFailed;
 }
 
 export default function PremiumCheckout() {
@@ -159,11 +163,11 @@ export default function PremiumCheckout() {
       }
 
       if (!response.ok) {
-        throw new Error(
-          "message" in data && data.message
+        const apiMessage =
+          "message" in data && typeof data.message === "string"
             ? data.message
-            : "결제를 준비하지 못했습니다.",
-        );
+            : null;
+        throw new Error(mapPaymentPrepareError(apiMessage));
       }
 
       if (
@@ -176,7 +180,7 @@ export default function PremiumCheckout() {
         !data.successUrl ||
         !data.failUrl
       ) {
-        throw new Error("결제 시작 응답이 올바르지 않습니다.");
+        throw new Error(userMessages.paymentPrepareFailed);
       }
 
       setCheckout(data as CheckoutSession);
@@ -189,7 +193,7 @@ export default function PremiumCheckout() {
 
   async function handleRequestPayment() {
     if (!checkout || !widgetsRef.current) {
-      setMessage("결제 위젯이 아직 준비되지 않았습니다.");
+      setMessage(userMessages.paymentWidgetNotReady);
       return;
     }
 
@@ -221,7 +225,7 @@ export default function PremiumCheckout() {
         onLoad={() => setIsSdkReady(true)}
         onError={() => {
           setStatus("error");
-          setMessage("Toss Payments 위젯을 불러오지 못했습니다.");
+          setMessage(userMessages.paymentWidgetLoadFailed);
         }}
       />
 

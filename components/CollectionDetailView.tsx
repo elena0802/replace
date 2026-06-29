@@ -7,6 +7,7 @@ import CollectionCoverImage from "@/components/CollectionCoverImage";
 import EmptyState from "@/components/EmptyState";
 import PlaceCard from "@/components/PlaceCard";
 import StatusMessage from "@/components/StatusMessage";
+import { mapSupabaseError } from "@/lib/errors/userMessages";
 import { withTimeout } from "@/lib/async/withTimeout";
 import { getSessionUser } from "@/lib/auth/getSessionUser";
 import {
@@ -91,9 +92,7 @@ export default function CollectionDetailView({ id }: CollectionDetailViewProps) 
         console.error(error);
 
         if (isMounted) {
-          setErrorMessage(
-            "컬렉션을 불러오지 못했습니다. Supabase 설정을 확인해주세요.",
-          );
+          setErrorMessage(mapSupabaseError(error, "collectionDetail"));
         }
       } finally {
         if (isMounted) {

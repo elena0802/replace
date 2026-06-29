@@ -2,6 +2,10 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  mapPaymentError,
+  userMessages,
+} from "@/lib/errors/userMessages";
 
 type PaymentSuccessResultProps = {
   paymentKey: string;
@@ -50,7 +54,7 @@ export default function PaymentSuccessResult({
     if (!paymentKey || !orderId || !amount) {
       setStatus("error");
       setResult({
-        message: "결제 승인에 필요한 정보가 부족합니다.",
+        message: userMessages.paymentMissingInfo,
         code: "MISSING_PAYMENT_QUERY",
       });
       return;
@@ -83,7 +87,7 @@ export default function PaymentSuccessResult({
       console.error(error);
       setStatus("error");
       setResult({
-        message: "결제 승인 상태를 확인하지 못했습니다.",
+        message: userMessages.paymentConfirmFailed,
         code: "CONFIRM_REQUEST_FAILED",
       });
     }
@@ -101,6 +105,8 @@ export default function PaymentSuccessResult({
     hasConfirmedRef.current = false;
     confirmPayment();
   }
+
+  const errorMessage = mapPaymentError(result?.message, result?.code);
 
   if (status === "checking") {
     return (
@@ -152,13 +158,8 @@ export default function PaymentSuccessResult({
         Premium 활성화를 완료하지 못했어요
       </h1>
       <p className="mx-auto mt-4 max-w-xl text-lg leading-8 text-[#6B6B68]">
-        {result?.message ?? "결제 승인 상태를 다시 확인해주세요."}
+        {errorMessage}
       </p>
-      {result?.code && (
-        <p className="mt-4 text-sm font-semibold text-[#8A857D]">
-          {result.code}
-        </p>
-      )}
       <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center">
         <button
           type="button"

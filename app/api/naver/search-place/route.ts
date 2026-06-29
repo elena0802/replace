@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { userMessages } from "@/lib/errors/userMessages";
 
 const naverLocalSearchUrl = "https://openapi.naver.com/v1/search/local.json";
 const defaultDisplay = 5;
@@ -136,7 +137,7 @@ export async function GET(request: NextRequest) {
 
   if (!query) {
     return NextResponse.json(
-      { error: "Search query is required." },
+      { error: userMessages.naverSearchRequired },
       { status: 400 },
     );
   }
@@ -150,7 +151,7 @@ export async function GET(request: NextRequest) {
 
   if (!clientId || !clientSecret) {
     return NextResponse.json(
-      { error: "Naver API environment variables are not configured." },
+      { error: userMessages.serviceUnavailable },
       { status: 500 },
     );
   }
@@ -177,7 +178,7 @@ export async function GET(request: NextRequest) {
       });
 
       return NextResponse.json(
-        { error: "Failed to search places." },
+        { error: userMessages.naverSearchFailed },
         { status: 500 },
       );
     }
@@ -190,7 +191,7 @@ export async function GET(request: NextRequest) {
     console.error("Naver local search request failed:", error);
 
     return NextResponse.json(
-      { error: "Failed to search places." },
+      { error: userMessages.naverSearchFailed },
       { status: 500 },
     );
   }

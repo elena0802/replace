@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import EmptyState from "@/components/EmptyState";
 import PlaceCard from "@/components/PlaceCard";
 import StatusMessage from "@/components/StatusMessage";
+import { mapSupabaseError } from "@/lib/errors/userMessages";
 import { getSessionUser } from "@/lib/auth/getSessionUser";
 import { getPublicPlaces } from "@/lib/places/getPublicPlaces";
 import type { PlaceRow } from "@/types/database";
@@ -50,9 +51,7 @@ export default function FeaturedPlacesList() {
         console.error(error);
 
         if (isMounted) {
-          setErrorMessage(
-            "공개 장소를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.",
-          );
+          setErrorMessage(mapSupabaseError(error, "publicPlaces"));
         }
       } finally {
         if (isMounted) {

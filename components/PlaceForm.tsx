@@ -15,6 +15,10 @@ import PlaceSearchDropdown from "@/components/PlaceSearchDropdown";
 import SelectedPlaceCard from "@/components/SelectedPlaceCard";
 import { useNaverPlaceSearch } from "@/hooks/useNaverPlaceSearch";
 import { AuthRequiredError, requireCurrentUser } from "@/lib/auth/getCurrentUser";
+import {
+  mapGenericError,
+  userMessages,
+} from "@/lib/errors/userMessages";
 import { createPlace } from "@/lib/places/createPlace";
 import { mapPlaceFormToInsert } from "@/lib/places/mapPlaceFormToInsert";
 import {
@@ -81,15 +85,14 @@ const formMessages = {
     submit: "기록 저장하기",
     completed: "기록 완료",
     success: "좋은 장소가 기록되었습니다.",
-    error: "기록을 저장하지 못했습니다. Supabase 설정과 테이블을 확인해주세요.",
+    error: userMessages.savePlaceFailed,
   },
   edit: {
     submitting: "수정하는 중...",
     submit: "수정 저장하기",
     completed: "수정 완료",
     success: "장소 기록이 수정되었습니다.",
-    error:
-      "장소 기록을 수정하지 못했습니다. Supabase 설정과 테이블을 확인해주세요.",
+    error: userMessages.updatePlaceFailed,
   },
 };
 
@@ -470,7 +473,7 @@ export default function PlaceForm({
         return;
       }
 
-      setSubmitError(messages.error);
+      setSubmitError(mapGenericError(error, messages.error));
     } finally {
       setIsSubmitting(false);
       setSubmitProgressMessage("");

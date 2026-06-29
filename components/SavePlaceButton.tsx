@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { User } from "@supabase/supabase-js";
 import { getCurrentUser } from "@/lib/auth/getCurrentUser";
+import { userMessages } from "@/lib/errors/userMessages";
 import {
   getSupabaseEnvironmentStatus,
   supabase,
@@ -35,7 +36,7 @@ export default function SavePlaceButton({ placeId }: SavePlaceButtonProps) {
         setIsLoading(false);
         setNotice({
           tone: "error",
-          message: "저장 기능 설정이 필요합니다.",
+          message: userMessages.saveUnavailable,
         });
         return;
       }
@@ -106,7 +107,7 @@ export default function SavePlaceButton({ placeId }: SavePlaceButtonProps) {
     if (!environment.configured) {
       setNotice({
         tone: "error",
-        message: "저장 기능 설정이 필요합니다.",
+        message: userMessages.saveUnavailable,
       });
       return;
     }

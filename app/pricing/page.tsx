@@ -8,7 +8,11 @@ export const metadata: Metadata = {
   description: "Re:Place Free와 Premium 요금제를 비교하고 시작하세요.",
 };
 
-const freeFeatures = ["장소 기록 CRUD", "대표 이미지 업로드", "공개 장소 둘러보기"];
+const freeFeatures = [
+  "장소 기록하기",
+  "대표 이미지 업로드",
+  "공개 장소 둘러보기",
+];
 const premiumFeatures = [
   "Premium 배지 활성화",
   "좋아하는 장소를 더 오래 보관할 준비",
@@ -24,7 +28,7 @@ export default function PricingPage() {
           Re:Place를 더 오래 기록하는 방법
         </h1>
         <p className="text-xl leading-9 text-[#6B6B68]">
-          무료 기록은 그대로 유지하고, Premium은 테스트 결제로 활성화 흐름을 확인합니다.
+          무료 기록은 그대로 유지하고, Premium으로 더 깊게 남길 수 있어요.
         </p>
       </div>
 
@@ -61,20 +65,15 @@ export default function PricingPage() {
 
         <section className="rounded-[28px] border border-[#A8B2A1]/70 bg-[#FCFBF8] p-6 shadow-[0_22px_54px_rgba(77,87,72,0.12)] sm:p-8">
           <div className="space-y-4">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-lg font-semibold text-[#4D5748]">
-                Re:Place Premium
-              </p>
-              <span className="inline-flex min-h-9 w-fit items-center rounded-full bg-[#EAE3D8] px-4 text-base font-semibold text-[#4D5748]">
-                MVP 테스트
-              </span>
-            </div>
+            <p className="text-lg font-semibold text-[#4D5748]">
+              Re:Place Premium
+            </p>
             <div className="space-y-2">
               <h2 className="text-3xl font-semibold tracking-normal text-[#3F3F3B]">
                 {PREMIUM_PRICE_LABEL}
               </h2>
               <p className="text-lg leading-8 text-[#6B6B68]">
-                한 번의 테스트 결제로 Premium 활성화와 결제 기록 저장을 확인합니다.
+                월 구독으로 Premium을 이용하고, 좋은 장소를 더 오래 간직해보세요.
               </p>
             </div>
           </div>

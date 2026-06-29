@@ -5,6 +5,7 @@ import EmptyState from "@/components/EmptyState";
 import PlaceCard from "@/components/PlaceCard";
 import StatusMessage from "@/components/StatusMessage";
 import { getCurrentUser } from "@/lib/auth/getCurrentUser";
+import { mapSupabaseError } from "@/lib/errors/userMessages";
 import {
   getSavedPlaces,
   type SavedPlaceListItem,
@@ -57,9 +58,7 @@ export default function SavedPlacesList() {
         console.error(error);
 
         if (isMounted) {
-          setErrorMessage(
-            "저장한 장소를 불러오지 못했습니다. Supabase 설정을 확인해주세요.",
-          );
+          setErrorMessage(mapSupabaseError(error, "savedPlaces"));
         }
       } finally {
         if (isMounted) {

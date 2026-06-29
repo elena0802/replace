@@ -8,6 +8,10 @@ import StatusMessage from "@/components/StatusMessage";
 import { withTimeout } from "@/lib/async/withTimeout";
 import { getSessionUser } from "@/lib/auth/getSessionUser";
 import {
+  mapSupabaseError,
+  userMessages,
+} from "@/lib/errors/userMessages";
+import {
   getCollections,
   getPublicCollections,
   type CollectionListItem,
@@ -151,7 +155,7 @@ export default function CollectionsList() {
         const environment = getSupabaseEnvironmentStatus();
 
         if (!environment.configured) {
-          setErrorMessage("컬렉션 기능 설정이 필요합니다.");
+          setErrorMessage(userMessages.collectionUnavailable);
           return;
         }
 
@@ -160,9 +164,7 @@ export default function CollectionsList() {
         console.error(error);
 
         if (isMounted) {
-          setErrorMessage(
-            "컬렉션을 불러오지 못했습니다. Supabase 설정을 확인해주세요.",
-          );
+          setErrorMessage(mapSupabaseError(error, "collections"));
         }
       } finally {
         if (isMounted) {

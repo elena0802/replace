@@ -77,7 +77,7 @@ export default function Home() {
             <div className="space-y-5">
               <div className="space-y-2">
                 <p className="text-sm font-medium text-stone">
-                  Archive note
+                  아카이브 메모
                 </p>
                 <p className="text-xl font-semibold leading-snug text-link sm:text-2xl">
                   머물렀던 순간과 장소 취향을 차분히 모아두는 곳

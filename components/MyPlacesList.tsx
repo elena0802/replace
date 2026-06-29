@@ -5,6 +5,7 @@ import EmptyState from "@/components/EmptyState";
 import PlaceCard from "@/components/PlaceCard";
 import StatusMessage from "@/components/StatusMessage";
 import { getCurrentUser } from "@/lib/auth/getCurrentUser";
+import { mapSupabaseError } from "@/lib/errors/userMessages";
 import { getPlaces } from "@/lib/places/getPlaces";
 import type { PlaceRow } from "@/types/database";
 
@@ -41,9 +42,7 @@ export default function MyPlacesList() {
         console.error(error);
 
         if (isMounted) {
-          setErrorMessage(
-            "장소 기록을 불러오지 못했습니다. Supabase 설정을 확인해주세요.",
-          );
+          setErrorMessage(mapSupabaseError(error, "myPlaces"));
         }
       } finally {
         if (isMounted) {

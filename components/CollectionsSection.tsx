@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import CollectionCoverImage from "@/components/CollectionCoverImage";
 import EmptyState from "@/components/EmptyState";
 import StatusMessage from "@/components/StatusMessage";
+import { mapSupabaseError } from "@/lib/errors/userMessages";
 import { getSessionUser } from "@/lib/auth/getSessionUser";
 import {
   getPublicCollections,
@@ -75,9 +76,7 @@ export default function CollectionsSection() {
         console.error(error);
 
         if (isMounted) {
-          setErrorMessage(
-            "공개 컬렉션을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.",
-          );
+          setErrorMessage(mapSupabaseError(error, "publicCollections"));
         }
       } finally {
         if (isMounted) {

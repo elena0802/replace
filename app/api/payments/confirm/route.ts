@@ -4,6 +4,7 @@ import {
   PREMIUM_PAYMENT_AMOUNT,
   PREMIUM_PLAN,
 } from "@/lib/payments/constants";
+import { isHumanKoreanMessage, userMessages } from "@/lib/errors/userMessages";
 import { getSupabaseAdminClient } from "@/lib/supabase/admin";
 import {
   createSupabaseRouteClient,
@@ -188,7 +189,7 @@ export async function POST(request: NextRequest) {
 
       return jsonWithAuthCookies(
         routeClient,
-        { message: "결제 주문 정보를 찾을 수 없습니다.", code: "PAYMENT_NOT_FOUND" },
+        { message: "결제를 확인하지 못했습니다. 잠시 후 다시 시도해주세요.", code: "PAYMENT_NOT_FOUND" },
         { status: 404 },
       );
     }
@@ -207,7 +208,7 @@ export async function POST(request: NextRequest) {
       return jsonWithAuthCookies(
         routeClient,
         {
-          message: "저장된 결제 정보가 Premium 서버 기준과 일치하지 않습니다.",
+          message: "결제 금액이 일치하지 않습니다. 잠시 후 다시 시도해주세요.",
           code: "PAYMENT_AMOUNT_MISMATCH",
         },
         { status: 400 },
@@ -219,7 +220,7 @@ export async function POST(request: NextRequest) {
         return jsonWithAuthCookies(
           routeClient,
           {
-            message: "이미 다른 paymentKey로 승인된 결제입니다.",
+            message: "이미 처리된 결제입니다.",
             code: "PAYMENT_ALREADY_CONFIRMED_WITH_DIFFERENT_KEY",
           },
           { status: 409 },
@@ -251,8 +252,10 @@ export async function POST(request: NextRequest) {
         routeClient,
         {
           message:
-            tossResult.data.message ??
-            "Toss Payments 결제 승인을 완료하지 못했습니다.",
+            (tossResult.data.message &&
+            isHumanKoreanMessage(tossResult.data.message)
+              ? tossResult.data.message
+              : null) ?? userMessages.paymentConfirmFailed,
           code: tossResult.data.code ?? "TOSS_CONFIRM_FAILED",
         },
         { status: tossResult.status >= 500 ? 502 : 400 },
@@ -299,7 +302,7 @@ export async function POST(request: NextRequest) {
       return jsonWithAuthCookies(
         routeClient,
         {
-          message: "결제 승인은 완료됐지만 Premium 기록 저장에 실패했습니다.",
+          message: "결제 승인은 완료됐지만 기록을 저장하지 못했습니다. 잠시 후 다시 시도해주세요.",
           code: "PAYMENT_APPROVED_DB_UPDATE_FAILED",
           requiresSupport: true,
         },
@@ -321,7 +324,7 @@ export async function POST(request: NextRequest) {
 
     return jsonWithAuthCookies(
       routeClient,
-      { message: "결제 승인 중 오류가 발생했습니다.", code: "PAYMENT_CONFIRM_ERROR" },
+      { message: userMessages.paymentConfirmFailed, code: "PAYMENT_CONFIRM_ERROR" },
       { status: 500 },
     );
   }
