@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import PageHeader from "@/components/PageHeader";
 import PremiumCheckout from "@/components/PremiumCheckout";
 import { PREMIUM_PRICE_LABEL } from "@/lib/payments/constants";
 
@@ -22,15 +23,12 @@ const premiumFeatures = [
 export default function PricingPage() {
   return (
     <div className="mx-auto w-full max-w-6xl px-5 py-12 lg:px-8 lg:py-16">
-      <div className="mb-10 max-w-3xl space-y-3">
-        <p className="text-lg font-medium text-link">요금제</p>
-        <h1 className="text-4xl font-semibold leading-tight tracking-normal text-ink sm:text-5xl">
-          Re:Place를 더 오래 기록하는 방법
-        </h1>
-        <p className="text-xl leading-9 text-stone">
-          무료 기록은 그대로 유지하고, Premium으로 더 깊게 남길 수 있어요.
-        </p>
-      </div>
+      <PageHeader
+        className="mb-10"
+        eyebrow="요금제"
+        title="Premium으로 더 많이 기록하세요"
+        description="무료 기록은 그대로 유지하고, Premium으로 더 깊게 남길 수 있어요."
+      />
 
       <div className="grid gap-5 lg:grid-cols-2 lg:items-start">
         <section className="rounded-xl border border-default bg-surface p-6 shadow-card sm:p-8">

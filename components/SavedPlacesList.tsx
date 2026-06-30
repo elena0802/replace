@@ -86,7 +86,7 @@ export default function SavedPlacesList() {
   if (requiresLogin) {
     return (
       <EmptyState
-        title="저장한 장소를 보려면 로그인이 필요해요."
+        title="로그인이 필요해요"
         description="로그인하고 마음에 드는 장소를 차분히 모아보세요."
         actionHref="/login"
         actionLabel="로그인하기"

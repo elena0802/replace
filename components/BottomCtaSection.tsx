@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { typography } from "@/components/typography";
 
 const bottomCtaImage = "/images/cta-image.jpg";
 
@@ -9,12 +10,8 @@ export default function BottomCtaSection() {
       <div className="grid lg:min-h-[360px] lg:grid-cols-[0.92fr_1.08fr]">
         <div className="flex flex-col justify-center px-7 py-10 sm:px-10 sm:py-12 lg:px-12 lg:py-16">
           <div className="max-w-xl space-y-6">
-            <h2 className="text-[1.75rem] font-semibold leading-[1.18] tracking-normal text-ink sm:text-[2.25rem] sm:leading-[1.16] lg:text-[2.5rem]">
-              다시 찾고 싶은 장소를
-              <br className="hidden sm:block" />
-              기록해보세요
-            </h2>
-            <p className="max-w-lg text-base leading-7 text-stone sm:text-[1.0625rem] sm:leading-8">
+            <h2 className={typography.sectionTitle}>좋은 장소를 기록해보세요</h2>
+            <p className={`max-w-lg ${typography.sectionDescription}`}>
               기록할수록 나만의 장소 아카이브가 완성됩니다.
             </p>
           </div>

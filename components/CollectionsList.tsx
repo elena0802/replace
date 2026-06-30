@@ -5,6 +5,7 @@ import { FormEvent, useEffect, useState } from "react";
 import CollectionCard from "@/components/CollectionCard";
 import CollectionsListSkeleton from "@/components/skeleton/CollectionsListSkeleton";
 import EmptyState from "@/components/EmptyState";
+import { typography } from "@/components/typography";
 import { withTimeout } from "@/lib/async/withTimeout";
 import { getSessionUser } from "@/lib/auth/getSessionUser";
 import {
@@ -255,10 +256,8 @@ export default function CollectionsList() {
         {userId && (
           <section className="space-y-4">
             <div className="space-y-2">
-              <h2 className="text-3xl font-semibold tracking-normal text-ink">
-                내 컬렉션
-              </h2>
-              <p className="text-lg leading-8 text-stone">
+              <h2 className={typography.sectionTitle}>내 장소 모음</h2>
+              <p className={typography.sectionDescription}>
                 내가 만든 공개/비공개 컬렉션을 모아봅니다.
               </p>
             </div>
@@ -281,10 +280,8 @@ export default function CollectionsList() {
 
         <section className="space-y-4">
           <div className="space-y-2">
-            <h2 className="text-3xl font-semibold tracking-normal text-ink">
-              공개 컬렉션
-            </h2>
-            <p className="text-lg leading-8 text-stone">
+            <h2 className={typography.sectionTitle}>공개 컬렉션</h2>
+            <p className={typography.sectionDescription}>
               다른 사람이 공개한 장소 아카이브를 조용히 둘러보세요.
             </p>
           </div>

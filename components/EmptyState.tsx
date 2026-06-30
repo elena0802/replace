@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { typography } from "@/components/typography";
 
 type EmptyStateProps = {
   title: string;
@@ -19,10 +20,8 @@ export default function EmptyState({
     <div
       className={`rounded-xl border border-default bg-surface px-5 py-12 text-center shadow-card sm:px-8 ${className}`}
     >
-      <h2 className="text-3xl font-semibold leading-tight tracking-normal text-ink sm:text-4xl">
-        {title}
-      </h2>
-      <p className="mx-auto mt-4 max-w-xl text-xl leading-9 text-stone">
+      <h2 className={typography.emptyStateTitle}>{title}</h2>
+      <p className={`mx-auto mt-4 max-w-xl ${typography.emptyStateDescription}`}>
         {description}
       </p>
       {actionHref && actionLabel && (

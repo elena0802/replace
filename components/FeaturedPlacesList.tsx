@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import EmptyState from "@/components/EmptyState";
 import PlaceCard from "@/components/PlaceCard";
 import PlaceGridSkeleton from "@/components/skeleton/PlaceGridSkeleton";
+import SectionHeader from "@/components/SectionHeader";
 import StatusMessage from "@/components/StatusMessage";
 import { mapSupabaseError } from "@/lib/errors/userMessages";
 import { getSessionUser } from "@/lib/auth/getSessionUser";
@@ -70,23 +71,19 @@ export default function FeaturedPlacesList() {
 
   return (
     <section className="space-y-10">
-      <header className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between sm:gap-8">
-        <div className="max-w-2xl space-y-4">
-          <p className="text-sm font-medium text-meta">공개 아카이브</p>
-          <h2 className="text-[1.75rem] font-semibold leading-tight tracking-normal text-ink sm:text-[2rem] lg:text-[2.125rem]">
-            다른 사람들이 다시 찾고 싶은 장소
-          </h2>
-          <p className="text-base leading-7 text-stone sm:text-[1.0625rem] sm:leading-8">
-            공개된 장소 기록 가운데, 다시 가고 싶은 순간들을 둘러보세요.
-          </p>
-        </div>
-        <Link
-          href="/explore"
-          className="shrink-0 self-start text-sm font-semibold text-brand transition hover:text-link focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover sm:self-end"
-        >
-          전체 보기
-        </Link>
-      </header>
+      <SectionHeader
+        eyebrow="공개 아카이브"
+        title="다시 가고 싶은 곳의 기록"
+        description="공개된 장소 기록 가운데, 다시 가고 싶은 순간들을 둘러보세요."
+        action={
+          <Link
+            href="/explore"
+            className="shrink-0 self-start text-sm font-semibold text-brand transition hover:text-link focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover sm:self-end"
+          >
+            전체 보기
+          </Link>
+        }
+      />
 
       {isLoading ? (
         <PlaceGridSkeleton

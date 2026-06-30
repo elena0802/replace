@@ -36,7 +36,7 @@ export default function NewPlaceForm() {
   if (requiresLogin) {
     return (
       <EmptyState
-        title="좋은 장소와 시간을 기록하려면 로그인이 필요해요."
+        title="로그인이 필요해요"
         description="로그인하고 나만의 장소 아카이브를 만들어보세요."
         actionHref="/login"
         actionLabel="로그인하기"

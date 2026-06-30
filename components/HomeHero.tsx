@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import styles from "@/components/HomeHero.module.css";
+import { typography } from "@/components/typography";
 
 const heroImageSrc = "/images/hero/replace-hero.jpg";
 
@@ -10,17 +11,15 @@ export default function HomeHero() {
       <div className="relative mx-auto w-full max-w-7xl lg:grid lg:min-h-[660px] lg:grid-cols-[2fr_3fr]">
         <div className="relative z-10 flex min-h-[520px] items-center px-5 py-16 sm:px-8 sm:py-20 lg:min-h-[660px] lg:px-10 lg:py-24 xl:px-14">
           <div className="max-w-xl space-y-12">
-            <p className="text-sm font-medium text-meta sm:text-base">
-              Re:Place · 나만의 장소 아카이브
-            </p>
+            <p className={typography.eyebrow}>Re:Place · 나만의 장소 아카이브</p>
 
             <div className="space-y-7">
-              <h1 className="max-w-2xl text-[2.5rem] font-semibold leading-[1.1] tracking-normal text-ink sm:max-w-none sm:text-[3.625rem] sm:leading-[1.08] lg:text-[3.875rem] lg:leading-[1.06] xl:text-[4.125rem]">
+              <h1 className={`max-w-2xl ${typography.heroTitle}`}>
                 좋은 장소와
-                <br className="hidden sm:block" />
-                <span className="sm:whitespace-nowrap">시간을 기록하세요</span>
+                <br />
+                시간을 기록하세요
               </h1>
-              <p className="max-w-[36rem] text-lg leading-[1.65] text-stone sm:text-[1.125rem] sm:leading-[1.7]">
+              <p className={`max-w-[36rem] ${typography.heroDescription}`}>
                 다시 찾고 싶은 카페, 음식점, 공원, 여행지와 호텔을 나만의 장소
                 아카이브로 기록해보세요.
               </p>

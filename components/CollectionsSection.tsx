@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import CollectionCard from "@/components/CollectionCard";
 import CollectionGridSkeleton from "@/components/skeleton/CollectionGridSkeleton";
 import EmptyState from "@/components/EmptyState";
+import SectionHeader from "@/components/SectionHeader";
 import StatusMessage from "@/components/StatusMessage";
 import { mapSupabaseError } from "@/lib/errors/userMessages";
 import { getSessionUser } from "@/lib/auth/getSessionUser";
@@ -55,25 +56,19 @@ export default function CollectionsSection() {
   return (
     <section className="rounded-xl border border-default/70 bg-subtle/50 px-5 py-10 sm:px-8 sm:py-12 lg:px-10 lg:py-14">
       <div className="space-y-10">
-        <header className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between sm:gap-8">
-          <div className="max-w-2xl space-y-4">
-            <p className="text-sm font-medium text-meta">컬렉션</p>
-            <h2 className="text-[1.75rem] font-semibold leading-tight tracking-normal text-ink sm:text-[2rem] lg:text-[2.125rem]">
-              좋아하는 장소를 모으면
-              <br className="hidden sm:block" />
-              하나의 취향이 됩니다
-            </h2>
-            <p className="text-base leading-7 text-stone sm:text-[1.0625rem] sm:leading-8">
-              장소들을 모아 나만의 취향을 천천히 만들어보세요.
-            </p>
-          </div>
-          <Link
-            href="/collections"
-            className="shrink-0 self-start text-sm font-semibold text-brand transition hover:text-link focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover sm:self-end"
-          >
-            전체 보기
-          </Link>
-        </header>
+        <SectionHeader
+          eyebrow="컬렉션"
+          title="좋아하는 장소를 모아보세요"
+          description="장소들을 모아 나만의 취향을 천천히 만들어보세요."
+          action={
+            <Link
+              href="/collections"
+              className="shrink-0 self-start text-sm font-semibold text-brand transition hover:text-link focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover sm:self-end"
+            >
+              전체 보기
+            </Link>
+          }
+        />
 
         {isLoading ? (
           <div className="-mx-5 overflow-hidden sm:mx-0">
