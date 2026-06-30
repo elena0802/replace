@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import KakaoIcon from "@/components/icons/KakaoIcon";
 import { getSafeAuthRedirectPath } from "@/lib/auth/redirect";
 import { supabase } from "@/lib/supabase/client";
 
@@ -116,10 +117,7 @@ export default function LoginForm({ initialErrorMessage = "" }: LoginFormProps) 
         onClick={handleKakaoLogin}
         className="flex min-h-14 w-full items-center justify-center gap-3 rounded-2xl bg-[#FEE500] px-5 py-3.5 text-base font-bold text-ink shadow-sm transition hover:bg-[#F8D900] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover disabled:cursor-not-allowed disabled:opacity-70 sm:text-lg"
       >
-        <span className="relative flex h-6 w-7 items-center justify-center" aria-hidden="true">
-          <span className="h-4 w-5 rounded-full bg-[#2A221E]" />
-          <span className="absolute bottom-0 left-1 h-2 w-2 rotate-45 bg-[#2A221E]" />
-        </span>
+        <KakaoIcon />
         {isKakaoSubmitting ? "카카오로 이동 중..." : "카카오로 시작하기"}
       </button>
 

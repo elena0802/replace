@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import KakaoIcon from "@/components/icons/KakaoIcon";
 import {
   getInitializedKakaoSdk,
   type KakaoShareFeedPayload,
@@ -124,12 +125,7 @@ export default function KakaoShareButton({
       className={buttonClassName}
       aria-label={`${place.name} 카카오톡 공유하기`}
     >
-      <span
-        aria-hidden="true"
-        className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#FEE500] text-xs font-bold text-[#3B1E1E]"
-      >
-        톡
-      </span>
+      <KakaoIcon />
       {isPreparing ? "공유 준비 중..." : "카카오톡 공유"}
     </button>
   );
