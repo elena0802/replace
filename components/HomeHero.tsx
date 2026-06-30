@@ -15,13 +15,14 @@ export default function HomeHero() {
 
             <div className="space-y-7">
               <h1 className={`max-w-2xl ${typography.heroTitle}`}>
-                좋은 장소와
+                좋았던 장소를
                 <br />
-                시간을 기록하세요
+                오래 간직하세요
               </h1>
               <p className={`max-w-[36rem] ${typography.heroDescription}`}>
-                다시 찾고 싶은 카페, 음식점, 공원, 여행지와 호텔을 나만의 장소
-                아카이브로 기록해보세요.
+                다시 찾고 싶은 여행지, 카페, 음식점, 숙소를
+                <br className="hidden sm:inline" />
+                나만의 장소 아카이브로 차분히 남겨보세요.
               </p>
             </div>
 
