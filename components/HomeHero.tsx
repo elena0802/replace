@@ -15,10 +15,10 @@ export default function HomeHero() {
             </p>
 
             <div className="space-y-7">
-              <h1 className="max-w-2xl text-[2.5rem] font-semibold leading-[1.1] tracking-normal text-ink sm:text-[3.625rem] sm:leading-[1.08] lg:text-[3.875rem] lg:leading-[1.06] xl:text-[4.125rem]">
+              <h1 className="max-w-2xl text-[2.5rem] font-semibold leading-[1.1] tracking-normal text-ink sm:max-w-none sm:text-[3.625rem] sm:leading-[1.08] lg:text-[3.875rem] lg:leading-[1.06] xl:text-[4.125rem]">
                 좋은 장소와
                 <br className="hidden sm:block" />
-                시간을 기록하세요
+                <span className="sm:whitespace-nowrap">시간을 기록하세요</span>
               </h1>
               <p className="max-w-[36rem] text-lg leading-[1.65] text-stone sm:text-[1.125rem] sm:leading-[1.7]">
                 다시 찾고 싶은 카페, 음식점, 공원, 여행지와 호텔을 나만의 장소
