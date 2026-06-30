@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import AuthNav from "@/components/AuthNav";
+import Footer from "@/components/Footer";
 import MobileNavMenu from "@/components/MobileNavMenu";
 import "./globals.css";
 
@@ -59,11 +60,7 @@ export default function RootLayout({
           </nav>
         </header>
         <main className="flex-1">{children}</main>
-        <footer className="border-t border-border-muted bg-surface">
-          <div className="mx-auto max-w-6xl px-5 py-7 text-base text-stone lg:px-8">
-            Re:Place - 좋은 장소와 시간을 기록하는 라이프스타일 아카이브
-          </div>
-        </footer>
+        <Footer />
       </body>
     </html>
   );

@@ -26,8 +26,8 @@ export default function PricingPage() {
       <PageHeader
         className="mb-10"
         eyebrow="요금제"
-        title="Premium으로 더 많이 기록하세요"
-        description="무료 기록은 그대로 유지하고, Premium으로 더 깊게 남길 수 있어요."
+        title="Premium으로 오래 간직하세요"
+        description="무료 기록은 그대로 유지하고, Premium으로 더 오래 남길 수 있어요."
       />
 
       <div className="grid gap-5 lg:grid-cols-2 lg:items-start">
@@ -71,7 +71,7 @@ export default function PricingPage() {
                 {PREMIUM_PRICE_LABEL}
               </h2>
               <p className="text-lg leading-8 text-stone">
-                월 구독으로 Premium을 이용하고, 좋은 장소를 더 오래 간직해보세요.
+                Premium으로 좋은 장소를 더 오래 간직해보세요.
               </p>
             </div>
           </div>

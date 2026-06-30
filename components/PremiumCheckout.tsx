@@ -1,278 +1,48 @@
 "use client";
 
-import Script from "next/script";
-import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import { PREMIUM_PRICE_LABEL } from "@/lib/payments/constants";
-import {
-  mapPaymentPrepareError,
-  userMessages,
-} from "@/lib/errors/userMessages";
-
-type CheckoutSession = {
-  clientKey: string;
-  customerKey: string;
-  orderId: string;
-  orderName: string;
-  amount: number;
-  successUrl: string;
-  failUrl: string;
-};
-
-type WidgetController = {
-  destroy: () => Promise<void> | void;
-};
-
-type TossPaymentWidgets = {
-  setAmount: (amount: { value: number; currency: "KRW" }) => Promise<void>;
-  renderPaymentMethods: (params: {
-    selector: string;
-    variantKey?: string;
-  }) => Promise<WidgetController>;
-  renderAgreement: (params: {
-    selector: string;
-    variantKey?: string;
-  }) => Promise<WidgetController>;
-  requestPayment: (params: {
-    orderId: string;
-    orderName: string;
-    successUrl: string;
-    failUrl: string;
-  }) => Promise<void>;
-};
-
-type TossPaymentsSdk = {
-  widgets: (params: { customerKey: string }) => TossPaymentWidgets;
-};
-
-declare global {
-  interface Window {
-    TossPayments?: (clientKey: string) => TossPaymentsSdk;
-  }
-}
-
-type CheckoutStatus =
-  | "idle"
-  | "creating"
-  | "rendering"
-  | "ready"
-  | "requesting"
-  | "error";
-
-function getErrorMessage(error: unknown) {
-  if (error instanceof Error) {
-    return mapPaymentPrepareError(error.message);
-  }
-
-  return userMessages.paymentPrepareFailed;
-}
+import { useState } from "react";
 
 export default function PremiumCheckout() {
-  const router = useRouter();
-  const [isSdkReady, setIsSdkReady] = useState(false);
-  const [checkout, setCheckout] = useState<CheckoutSession | null>(null);
-  const [status, setStatus] = useState<CheckoutStatus>("idle");
-  const [message, setMessage] = useState("");
-  const widgetsRef = useRef<TossPaymentWidgets | null>(null);
-  const paymentMethodWidgetRef = useRef<WidgetController | null>(null);
-  const agreementWidgetRef = useRef<WidgetController | null>(null);
+  const [showNotice, setShowNotice] = useState(false);
 
-  useEffect(() => {
-    const currentCheckout = checkout;
-    const tossPaymentsFactory = window.TossPayments;
-
-    if (!currentCheckout || !isSdkReady || typeof tossPaymentsFactory !== "function") {
-      return;
-    }
-
-    let isMounted = true;
-    const activeCheckout: CheckoutSession = currentCheckout;
-    const createTossPayments: (clientKey: string) => TossPaymentsSdk =
-      tossPaymentsFactory;
-
-    async function renderWidgets() {
-      setStatus("rendering");
-      setMessage("");
-
-      try {
-        await paymentMethodWidgetRef.current?.destroy();
-        await agreementWidgetRef.current?.destroy();
-
-        const tossPayments = createTossPayments(activeCheckout.clientKey);
-        const widgets = tossPayments.widgets({
-          customerKey: activeCheckout.customerKey,
-        });
-
-        await widgets.setAmount({
-          value: activeCheckout.amount,
-          currency: "KRW",
-        });
-
-        const [paymentMethodWidget, agreementWidget] = await Promise.all([
-          widgets.renderPaymentMethods({
-            selector: "#replace-payment-methods",
-            variantKey: "DEFAULT",
-          }),
-          widgets.renderAgreement({
-            selector: "#replace-payment-agreement",
-          }),
-        ]);
-
-        if (!isMounted) {
-          await paymentMethodWidget.destroy();
-          await agreementWidget.destroy();
-          return;
-        }
-
-        widgetsRef.current = widgets;
-        paymentMethodWidgetRef.current = paymentMethodWidget;
-        agreementWidgetRef.current = agreementWidget;
-        setStatus("ready");
-      } catch (error) {
-        console.error(error);
-
-        if (isMounted) {
-          setStatus("error");
-          setMessage(getErrorMessage(error));
-        }
-      }
-    }
-
-    renderWidgets();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [checkout, isSdkReady]);
-
-  async function handleStartPremium() {
-    setStatus("creating");
-    setMessage("");
-
-    try {
-      const response = await fetch("/api/payments/create", {
-        method: "POST",
-      });
-      const data = (await response.json().catch(() => ({}))) as
-        | Partial<CheckoutSession>
-        | { message?: string };
-
-      if (response.status === 401) {
-        router.push("/login?next=/pricing");
-        return;
-      }
-
-      if (!response.ok) {
-        const apiMessage =
-          "message" in data && typeof data.message === "string"
-            ? data.message
-            : null;
-        throw new Error(mapPaymentPrepareError(apiMessage));
-      }
-
-      if (
-        !("clientKey" in data) ||
-        !data.clientKey ||
-        !data.customerKey ||
-        !data.orderId ||
-        !data.orderName ||
-        !data.amount ||
-        !data.successUrl ||
-        !data.failUrl
-      ) {
-        throw new Error(userMessages.paymentPrepareFailed);
-      }
-
-      setCheckout(data as CheckoutSession);
-    } catch (error) {
-      console.error(error);
-      setStatus("error");
-      setMessage(getErrorMessage(error));
-    }
+  function handleStartPremium() {
+    setShowNotice(true);
   }
-
-  async function handleRequestPayment() {
-    if (!checkout || !widgetsRef.current) {
-      setMessage(userMessages.paymentWidgetNotReady);
-      return;
-    }
-
-    setStatus("requesting");
-    setMessage("");
-
-    try {
-      await widgetsRef.current.requestPayment({
-        orderId: checkout.orderId,
-        orderName: checkout.orderName,
-        successUrl: checkout.successUrl,
-        failUrl: checkout.failUrl,
-      });
-    } catch (error) {
-      console.error(error);
-      setStatus("ready");
-      setMessage(getErrorMessage(error));
-    }
-  }
-
-  const isPreparing = status === "creating" || status === "rendering";
-  const isPaymentButtonDisabled = status !== "ready";
 
   return (
-    <div className="space-y-6">
-      <Script
-        src="https://js.tosspayments.com/v2/standard"
-        strategy="afterInteractive"
-        onLoad={() => setIsSdkReady(true)}
-        onError={() => {
-          setStatus("error");
-          setMessage(userMessages.paymentWidgetLoadFailed);
-        }}
-      />
-
+    <div>
       <button
         type="button"
         onClick={handleStartPremium}
-        disabled={isPreparing || status === "requesting"}
         className="inline-flex min-h-14 w-full items-center justify-center rounded-full bg-brand px-7 py-4 text-lg font-semibold text-brand-foreground shadow-sm transition hover:bg-brand-hover focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover disabled:cursor-not-allowed disabled:opacity-70"
       >
-        {isPreparing ? "결제 준비 중..." : "Premium 시작하기"}
+        Premium 시작하기
       </button>
 
-      {message && (
-        <div
-          role="alert"
-          className="rounded-2xl border border-danger-border bg-danger-surface px-4 py-3 text-base font-semibold leading-7 text-danger"
-        >
-          {message}
-        </div>
-      )}
-
-      {checkout && (
-        <div className="space-y-5 border-t border-border-muted pt-6">
-          <div className="flex flex-col gap-1 text-link sm:flex-row sm:items-end sm:justify-between">
-            <p className="text-xl font-semibold">Re:Place Premium</p>
-            <p className="text-lg font-semibold">{PREMIUM_PRICE_LABEL}</p>
-          </div>
-
+      <div
+        aria-live="polite"
+        className={`grid transition-all duration-slow ease-emphasis motion-reduce:transition-none ${
+          showNotice
+            ? "mt-4 grid-rows-[1fr] opacity-100"
+            : "mt-0 grid-rows-[0fr] opacity-0"
+        }`}
+      >
+        <div className="overflow-hidden">
           <div
-            id="replace-payment-methods"
-            className="min-h-[190px] rounded-xl bg-surface/70"
-          />
-          <div
-            id="replace-payment-agreement"
-            className="min-h-[64px] rounded-xl bg-surface/70"
-          />
-
-          <button
-            type="button"
-            onClick={handleRequestPayment}
-            disabled={isPaymentButtonDisabled}
-            className="inline-flex min-h-14 w-full items-center justify-center rounded-full bg-[#4D5748] px-7 py-4 text-lg font-semibold text-inverse shadow-sm transition hover:bg-brand-hover focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover disabled:cursor-not-allowed disabled:opacity-60"
+            role="status"
+            className="rounded-xl border border-default bg-subtle p-4 text-stone"
           >
-            {status === "requesting" ? "결제창 여는 중..." : "4,900원 결제하기"}
-          </button>
+            <p className="text-base font-semibold text-ink">준비 중입니다.</p>
+            <div className="mt-2 space-y-1 text-sm leading-relaxed sm:text-base sm:leading-relaxed">
+              <p>Premium은 현재 준비 중입니다.</p>
+              <p>
+                좋은 장소를 더 오래 간직할 수 있는 기능을 곧 만나보실 수
+                있습니다.
+              </p>
+            </div>
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
