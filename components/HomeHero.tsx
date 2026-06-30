@@ -1,0 +1,72 @@
+import Image from "next/image";
+import Link from "next/link";
+import styles from "@/components/HomeHero.module.css";
+
+const heroImageSrc = "/images/hero/replace-hero.jpg";
+
+export default function HomeHero() {
+  return (
+    <section className="relative w-full overflow-hidden bg-page">
+      <div className="relative mx-auto w-full max-w-7xl lg:grid lg:min-h-[660px] lg:grid-cols-[2fr_3fr]">
+        <div className="relative z-10 flex min-h-[520px] items-center px-5 py-16 sm:px-8 sm:py-20 lg:min-h-[660px] lg:px-10 lg:py-24 xl:px-14">
+          <div className="max-w-xl space-y-12">
+            <p className="text-sm font-medium text-meta sm:text-base">
+              Re:Place · 나만의 장소 아카이브
+            </p>
+
+            <div className="space-y-7">
+              <h1 className="max-w-2xl text-[2.5rem] font-semibold leading-[1.1] tracking-normal text-ink sm:max-w-none sm:text-[3.625rem] sm:leading-[1.08] lg:text-[3.875rem] lg:leading-[1.06] xl:text-[4.125rem]">
+                좋은 장소와
+                <br className="hidden sm:block" />
+                <span className="sm:whitespace-nowrap">시간을 기록하세요</span>
+              </h1>
+              <p className="max-w-[36rem] text-lg leading-[1.65] text-stone sm:text-[1.125rem] sm:leading-[1.7]">
+                다시 찾고 싶은 카페, 음식점, 공원, 여행지와 호텔을 나만의 장소
+                아카이브로 기록해보세요.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-4 pt-2 sm:flex-row sm:gap-5">
+              <Link
+                href="/places/new"
+                className="inline-flex min-h-[3.25rem] w-full items-center justify-center rounded-full bg-brand px-8 py-3.5 text-[1.0625rem] font-semibold text-brand-foreground shadow-sm transition hover:bg-brand-hover focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover sm:w-auto"
+              >
+                기록 시작하기
+              </Link>
+              <Link
+                href="/explore"
+                className="inline-flex min-h-[3.25rem] w-full items-center justify-center rounded-full border border-default bg-surface/90 px-8 py-3.5 text-[1.0625rem] font-semibold text-link shadow-sm backdrop-blur-[1px] transition hover:border-brand-muted hover:bg-surface focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover sm:w-auto"
+              >
+                둘러보기
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        <div className="absolute inset-0 lg:relative lg:min-h-[660px]">
+          <div className="absolute inset-0 overflow-hidden">
+            <Image
+              src={heroImageSrc}
+              alt="창가 햇살 아래 노트와 커피가 놓인 테이블"
+              fill
+              priority
+              quality={90}
+              sizes="(min-width: 1024px) 60vw, 100vw"
+              className={`${styles.heroImage} object-cover object-[72%_center] lg:object-center`}
+            />
+          </div>
+
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-gradient-to-r from-page via-page/50 to-page/10 sm:via-page/40 sm:to-page/5 lg:from-page/75 lg:via-page/20 lg:to-transparent"
+          />
+
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 left-0 hidden w-28 bg-gradient-to-r from-page to-transparent lg:block"
+          />
+        </div>
+      </div>
+    </section>
+  );
+}

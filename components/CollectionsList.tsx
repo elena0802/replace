@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
-import CollectionCoverImage from "@/components/CollectionCoverImage";
+import CollectionCard from "@/components/CollectionCard";
 import CollectionsListSkeleton from "@/components/skeleton/CollectionsListSkeleton";
 import EmptyState from "@/components/EmptyState";
 import { withTimeout } from "@/lib/async/withTimeout";
@@ -21,93 +21,24 @@ import {
   supabase,
 } from "@/lib/supabase/client";
 
-function formatDate(value: string) {
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-
-  return `${year}.${month}.${day}`;
-}
-
-function CollectionCard({
-  collection,
-  visibilityMode,
-}: {
-  collection: CollectionListItem;
-  visibilityMode: "owner" | "public";
-}) {
-  return (
-    <Link
-      href={`/collections/${collection.id}`}
-      className="group flex h-full flex-col rounded-xl border border-default bg-surface p-4 shadow-card transition hover:-translate-y-0.5 hover:border-brand-muted hover:shadow-floating focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover"
-    >
-      <CollectionCoverImage
-        imageUrl={collection.coverImageUrl}
-        title={collection.name}
-        placeholderTitle={
-          collection.placeCount === 0
-            ? "아직 담긴 장소가 없어요"
-            : "커버 이미지가 없어요"
-        }
-        placeholderDescription={
-          collection.placeCount === 0
-            ? "장소를 담으면 커버가 채워집니다"
-            : "이미지가 있는 장소를 담으면 커버가 채워집니다"
-        }
-      />
-
-      <div className="mt-5 flex items-start justify-between gap-4">
-        <div className="flex flex-wrap gap-2">
-          <span className="rounded-full bg-[color:var(--color-accent)] px-3 py-1 text-base font-medium text-link">
-            {collection.placeCount}곳
-          </span>
-          <span className="rounded-full border border-default bg-surface px-3 py-1 text-base font-medium text-stone">
-            {visibilityMode === "public"
-              ? "공개"
-              : collection.is_public
-                ? "공개"
-                : "나만 보기"}
-          </span>
-        </div>
-        <span className="text-base font-medium text-meta">
-          {formatDate(collection.created_at)}
-        </span>
-      </div>
-      <div className="mt-5 space-y-3">
-        <h3 className="text-3xl font-semibold leading-tight tracking-normal text-ink">
-          {collection.name}
-        </h3>
-        <p className="text-lg leading-8 text-stone">
-          {collection.description || "설명 없이 조용히 모아둔 컬렉션"}
-        </p>
-      </div>
-      <span className="mt-auto pt-6 text-lg font-semibold text-link">
-        열어보기
-      </span>
-    </Link>
-  );
-}
-
 function CollectionGrid({
   collections,
   visibilityMode,
+  showDate = false,
 }: {
   collections: CollectionListItem[];
   visibilityMode: "owner" | "public";
+  showDate?: boolean;
 }) {
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
+    <div className="grid gap-6 sm:grid-cols-2">
       {collections.map((collection) => (
         <CollectionCard
           key={collection.id}
           collection={collection}
+          variant="grid"
           visibilityMode={visibilityMode}
+          showDate={showDate}
         />
       ))}
     </div>
@@ -342,6 +273,7 @@ export default function CollectionsList() {
               <CollectionGrid
                 collections={myCollections}
                 visibilityMode="owner"
+                showDate
               />
             )}
           </section>
