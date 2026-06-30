@@ -7,20 +7,21 @@ export default function BottomCtaSection() {
   return (
     <section className="overflow-hidden rounded-xl border border-default/80 bg-tint shadow-floating">
       <div className="grid lg:min-h-[360px] lg:grid-cols-[0.92fr_1.08fr]">
-        <div className="flex flex-col justify-center px-7 py-9 sm:px-10 sm:py-12 lg:px-12 lg:py-14">
-          <div className="max-w-xl space-y-5">
-            <h2 className="text-[2rem] font-semibold leading-[1.16] tracking-normal text-ink sm:text-[2.5rem]">
-              당신의 좋은 장소와 시간을 기록해보세요
+        <div className="flex flex-col justify-center px-7 py-10 sm:px-10 sm:py-12 lg:px-12 lg:py-16">
+          <div className="max-w-xl space-y-6">
+            <h2 className="text-[1.75rem] font-semibold leading-[1.18] tracking-normal text-ink sm:text-[2.25rem] sm:leading-[1.16] lg:text-[2.5rem]">
+              다시 찾고 싶은 장소를
+              <br className="hidden sm:block" />
+              기록해보세요
             </h2>
-            <p className="max-w-lg text-[17px] leading-8 text-stone">
-              기록할수록 나만의 취향이 쌓이고, 다시 가고 싶은 순간이 쉽게
-              찾아옵니다.
+            <p className="max-w-lg text-base leading-7 text-stone sm:text-[1.0625rem] sm:leading-8">
+              기록할수록 나만의 장소 아카이브가 완성됩니다.
             </p>
           </div>
-          <div className="mt-8">
+          <div className="mt-8 sm:mt-10">
             <Link
               href="/places/new"
-              className="inline-flex min-h-12 items-center justify-center rounded-full bg-brand px-7 py-3 text-base font-semibold text-brand-foreground shadow-sm transition hover:bg-brand-hover focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover"
+              className="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-brand px-7 py-3 text-[1.0625rem] font-semibold text-brand-foreground shadow-sm transition hover:bg-brand-hover focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand-hover sm:w-auto"
             >
               지금 시작하기
             </Link>

@@ -56,13 +56,15 @@ export default function CollectionsSection() {
     <section className="rounded-xl border border-default/70 bg-subtle/50 px-5 py-10 sm:px-8 sm:py-12 lg:px-10 lg:py-14">
       <div className="space-y-10">
         <header className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between sm:gap-8">
-          <div className="max-w-2xl space-y-3">
+          <div className="max-w-2xl space-y-4">
             <p className="text-sm font-medium text-meta">컬렉션</p>
             <h2 className="text-[1.75rem] font-semibold leading-tight tracking-normal text-ink sm:text-[2rem] lg:text-[2.125rem]">
-              비슷한 순간들이 모이면 하나의 취향이 됩니다
+              좋아하는 장소를 모으면
+              <br className="hidden sm:block" />
+              하나의 취향이 됩니다
             </h2>
-            <p className="text-base leading-7 text-stone">
-              장소들을 모아 하루 코스와 취향의 묶음으로 남겨보세요.
+            <p className="text-base leading-7 text-stone sm:text-[1.0625rem] sm:leading-8">
+              장소들을 모아 나만의 취향을 천천히 만들어보세요.
             </p>
           </div>
           <Link
