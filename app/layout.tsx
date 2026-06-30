@@ -62,7 +62,7 @@ export default function RootLayout({
               <AuthNav />
             </nav>
 
-            <div className="pb-2 md:hidden">
+            <div className="pb-1.5 md:hidden">
               <MobileHeaderNav />
             </div>
           </div>

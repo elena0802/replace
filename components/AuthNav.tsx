@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import type { User } from "@supabase/supabase-js";
+import { useAuthUser } from "@/lib/auth/useAuthUser";
 import { supabase } from "@/lib/supabase/client";
 
 const authButtonClass =
@@ -11,44 +10,10 @@ const authButtonClass =
 
 export default function AuthNav() {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    let isMounted = true;
-    let unsubscribe: (() => void) | undefined;
-
-    async function loadSession() {
-      try {
-        const { data } = await supabase.auth.getSession();
-
-        if (isMounted) {
-          setUser(data.session?.user ?? null);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    }
-
-    try {
-      const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-        setUser(session?.user ?? null);
-      });
-      unsubscribe = () => data.subscription.unsubscribe();
-    } catch (error) {
-      console.error(error);
-    }
-
-    loadSession();
-
-    return () => {
-      isMounted = false;
-      unsubscribe?.();
-    };
-  }, []);
+  const user = useAuthUser();
 
   async function handleLogout() {
     await supabase.auth.signOut();
-    setUser(null);
     router.push("/");
   }
 
